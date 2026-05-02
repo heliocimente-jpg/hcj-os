@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HCJ-OS v3 — Intelligent Operations Platform</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsZzEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDBlNjc2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZmZDYwMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGcyIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwZTY3NjI1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZmZDYwMDI1Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cG9seWdvbiBwb2ludHM9IjYwLDQgMTA4LDMwIDEwOCw5MCA2MCwxMTYgMTIsOTAgMTIsMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNsZzEpIiBzdHJva2Utd2lkdGg9IjIuNSIgb3BhY2l0eT0iMC41Ii8+CiAgPHBvbHlnb24gcG9pbnRzPSI2MCwxNCA5OCwzNiA5OCw4NCA2MCwxMDYgMjIsODQgMjIsMzYiIGZpbGw9InVybCgjbGcyKSIgc3Ryb2tlPSJ1cmwoI2xnMSkiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjciLz4KICA8cmVjdCB4PSIyOCIgeT0iMzgiIHdpZHRoPSI1IiBoZWlnaHQ9IjI4IiByeD0iMS41IiBmaWxsPSJ1cmwoI2xnMSkiLz4KICA8cmVjdCB4PSIyOCIgeT0iNTAiIHdpZHRoPSIxNiIgaGVpZ2h0PSI1IiByeD0iMS41IiBmaWxsPSJ1cmwoI2xnMSkiLz4KICA8cmVjdCB4PSIzOSIgeT0iMzgiIHdpZHRoPSI1IiBoZWlnaHQ9IjI4IiByeD0iMS41IiBmaWxsPSJ1cmwoI2xnMSkiLz4KICA8cGF0aCBkPSJNNTIgNDUgUTUyIDM4IDYwIDM4IEw2NiAzOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2xnMSkiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjUyIiB5MT0iNDUiIHgyPSI1MiIgeTI9IjYxIiBzdHJva2U9InVybCgjbGcxKSIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNNTIgNjEgUTUyIDY4IDYwIDY4IEw2NiA2OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2xnMSkiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGxpbmUgeDE9IjgzIiB5MT0iMzgiIHgyPSI4MyIgeTI9IjYyIiBzdHJva2U9InVybCgjbGcxKSIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNODMgNjIgUTgzIDcwIDc1IDcwIEw3MiA3MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2xnMSkiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPg=="/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#07090c;--surface:#0f1318;--surface2:#161b22;--surface3:#1c2330;
+  --border:#1e2a38;--border2:#263345;--text:#e8edf5;--text2:#8899aa;--text3:#445566;
+  --green:#00e676;--green-dim:#00e67615;--green2:#00c853;
+  --amber:#ffb300;--amber-dim:#ffb30015;
+  --red:#ff4444;--red-dim:#ff444415;
+  --blue:#4fc3f7;--blue-dim:#4fc3f715;
+  --purple:#ce93d8;--purple-dim:#ce93d815;
+  --radius:10px;--radius-sm:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* SPLASH SCREEN */
+#splash{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.5s;}
+#splash.hide{opacity:0;pointer-events:none;}
+.splash-logo{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:var(--green);letter-spacing:-2px;margin-bottom:8px;}
+.splash-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;margin-bottom:40px;}
+.splash-bar{width:200px;height:2px;background:var(--border);border-radius:2px;overflow:hidden;}
+.splash-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:2px;animation:load 2s ease forwards;}
+@keyframes load{from{width:0}to{width:100%}}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--bg);z-index:999;display:none;align-items:center;justify-content:center;}
+#login-screen.show{display:flex;}
+.login-box{width:400px;max-width:90vw;background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px;text-align:center;}
+.login-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--green);margin-bottom:4px;}
+.login-tagline{font-size:12px;color:var(--text3);font-family:'IBM Plex Mono',monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;}
+.login-tabs{display:flex;gap:0;margin-bottom:24px;background:var(--surface2);border-radius:8px;padding:4px;}
+.login-tab{flex:1;padding:8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);transition:all 0.2s;text-align:center;}
+.login-tab.active{background:var(--green);color:#000;}
+.login-form{display:flex;flex-direction:column;gap:12px;text-align:left;}
+.login-form input{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;width:100%;}
+.login-form input:focus{border-color:var(--green);}
+.login-btn{background:var(--green);color:#000;border:none;border-radius:8px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-top:4px;transition:all 0.2s;}
+.login-btn:hover{background:#00ff88;transform:translateY(-1px);}
+.login-divider{text-align:center;font-size:11px;color:var(--text3);margin:12px 0;}
+.user-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.user-pill{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all 0.15s;}
+.user-pill:hover{border-color:var(--green);background:var(--green-dim);}
+.user-pill-avatar{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;font-family:'Syne',sans-serif;}
+.user-pill-info{flex:1;text-align:left;}
+.user-pill-name{font-size:13px;font-weight:600;}
+.user-pill-role{font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+.terms-link{font-size:11px;color:var(--text3);text-decoration:underline;cursor:pointer;margin-top:8px;display:block;text-align:center;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;transition:transform 0.3s;}
+.sidebar.collapsed{transform:translateX(-240px);}
+.logo-area{padding:20px 20px 16px;border-bottom:1px solid var(--border);}
+.logo-mark{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--green);letter-spacing:-0.5px;}
+.logo-sub{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+.logo-version{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--green);opacity:0.7;margin-top:1px;}
+.user-info-bar{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.user-avatar-sm{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;font-family:'Syne',sans-serif;flex-shrink:0;}
+.user-name-sm{font-size:12px;font-weight:600;line-height:1.3;}
+.user-role-sm{font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+.nav{flex:1;padding:12px 0;overflow-y:auto;}
+.nav-section{padding:0 10px;margin-bottom:2px;}
+.nav-label{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:8px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:12px;color:var(--text2);transition:all 0.15s;border:1px solid transparent;position:relative;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:var(--green-dim);color:var(--green);border-color:#00e67625;}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;padding:1px 6px;border-radius:10px;font-family:'IBM Plex Mono',monospace;}
+.sidebar-bottom{padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
+.status-online{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text2);}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:pulse 2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.logout-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;cursor:pointer;font-size:12px;color:var(--text3);transition:all 0.15s;border:1px solid transparent;}
+.logout-btn:hover{background:var(--red-dim);color:var(--red);border-color:#ff444425;}
+
+/* MAIN */
+.main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column;transition:margin-left 0.3s;}
+.main.expanded{margin-left:0;}
+.topbar{height:54px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--surface);position:sticky;top:0;z-index:50;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.menu-toggle{background:transparent;border:1px solid var(--border);border-radius:6px;padding:6px 8px;cursor:pointer;color:var(--text2);font-size:14px;}
+.topbar-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.notif-btn{position:relative;background:transparent;border:1px solid var(--border);border-radius:6px;padding:6px 10px;cursor:pointer;color:var(--text2);font-size:14px;}
+.notif-dot{position:absolute;top:4px;right:4px;width:6px;height:6px;background:var(--red);border-radius:50%;}
+.content{flex:1;padding:24px;}
+.view{display:none;animation:fadeIn 0.2s ease;}
+.view.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* COMPONENTS */
+.page-header{margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.page-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.page-sub{font-size:12px;color:var(--text2);margin-top:3px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;position:relative;overflow:hidden;transition:transform 0.2s,border-color 0.2s;}
+.kpi-card:hover{transform:translateY(-2px);border-color:var(--border2);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi-green::before{background:linear-gradient(90deg,var(--green),var(--blue));}
+.kpi-amber::before{background:linear-gradient(90deg,var(--amber),#ff9800);}
+.kpi-red::before{background:linear-gradient(90deg,var(--red),#ff6b6b);}
+.kpi-blue::before{background:linear-gradient(90deg,var(--blue),var(--purple));}
+.kpi-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;}
+.kpi-value{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1;margin-bottom:4px;}
+.kpi-green .kpi-value{color:var(--green);}
+.kpi-amber .kpi-value{color:var(--amber);}
+.kpi-red .kpi-value{color:var(--red);}
+.kpi-blue .kpi-value{color:var(--blue);}
+.kpi-delta{font-size:10px;color:var(--text3);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.card-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 8px;border-radius:4px;letter-spacing:0.5px;font-weight:600;}
+.badge-green{background:var(--green-dim);color:var(--green);}
+.badge-amber{background:var(--amber-dim);color:var(--amber);}
+.badge-red{background:var(--red-dim);color:var(--red);}
+.badge-blue{background:var(--blue-dim);color:var(--blue);}
+.badge-gray{background:var(--surface2);color:var(--text2);}
+.btn{padding:7px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;font-family:'IBM Plex Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--green);color:#000;}
+.btn-primary:hover{background:#00ff88;transform:translateY(-1px);}
+.btn-primary:disabled{background:var(--surface3);color:var(--text3);cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2);}
+.btn-ghost:hover{border-color:var(--green);color:var(--text);}
+.btn-red{background:var(--red-dim);color:var(--red);border:1px solid #ff444425;}
+.btn-red:hover{background:#ff444425;}
+.btn-blue{background:var(--blue-dim);color:var(--blue);border:1px solid #4fc3f725;}
+.btn-amber{background:var(--amber-dim);color:var(--amber);border:1px solid #ffb30025;}
+
+/* PILLARS */
+.pillars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.pillar-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.pillar-card:hover{transform:translateY(-2px);border-color:var(--border2);}
+.pillar-ring{width:60px;height:60px;margin:0 auto 8px;position:relative;}
+.pillar-ring svg{transform:rotate(-90deg);}
+.pillar-ring-bg{fill:none;stroke:var(--border);stroke-width:5;}
+.pillar-ring-fill{fill:none;stroke-width:5;stroke-linecap:round;}
+.pillar-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Syne',sans-serif;font-size:12px;font-weight:800;}
+.pillar-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;font-family:'IBM Plex Mono',monospace;}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead tr{border-bottom:1px solid var(--border);}
+th{text-align:left;padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 10px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface2);}
+.case-id{font-family:'IBM Plex Mono',monospace;color:var(--text3);font-size:10px;}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:10px;}
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-label{width:70px;color:var(--text2);text-align:right;flex-shrink:0;font-family:'IBM Plex Mono',monospace;font-size:9px;}
+.bar-track{flex:1;height:6px;background:var(--border);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.bar-val{width:30px;text-align:right;color:var(--text3);font-size:10px;font-family:'IBM Plex Mono',monospace;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;color:var(--text);font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;transition:border-color 0.15s;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-dim);}
+select option{background:var(--surface2);}
+textarea{resize:vertical;min-height:90px;line-height:1.5;}
+
+/* UPLOAD */
+.upload-zone{border:2px dashed var(--border2);border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:14px;}
+.upload-zone:hover{border-color:var(--green);background:var(--green-dim);}
+.upload-zone input{display:none;}
+.file-list{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.file-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;font-size:11px;}
+
+/* TRIAGE */
+.triage-result{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:18px;margin-top:16px;display:none;}
+.triage-result.show{display:block;animation:fadeIn 0.3s ease;}
+.risk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.risk-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;}
+.risk-label{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.risk-level{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;}
+.actions-list{display:flex;flex-direction:column;gap:5px;}
+.action-item{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--text2);padding:8px 10px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);line-height:1.5;}
+.action-num{font-family:'IBM Plex Mono',monospace;color:var(--green);font-size:10px;flex-shrink:0;margin-top:2px;font-weight:700;}
+
+/* REPORT */
+.report-output{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:22px;font-size:13px;line-height:1.7;display:none;margin-top:16px;}
+.report-output.show{display:block;animation:fadeIn 0.3s ease;}
+.report-section{margin-bottom:22px;}
+.report-section-title{font-family:'Syne',sans-serif;font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--green);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.report-section p{color:var(--text2);margin-bottom:6px;}
+.report-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px;}
+.report-table th{background:var(--surface);padding:7px 10px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--text3);text-transform:uppercase;}
+.report-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text2);}
+
+/* ALERTS */
+.alert{border-radius:8px;padding:12px 16px;display:flex;align-items:flex-start;gap:12px;margin-top:14px;font-size:12px;line-height:1.5;}
+.alert-amber{background:var(--amber-dim);border:1px solid #ffb30030;color:var(--amber);}
+.alert-green{background:var(--green-dim);border:1px solid #00e67630;color:var(--green);}
+.alert-red{background:var(--red-dim);border:1px solid #ff444430;color:var(--red);}
+.alert-blue{background:var(--blue-dim);border:1px solid #4fc3f730;color:var(--blue);}
+
+/* CLIENTS */
+.client-list{display:flex;flex-direction:column;gap:8px;}
+.client-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.15s;}
+.client-card:hover{border-color:var(--border2);}
+.client-avatar{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;flex-shrink:0;}
+
+/* TEAM */
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.team-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;transition:all 0.2s;}
+.team-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.team-avatar{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin:0 auto 10px;}
+.team-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.team-role{font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.5px;}
+.team-status{font-size:10px;margin-top:6px;}
+
+/* STORAGE */
+.storage-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.storage-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:all 0.2s;}
+.storage-card:hover{border-color:var(--border2);}
+.storage-icon{font-size:24px;margin-bottom:8px;}
+.storage-name{font-size:12px;font-weight:700;margin-bottom:2px;}
+.storage-meta{font-size:10px;color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+.storage-file{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;font-size:12px;cursor:pointer;transition:all 0.15s;}
+.storage-file:hover{border-color:var(--green);background:var(--green-dim);}
+
+/* NOTIFICATIONS */
+.notif-list{display:flex;flex-direction:column;gap:6px;}
+.notif-item{display:flex;gap:12px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:12px;transition:all 0.15s;}
+.notif-item.unread{border-color:var(--green);background:var(--green-dim);}
+.notif-dot-sm{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.notif-content{flex:1;}
+.notif-time{font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-top:2px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:#000c;z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.modal-close{background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:18px;padding:2px;}
+.modal-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end;}
+
+/* TERMS */
+.terms-content{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:20px;max-height:400px;overflow-y:auto;font-size:12px;color:var(--text2);line-height:1.8;}
+.terms-content h3{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;}
+.terms-content h3:first-child{margin-top:0;}
+
+/* INTEGRATIONS */
+.integrations-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.integration-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;transition:all 0.2s;}
+.integration-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.integration-card.connected{border-color:var(--green);background:var(--green-dim);}
+.integration-icon{font-size:28px;margin-bottom:8px;}
+.integration-name{font-size:12px;font-weight:700;margin-bottom:4px;}
+.integration-desc{font-size:10px;color:var(--text2);margin-bottom:10px;line-height:1.4;}
+.integration-status{font-size:10px;font-family:'IBM Plex Mono',monospace;}
+
+/* SETTINGS */
+.settings-section{margin-bottom:24px;}
+.settings-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.setting-row:last-child{border-bottom:none;}
+.setting-label{font-size:13px;}
+.setting-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.toggle{width:42px;height:24px;background:var(--border);border-radius:12px;position:relative;cursor:pointer;transition:background 0.3s;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform 0.3s;}
+.toggle.on::after{transform:translateX(18px);}
+.danger-zone{background:var(--red-dim);border:1px solid #ff444430;border-radius:8px;padding:16px;margin-top:16px;}
+.danger-title{font-size:12px;font-weight:700;color:var(--red);margin-bottom:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* PRINT */
+@media print{
+  .sidebar,.topbar,.btn,.notif-btn,.menu-toggle,.alert-amber{display:none!important;}
+  .main{margin-left:0!important;}
+  .report-output{border:none!important;padding:0!important;}
+  body{background:#fff!important;color:#000!important;}
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .pillars-grid{grid-template-columns:repeat(2,1fr);}
+  .risk-grid{grid-template-columns:repeat(2,1fr);}
+  .form-grid{grid-template-columns:1fr;}
+  .form-group.full{grid-column:1;}
+  .team-grid{grid-template-columns:repeat(2,1fr);}
+  .integrations-grid{grid-template-columns:repeat(2,1fr);}
+  .storage-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .pillars-grid{grid-template-columns:repeat(2,1fr);}
+  .team-grid{grid-template-columns:1fr;}
+  .integrations-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="72" height="72">
+  <defs>
+    <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00e676"/>
+      <stop offset="100%" style="stop-color:#ffd600"/>
+    </linearGradient>
+    <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00e67625"/>
+      <stop offset="100%" style="stop-color:#ffd60025"/>
+    </linearGradient>
+  </defs>
+  <polygon points="60,4 108,30 108,90 60,116 12,90 12,30" fill="none" stroke="url(#lg1)" stroke-width="2.5" opacity="0.5"/>
+  <polygon points="60,14 98,36 98,84 60,106 22,84 22,36" fill="url(#lg2)" stroke="url(#lg1)" stroke-width="1.5" opacity="0.7"/>
+  <rect x="28" y="38" width="5" height="28" rx="1.5" fill="url(#lg1)"/>
+  <rect x="28" y="50" width="16" height="5" rx="1.5" fill="url(#lg1)"/>
+  <rect x="39" y="38" width="5" height="28" rx="1.5" fill="url(#lg1)"/>
+  <path d="M52 45 Q52 38 60 38 L66 38" fill="none" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <line x1="52" y1="45" x2="52" y2="61" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M52 61 Q52 68 60 68 L66 68" fill="none" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <line x1="83" y1="38" x2="83" y2="62" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M83 62 Q83 70 75 70 L72 70" fill="none" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+</svg>
+  <div class="splash-logo" style="margin-top:16px;">HCJ-OS</div>
+  <div class="splash-sub">Intelligent Operations Platform</div>
+  <div class="splash-bar"><div class="splash-fill"></div></div>
+  <div style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-top:16px;letter-spacing:1px;">v3.0 · Powered by Gemini AI</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="64" height="64">
+  <defs>
+    <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00e676"/>
+      <stop offset="100%" style="stop-color:#ffd600"/>
+    </linearGradient>
+    <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00e67625"/>
+      <stop offset="100%" style="stop-color:#ffd60025"/>
+    </linearGradient>
+  </defs>
+  <polygon points="60,4 108,30 108,90 60,116 12,90 12,30" fill="none" stroke="url(#lg1)" stroke-width="2.5" opacity="0.5"/>
+  <polygon points="60,14 98,36 98,84 60,106 22,84 22,36" fill="url(#lg2)" stroke="url(#lg1)" stroke-width="1.5" opacity="0.7"/>
+  <rect x="28" y="38" width="5" height="28" rx="1.5" fill="url(#lg1)"/>
+  <rect x="28" y="50" width="16" height="5" rx="1.5" fill="url(#lg1)"/>
+  <rect x="39" y="38" width="5" height="28" rx="1.5" fill="url(#lg1)"/>
+  <path d="M52 45 Q52 38 60 38 L66 38" fill="none" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <line x1="52" y1="45" x2="52" y2="61" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M52 61 Q52 68 60 68 L66 68" fill="none" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <line x1="83" y1="38" x2="83" y2="62" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M83 62 Q83 70 75 70 L72 70" fill="none" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+</svg>
+      <div style="text-align:left;">
+        <div class="login-logo" style="margin-bottom:2px;">HCJ-OS</div>
+        <div class="login-tagline" style="margin-bottom:0;">Intelligent Operations Platform</div>
+      </div>
+    </div>
+    <div class="login-tabs">
+      <div class="login-tab active" onclick="switchLoginTab('existing')">Entrar</div>
+      <div class="login-tab" onclick="switchLoginTab('new')">Novo Utilizador</div>
+    </div>
+    <div id="tab-existing">
+      <div style="font-size:11px;color:var(--text2);margin-bottom:12px;font-family:'IBM Plex Mono',monospace;">Seleccionar utilizador:</div>
+      <div class="user-list" id="user-list-login"></div>
+      <div class="login-divider">ou entrar com PIN</div>
+      <div class="login-form">
+        <input type="text" id="login-name-input" placeholder="Nome de utilizador"/>
+        <input type="password" id="login-pin" placeholder="PIN (4 dígitos)" maxlength="4"/>
+        <button class="login-btn" onclick="doLogin()">Entrar no Sistema</button>
+      </div>
+    </div>
+    <div id="tab-new" style="display:none;">
+      <div class="login-form">
+        <input type="text" id="reg-name" placeholder="Nome completo"/>
+        <input type="text" id="reg-role" placeholder="Cargo (ex: Técnico HSE)"/>
+        <select id="reg-permission"><option value="admin">Administrador</option><option value="manager">Gestor</option><option value="technician">Técnico</option><option value="viewer">Visualizador</option></select>
+        <input type="password" id="reg-pin" placeholder="Criar PIN (4 dígitos)" maxlength="4"/>
+        <button class="login-btn" onclick="doRegister()">Criar Conta</button>
+      </div>
+    </div>
+    <a class="terms-link" onclick="openModal('terms-modal')">Termos e Condições de Utilização</a>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo-area" style="display:flex;align-items:center;gap:10px;padding:16px 16px 14px;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="36" height="36">
+  <defs>
+    <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00e676"/>
+      <stop offset="100%" style="stop-color:#ffd600"/>
+    </linearGradient>
+    <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00e67625"/>
+      <stop offset="100%" style="stop-color:#ffd60025"/>
+    </linearGradient>
+  </defs>
+  <polygon points="60,4 108,30 108,90 60,116 12,90 12,30" fill="none" stroke="url(#lg1)" stroke-width="2.5" opacity="0.5"/>
+  <polygon points="60,14 98,36 98,84 60,106 22,84 22,36" fill="url(#lg2)" stroke="url(#lg1)" stroke-width="1.5" opacity="0.7"/>
+  <rect x="28" y="38" width="5" height="28" rx="1.5" fill="url(#lg1)"/>
+  <rect x="28" y="50" width="16" height="5" rx="1.5" fill="url(#lg1)"/>
+  <rect x="39" y="38" width="5" height="28" rx="1.5" fill="url(#lg1)"/>
+  <path d="M52 45 Q52 38 60 38 L66 38" fill="none" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <line x1="52" y1="45" x2="52" y2="61" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M52 61 Q52 68 60 68 L66 68" fill="none" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <line x1="83" y1="38" x2="83" y2="62" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M83 62 Q83 70 75 70 L72 70" fill="none" stroke="url(#lg1)" stroke-width="5" stroke-linecap="round"/>
+</svg>
+    <div>
+      <div class="logo-mark">HCJ-OS</div>
+      <div class="logo-sub">Global Solutions</div>
+      <div class="logo-version">v3.0 · Gemini AI</div>
+    </div>
+  </div>
+  <div class="user-info-bar">
+    <div class="user-avatar-sm" id="sidebar-avatar" style="background:#00e67620;color:var(--green)">H</div>
+    <div>
+      <div class="user-name-sm" id="sidebar-name">Utilizador</div>
+      <div class="user-role-sm" id="sidebar-role">Administrador</div>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <div class="nav-item active" onclick="showView('dashboard',this)"><span class="nav-icon">⬡</span> Dashboard</div>
+      <div class="nav-item" onclick="showView('casos',this)"><span class="nav-icon">◫</span> Gestão de Casos<span class="nav-badge" id="badge-casos">0</span></div>
+      <div class="nav-item" onclick="showView('clientes',this)"><span class="nav-icon">◈</span> Clientes</div>
+      <div class="nav-item" onclick="showView('equipa',this)"><span class="nav-icon">◉</span> Equipa</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Inteligência IA</div>
+      <div class="nav-item" onclick="showView('triagem',this)"><span class="nav-icon">◎</span> Triagem de Risco</div>
+      <div class="nav-item" onclick="showView('relatorio',this)"><span class="nav-icon">◻</span> Gerar Relatório</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Recursos</div>
+      <div class="nav-item" onclick="showView('armazenamento',this)"><span class="nav-icon">◱</span> Armazenamento</div>
+      <div class="nav-item" onclick="showView('notificacoes',this)"><span class="nav-icon">◆</span> Notificações<span class="nav-badge" id="badge-notif">3</span></div>
+      <div class="nav-item" onclick="showView('integracoes',this)"><span class="nav-icon">◐</span> Integrações</div>
+      <div class="nav-item" onclick="showView('configuracoes',this)"><span class="nav-icon">◇</span> Configurações</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Ajuda</div>
+      <div class="nav-item" onclick="showView('tutorial',this)"><span class="nav-icon">◑</span> Como Usar</div>
+    </div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="status-online"><div class="dot"></div> Sistema operacional</div>
+    <div class="logout-btn" onclick="doLogout()"><span>⏻</span> Terminar Sessão</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="page-title">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn" onclick="showView('notificacoes',null)">🔔<div class="notif-dot" id="notif-dot"></div></button>
+      <span style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;display:none;" id="topbar-user"></span>
+      <button class="btn btn-primary" onclick="showView('triagem',document.querySelectorAll('.nav-item')[4])">+ Novo Caso</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="page-header">
+        <div><div class="page-title">Visão Geral Operacional</div><div class="page-sub" id="dash-sub">Moatize / Tete — Actualizado agora</div></div>
+        <span class="badge badge-green">● Ao vivo</span>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-green"><div class="kpi-label">Casos Activos</div><div class="kpi-value" id="kpi-casos">0</div><div class="kpi-delta">Total registados</div></div>
+        <div class="kpi-card kpi-amber"><div class="kpi-label">Riscos Pendentes</div><div class="kpi-value">5</div><div class="kpi-delta">Aguardam acção</div></div>
+        <div class="kpi-card kpi-red"><div class="kpi-label">Não Conformidades</div><div class="kpi-value">2</div><div class="kpi-delta">Prioridade alta</div></div>
+        <div class="kpi-card kpi-blue"><div class="kpi-label">Clientes</div><div class="kpi-value" id="kpi-clientes">0</div><div class="kpi-delta">Registados</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Conformidade por Pilar</div></div>
+          <div class="pillars-grid">
+            <div class="pillar-card"><div class="pillar-ring"><svg viewBox="0 0 64 64" width="60" height="60"><circle class="pillar-ring-bg" cx="32" cy="32" r="27"/><circle class="pillar-ring-fill" cx="32" cy="32" r="27" stroke="#ffb300" stroke-dasharray="169.6" stroke-dashoffset="33.9"/></svg><div class="pillar-pct" style="color:#ffb300">80%</div></div><div class="pillar-name" style="color:#ffb300">HSST</div></div>
+            <div class="pillar-card"><div class="pillar-ring"><svg viewBox="0 0 64 64" width="60" height="60"><circle class="pillar-ring-bg" cx="32" cy="32" r="27"/><circle class="pillar-ring-fill" cx="32" cy="32" r="27" stroke="#00e676" stroke-dasharray="169.6" stroke-dashoffset="50.9"/></svg><div class="pillar-pct" style="color:#00e676">70%</div></div><div class="pillar-name" style="color:#00e676">Ambiente</div></div>
+            <div class="pillar-card"><div class="pillar-ring"><svg viewBox="0 0 64 64" width="60" height="60"><circle class="pillar-ring-bg" cx="32" cy="32" r="27"/><circle class="pillar-ring-fill" cx="32" cy="32" r="27" stroke="#4fc3f7" stroke-dasharray="169.6" stroke-dashoffset="25.4"/></svg><div class="pillar-pct" style="color:#4fc3f7">85%</div></div><div class="pillar-name" style="color:#4fc3f7">Qualidade</div></div>
+            <div class="pillar-card"><div class="pillar-ring"><svg viewBox="0 0 64 64" width="60" height="60"><circle class="pillar-ring-bg" cx="32" cy="32" r="27"/><circle class="pillar-ring-fill" cx="32" cy="32" r="27" stroke="#ce93d8" stroke-dasharray="169.6" stroke-dashoffset="67.8"/></svg><div class="pillar-pct" style="color:#ce93d8">60%</div></div><div class="pillar-name" style="color:#ce93d8">ESG</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Risco por Sector</div></div>
+          <div class="bar-chart">
+            <div class="bar-row"><div class="bar-label">Mineração</div><div class="bar-track"><div class="bar-fill" style="width:82%;background:#ff4444"></div></div><div class="bar-val">82%</div></div>
+            <div class="bar-row"><div class="bar-label">Logística</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:#ffb300"></div></div><div class="bar-val">55%</div></div>
+            <div class="bar-row"><div class="bar-label">Construção</div><div class="bar-track"><div class="bar-fill" style="width:68%;background:#ffb300"></div></div><div class="bar-val">68%</div></div>
+            <div class="bar-row"><div class="bar-label">Ambiente</div><div class="bar-track"><div class="bar-fill" style="width:45%;background:#00e676"></div></div><div class="bar-val">45%</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Últimos Casos</div><span class="badge badge-gray" id="casos-count-label">0 registados</span></div>
+        <div id="dash-casos-table"><p style="color:var(--text3);font-size:12px;">Nenhum caso ainda. Crie o primeiro caso na Triagem de Risco.</p></div>
+      </div>
+    </div>
+
+    <!-- CASOS -->
+    <div class="view" id="view-casos">
+      <div class="page-header"><div><div class="page-title">Gestão de Casos</div><div class="page-sub">Histórico completo de todos os casos</div></div></div>
+      <div class="card"><div id="casos-table-wrap"><p style="color:var(--text3);font-size:12px;">Nenhum caso registado.</p></div></div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="view" id="view-clientes">
+      <div class="page-header"><div><div class="page-title">Clientes</div><div class="page-sub">CRM — Gestão de relacionamento comercial</div></div><button class="btn btn-primary" onclick="openModal('client-modal')">+ Adicionar Cliente</button></div>
+      <div class="client-list" id="client-list"><p style="color:var(--text3);font-size:12px;">Nenhum cliente registado.</p></div>
+    </div>
+
+    <!-- EQUIPA -->
+    <div class="view" id="view-equipa">
+      <div class="page-header"><div><div class="page-title">Equipa</div><div class="page-sub">Gestão de utilizadores e permissões</div></div><button class="btn btn-primary" onclick="switchLoginTab('new');openModal('add-user-modal')">+ Adicionar Membro</button></div>
+      <div class="team-grid" id="team-grid"></div>
+    </div>
+
+    <!-- TRIAGEM -->
+    <div class="view" id="view-triagem">
+      <div class="page-header"><div><div class="page-title">Triagem de Risco</div><div class="page-sub">Análise automática por IA — Gemini 2.0</div></div></div>
+      <div class="card">
+        <div class="upload-zone" onclick="document.getElementById('upload-input').click()">
+          <div style="font-size:24px;margin-bottom:6px;">📎</div>
+          <div style="font-size:12px;color:var(--text2);">Anexar ficheiros (PDF, Word, Excel, Imagens, Texto)</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px;">Clica para seleccionar</div>
+          <input type="file" id="upload-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" onchange="handleFiles(this.files,'file-list',0)">
+        </div>
+        <div class="file-list" id="file-list"></div>
+        <div class="form-grid">
+          <div class="form-group"><label>Cliente</label><input type="text" id="t-cliente" placeholder="Nome do cliente"/></div>
+          <div class="form-group"><label>Sector</label><select id="t-sector"><option value="">Seleccionar...</option><option value="mineracao">Mineração</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="industria">Indústria</option><option value="ambiente">Ambiente / Florestal</option><option value="infraestrutura">Infraestrutura</option></select></div>
+          <div class="form-group"><label>Tipo de Serviço</label><select id="t-servico"><option value="">Seleccionar...</option><option value="hse">Auditoria HSE</option><option value="ambiental">Conformidade Ambiental</option><option value="iso9001">ISO 9001 — Qualidade</option><option value="esg">Relatório ESG</option><option value="inspecao">Inspecção de Campo</option><option value="florestal">Monitoramento Florestal</option></select></div>
+          <div class="form-group"><label>Localização</label><input type="text" id="t-local" placeholder="ex: Moatize, Tete"/></div>
+          <div class="form-group full"><label>Descrição da Situação</label><textarea id="t-desc" placeholder="Descreva a situação, dados de campo, observações..." style="min-height:100px;"></textarea></div>
+        </div>
+        <button class="btn btn-primary" id="btn-triagem" onclick="runTriage()">⚡ Executar Triagem com IA</button>
+        <div class="triage-result" id="triage-result">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;">Resultado da Triagem</div>
+            <span class="badge badge-gray" id="triage-id">#HCJ-001</span>
+          </div>
+          <div class="risk-grid">
+            <div class="risk-item"><div class="risk-label">Risco HSE</div><div class="risk-level" id="r-hse">—</div></div>
+            <div class="risk-item"><div class="risk-label">Risco Ambiental</div><div class="risk-level" id="r-amb">—</div></div>
+            <div class="risk-item"><div class="risk-label">Risco ESG</div><div class="risk-level" id="r-esg">—</div></div>
+            <div class="risk-item"><div class="risk-label">Prioridade</div><div class="risk-level" id="r-pri">—</div></div>
+          </div>
+          <div style="font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Análise IA e Acções Recomendadas</div>
+          <div class="actions-list" id="actions-list"></div>
+          <div class="alert alert-amber" style="margin-top:12px;">⚠ Aguardando validação técnica antes de emissão final.</div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="approveAndGoReport()">✓ Validar e Gerar Relatório</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('triage-result').classList.remove('show')">↩ Rever dados</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RELATORIO -->
+    <div class="view" id="view-relatorio">
+      <div class="page-header"><div><div class="page-title">Gerar Relatório Técnico</div><div class="page-sub">Output profissional completo — 10 secções</div></div></div>
+      <div class="card">
+        <div class="upload-zone" onclick="document.getElementById('upload-input-rep').click()">
+          <div style="font-size:24px;margin-bottom:6px;">📎</div>
+          <div style="font-size:12px;color:var(--text2);">Anexar documentos de suporte</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px;">PDF, Word, Excel, Imagens, Texto</div>
+          <input type="file" id="upload-input-rep" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" onchange="handleFiles(this.files,'file-list-rep',1)">
+        </div>
+        <div class="file-list" id="file-list-rep"></div>
+        <div class="form-grid">
+          <div class="form-group"><label>Número do Caso</label><input type="text" id="r-caso" placeholder="ex: HCJ-025"/></div>
+          <div class="form-group"><label>Cliente</label><input type="text" id="r-cliente" placeholder="Nome do cliente"/></div>
+          <div class="form-group"><label>Tipo de Relatório</label><select id="r-tipo"><option value="hse">Auditoria HSE (ISO 45001)</option><option value="ambiental">Conformidade Ambiental (ISO 14001)</option><option value="qualidade">Qualidade (ISO 9001)</option><option value="esg">ESG / Sustentabilidade (GRI)</option></select></div>
+          <div class="form-group"><label>Sector</label><select id="r-sector"><option value="mineracao">Mineração</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="industria">Indústria</option><option value="ambiente">Ambiente</option></select></div>
+          <div class="form-group full"><label>Observações de Campo</label><textarea id="r-obs" placeholder="Notas de campo, dados de inspecção, não conformidades observadas..." style="min-height:120px;"></textarea></div>
+        </div>
+        <button class="btn btn-primary" id="btn-report" onclick="generateReport()">📄 Gerar Relatório Completo com IA</button>
+        <div class="report-output" id="report-output">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+            <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;" id="rep-titulo">Relatório Técnico</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="btn btn-blue" onclick="exportPDF()">⬇ PDF</button>
+              <button class="btn btn-ghost" onclick="exportWord()">⬇ Word (.txt)</button>
+              <button class="btn btn-ghost" onclick="saveToStorage()">💾 Guardar</button>
+              <button class="btn btn-ghost" onclick="window.print()">🖨 Imprimir</button>
+            </div>
+          </div>
+          <div id="report-content">
+            <div class="report-section"><div class="report-section-title">01 — Identificação</div><div id="rep-identificacao"></div></div>
+            <div class="report-section"><div class="report-section-title">02 — Resumo Executivo</div><p id="rep-resumo"></p></div>
+            <div class="report-section"><div class="report-section-title">03 — Âmbito e Metodologia</div><p id="rep-metodologia"></p></div>
+            <div class="report-section"><div class="report-section-title">04 — Diagnóstico Técnico</div><p id="rep-diag"></p></div>
+            <div class="report-section"><div class="report-section-title">05 — Riscos Identificados</div><table class="report-table"><thead><tr><th>Nº</th><th>Risco</th><th>Classificação</th><th>Norma</th><th>Probabilidade</th></tr></thead><tbody id="rep-riscos"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title">06 — Não Conformidades</div><table class="report-table"><thead><tr><th>Ref.</th><th>Descrição</th><th>Gravidade</th><th>Requisito</th><th>Prazo</th></tr></thead><tbody id="rep-nc"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title">07 — Análise de Causa Raiz</div><p id="rep-causa"></p></div>
+            <div class="report-section"><div class="report-section-title">08 — Recomendações Técnicas</div><div id="rep-rec"></div></div>
+            <div class="report-section"><div class="report-section-title">09 — Plano de Acção Corretiva</div><table class="report-table"><thead><tr><th>Acção</th><th>Responsável</th><th>Prazo</th><th>Indicador</th></tr></thead><tbody id="rep-plano"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title">10 — Conclusão</div><p id="rep-conclusao"></p></div>
+          </div>
+          <div class="alert alert-amber">⚠ Relatório gerado por IA. Aguardando validação técnica antes de emissão final.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARMAZENAMENTO -->
+    <div class="view" id="view-armazenamento">
+      <div class="page-header"><div><div class="page-title">Armazenamento</div><div class="page-sub">Todos os documentos e relatórios guardados</div></div><button class="btn btn-primary" onclick="document.getElementById('upload-storage').click()">+ Adicionar Documento<input type="file" id="upload-storage" style="display:none" multiple onchange="uploadToStorage(this.files)"></button></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <div class="kpi-card kpi-blue"><div class="kpi-label">Total Ficheiros</div><div class="kpi-value" id="storage-count" style="color:var(--blue)">0</div><div class="kpi-delta">No sistema</div></div>
+        <div class="kpi-card kpi-green"><div class="kpi-label">Relatórios</div><div class="kpi-value" id="storage-reports" style="color:var(--green)">0</div><div class="kpi-delta">Gerados</div></div>
+        <div class="kpi-card kpi-amber"><div class="kpi-label">Documentos</div><div class="kpi-value" id="storage-docs" style="color:var(--amber)">0</div><div class="kpi-delta">Carregados</div></div>
+        <div class="kpi-card kpi-red"><div class="kpi-label">Casos Arquivo</div><div class="kpi-value" id="storage-cases-count" style="color:var(--red)">0</div><div class="kpi-delta">Arquivados</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Documentos e Relatórios</div></div>
+        <div id="storage-list"><p style="color:var(--text3);font-size:12px;">Nenhum documento guardado.</p></div>
+      </div>
+    </div>
+
+    <!-- NOTIFICACOES -->
+    <div class="view" id="view-notificacoes">
+      <div class="page-header"><div><div class="page-title">Notificações</div><div class="page-sub">Alertas e actualizações do sistema</div></div><button class="btn btn-ghost" onclick="markAllRead()">Marcar todas como lidas</button></div>
+      <div class="notif-list" id="notif-list"></div>
+    </div>
+
+    <!-- INTEGRACOES -->
+    <div class="view" id="view-integracoes">
+      <div class="page-header"><div><div class="page-title">Integrações</div><div class="page-sub">Conectar com ferramentas externas</div></div></div>
+      <div class="integrations-grid">
+        <div class="integration-card connected"><div class="integration-icon">🤖</div><div class="integration-name">Gemini AI</div><div class="integration-desc">Motor de inteligência artificial para análise e relatórios</div><div class="integration-status" style="color:var(--green)">● Conectado</div></div>
+        <div class="integration-card"><div class="integration-icon">📊</div><div class="integration-name">Power BI</div><div class="integration-desc">Dashboard executivo e visualização de dados avançada</div><div class="integration-status" style="color:var(--text3)">○ Disponível</div><button class="btn btn-ghost" style="margin-top:8px;font-size:10px;" onclick="showIntegrationInfo('powerbi')">Como conectar</button></div>
+        <div class="integration-card"><div class="integration-icon">📋</div><div class="integration-name">KoboToolbox</div><div class="integration-desc">Colecta de dados de campo via formulários e API</div><div class="integration-status" style="color:var(--text3)">○ Disponível</div><button class="btn btn-ghost" style="margin-top:8px;font-size:10px;" onclick="showIntegrationInfo('kobo')">Como conectar</button></div>
+        <div class="integration-card"><div class="integration-icon">🗺️</div><div class="integration-name">Google Earth Engine</div><div class="integration-desc">Análise geoespacial e monitoramento por satélite</div><div class="integration-status" style="color:var(--text3)">○ Disponível</div><button class="btn btn-ghost" style="margin-top:8px;font-size:10px;" onclick="showIntegrationInfo('gee')">Como conectar</button></div>
+        <div class="integration-card"><div class="integration-icon">📧</div><div class="integration-name">Email / SMTP</div><div class="integration-desc">Envio automático de relatórios por email</div><div class="integration-status" style="color:var(--text3)">○ Disponível</div><button class="btn btn-ghost" style="margin-top:8px;font-size:10px;" onclick="showIntegrationInfo('email')">Configurar</button></div>
+        <div class="integration-card"><div class="integration-icon">📁</div><div class="integration-name">Google Drive</div><div class="integration-desc">Armazenamento e partilha de documentos na nuvem</div><div class="integration-status" style="color:var(--text3)">○ Disponível</div><button class="btn btn-ghost" style="margin-top:8px;font-size:10px;" onclick="showIntegrationInfo('drive')">Como conectar</button></div>
+        <div class="integration-card"><div class="integration-icon">💬</div><div class="integration-name">WhatsApp Business</div><div class="integration-desc">Notificações e alertas via WhatsApp</div><div class="integration-status" style="color:var(--text3)">○ Disponível</div><button class="btn btn-ghost" style="margin-top:8px;font-size:10px;" onclick="showIntegrationInfo('whatsapp')">Como conectar</button></div>
+        <div class="integration-card"><div class="integration-icon">🗃️</div><div class="integration-name">ArcGIS / QGIS</div><div class="integration-desc">Exportação de dados geoespaciais para análise GIS</div><div class="integration-status" style="color:var(--text3)">○ Disponível</div><button class="btn btn-ghost" style="margin-top:8px;font-size:10px;" onclick="showIntegrationInfo('gis')">Como conectar</button></div>
+        <div class="integration-card"><div class="integration-icon">📈</div><div class="integration-name">Excel / CSV</div><div class="integration-desc">Exportação de dados para análise em Excel</div><div class="integration-status" style="color:var(--green)">● Disponível</div></div>
+      </div>
+    </div>
+
+    <!-- CONFIGURACOES -->
+    <div class="view" id="view-configuracoes">
+      <div class="page-header"><div><div class="page-title">Configurações</div><div class="page-sub">Preferências do sistema e conta</div></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="settings-section">
+            <div class="settings-title">Sistema</div>
+            <div class="setting-row"><div><div class="setting-label">Notificações</div><div class="setting-sub">Alertas de risco e casos</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-row"><div><div class="setting-label">Validação obrigatória</div><div class="setting-sub">Aprovar antes de emitir relatório</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-row"><div><div class="setting-label">Modo escuro</div><div class="setting-sub">Interface dark (activo)</div></div><div class="toggle on"></div></div>
+            <div class="setting-row"><div><div class="setting-label">Guardar automaticamente</div><div class="setting-sub">Casos e relatórios</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="settings-section">
+            <div class="settings-title">Empresa</div>
+            <div class="form-grid" style="grid-template-columns:1fr;">
+              <div class="form-group"><label>Nome da empresa</label><input type="text" value="HCJ Global Solutions"/></div>
+              <div class="form-group"><label>Localização</label><input type="text" value="Moatize, Tete, Moçambique"/></div>
+              <div class="form-group"><label>Chave API Gemini</label><input type="password" value="AIzaSyB2s8ubM_5XLf1Wut9mFfygK-mw0zfDnjs"/></div>
+              <button class="btn btn-primary" style="width:fit-content;">Guardar alterações</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px;">
+        <div class="danger-zone">
+          <div class="danger-title">⚠ Zona de Perigo</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-red" onclick="if(confirm('Apagar todos os dados locais?')){clearAllData()}">🗑 Apagar todos os dados</button>
+            <button class="btn btn-red" onclick="doLogout()">⏻ Terminar sessão</button>
+            <button class="btn btn-ghost" onclick="openModal('terms-modal')">📄 Ver Termos e Condições</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUTORIAL -->
+    <div class="view" id="view-tutorial">
+      <div class="page-header"><div><div class="page-title">Como Usar o HCJ-OS</div><div class="page-sub">Guia completo do sistema</div></div></div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card"><div style="display:flex;gap:16px;align-items:flex-start;"><div style="font-size:28px;flex-shrink:0;">1️⃣</div><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Registo e Login</div><div style="font-size:13px;color:var(--text2);line-height:1.7;">Cria a tua conta com nome, cargo e PIN de 4 dígitos. Podes adicionar membros da equipa com diferentes permissões: Administrador, Gestor, Técnico ou Visualizador. Cada pessoa entra com o seu próprio utilizador e PIN.</div></div></div></div>
+        <div class="card"><div style="display:flex;gap:16px;align-items:flex-start;"><div style="font-size:28px;flex-shrink:0;">2️⃣</div><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Registar Clientes</div><div style="font-size:13px;color:var(--text2);line-height:1.7;">Vai a <strong>Clientes</strong> e adiciona as empresas com que trabalhas. Define o sector, localização e estado (Activo, Proposta, Inactivo). Podes editar ou remover a qualquer momento quando um contrato terminar.</div></div></div></div>
+        <div class="card"><div style="display:flex;gap:16px;align-items:flex-start;"><div style="font-size:28px;flex-shrink:0;">3️⃣</div><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Triagem de Risco com IA</div><div style="font-size:13px;color:var(--text2);line-height:1.7;">Vai a <strong>Triagem de Risco</strong>. Preenche os dados do cliente, sector, tipo de serviço e descrição da situação. Podes anexar ficheiros. A IA analisa e classifica automaticamente o risco em 4 dimensões: HSE, Ambiental, ESG e Prioridade.</div></div></div></div>
+        <div class="card"><div style="display:flex;gap:16px;align-items:flex-start;"><div style="font-size:28px;flex-shrink:0;">4️⃣</div><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Gerar Relatório Técnico</div><div style="font-size:13px;color:var(--text2);line-height:1.7;">Após validar a triagem, clica em <strong>"Validar e Gerar Relatório"</strong>. O sistema abre automaticamente o módulo de relatório pré-preenchido. A IA gera um relatório com 10 secções completas. Depois podes exportar em PDF, Word ou imprimir.</div></div></div></div>
+        <div class="card"><div style="display:flex;gap:16px;align-items:flex-start;"><div style="font-size:28px;flex-shrink:0;">5️⃣</div><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Armazenamento de Documentos</div><div style="font-size:13px;color:var(--text2);line-height:1.7;">Vai a <strong>Armazenamento</strong> para guardar e organizar todos os documentos. Relatórios gerados podem ser guardados directamente no sistema. Ficheiros carregados ficam disponíveis para consulta a qualquer momento.</div></div></div></div>
+        <div class="card"><div style="display:flex;gap:16px;align-items:flex-start;"><div style="font-size:28px;flex-shrink:0;">6️⃣</div><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Integrações Externas</div><div style="font-size:13px;color:var(--text2);line-height:1.7;">Vai a <strong>Integrações</strong> para ver como conectar o HCJ-OS com Power BI, KoboToolbox, Google Earth Engine, ArcGIS, Google Drive e WhatsApp Business. Cada integração tem instruções específicas de configuração.</div></div></div></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="client-modal">
+  <div class="modal">
+    <div class="modal-title">Adicionar Cliente <button class="modal-close" onclick="closeModal('client-modal')">✕</button></div>
+    <div class="form-grid" style="grid-template-columns:1fr;">
+      <div class="form-group"><label>Nome da Empresa</label><input type="text" id="m-nome" placeholder="ex: Vulcan Resources"/></div>
+      <div class="form-group"><label>Sector</label><select id="m-sector"><option value="Mineração">Mineração</option><option value="Logística">Logística</option><option value="Construção">Construção</option><option value="Indústria">Indústria</option><option value="Ambiente">Ambiente</option><option value="Infraestrutura">Infraestrutura</option></select></div>
+      <div class="form-group"><label>Localização</label><input type="text" id="m-local" placeholder="ex: Moatize, Tete"/></div>
+      <div class="form-group"><label>Contacto</label><input type="text" id="m-contacto" placeholder="Email ou telefone"/></div>
+      <div class="form-group"><label>Estado</label><select id="m-estado"><option value="Activo">Activo</option><option value="Proposta">Proposta</option><option value="Inactivo">Inactivo</option></select></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('client-modal')">Cancelar</button><button class="btn btn-primary" onclick="saveClient()">Guardar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="add-user-modal">
+  <div class="modal">
+    <div class="modal-title">Adicionar Membro da Equipa <button class="modal-close" onclick="closeModal('add-user-modal')">✕</button></div>
+    <div class="form-grid" style="grid-template-columns:1fr;">
+      <div class="form-group"><label>Nome completo</label><input type="text" id="au-name" placeholder="Nome"/></div>
+      <div class="form-group"><label>Cargo</label><input type="text" id="au-role" placeholder="ex: Técnico HSE"/></div>
+      <div class="form-group"><label>Permissão</label><select id="au-perm"><option value="admin">Administrador</option><option value="manager">Gestor</option><option value="technician">Técnico</option><option value="viewer">Visualizador</option></select></div>
+      <div class="form-group"><label>PIN (4 dígitos)</label><input type="password" id="au-pin" placeholder="PIN" maxlength="4"/></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('add-user-modal')">Cancelar</button><button class="btn btn-primary" onclick="addTeamMember()">Adicionar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="integration-modal">
+  <div class="modal">
+    <div class="modal-title" id="integration-modal-title">Integração <button class="modal-close" onclick="closeModal('integration-modal')">✕</button></div>
+    <div id="integration-modal-content"></div>
+    <div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('integration-modal')">Fechar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="terms-modal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-title">Termos e Condições de Utilização <button class="modal-close" onclick="closeModal('terms-modal')">✕</button></div>
+    <div class="terms-content">
+      <h3>1. Identificação</h3>
+      <p>O HCJ-OS é uma plataforma digital desenvolvida e operada pela <strong>HCJ Global Solutions</strong>, com sede em Moçambique. O sistema destina-se à gestão operacional de HSE, Meio Ambiente, Qualidade e Sustentabilidade (ESG).</p>
+      <h3>2. Aceitação dos Termos</h3>
+      <p>Ao utilizar o HCJ-OS, o utilizador aceita integralmente os presentes Termos e Condições. O uso continuado do sistema implica a aceitação de quaisquer alterações futuras.</p>
+      <h3>3. Uso Autorizado</h3>
+      <p>O sistema destina-se exclusivamente a uso profissional pelos colaboradores e clientes autorizados da HCJ Global Solutions. É proibido o uso para fins ilegais, fraudulentos ou que violem direitos de terceiros.</p>
+      <h3>4. Confidencialidade de Dados</h3>
+      <p>Todos os dados introduzidos no sistema são considerados confidenciais. Os relatórios gerados não devem ser partilhados com terceiros não autorizados sem aprovação da gestão da HCJ Global Solutions.</p>
+      <h3>5. Inteligência Artificial</h3>
+      <p>O sistema utiliza inteligência artificial (Google Gemini) para análise de riscos e geração de relatórios. Os outputs da IA são orientativos e requerem sempre validação técnica humana antes da emissão final.</p>
+      <h3>6. Limitação de Responsabilidade</h3>
+      <p>A HCJ Global Solutions não se responsabiliza por decisões tomadas com base exclusiva nos outputs do sistema sem validação técnica adequada. O sistema é uma ferramenta de apoio à decisão.</p>
+      <h3>7. Armazenamento de Dados</h3>
+      <p>Os dados são armazenados localmente no dispositivo do utilizador. A HCJ Global Solutions recomenda backup regular dos dados críticos.</p>
+      <h3>8. Propriedade Intelectual</h3>
+      <p>O HCJ-OS, incluindo a sua arquitectura, design e metodologias, é propriedade exclusiva da HCJ Global Solutions. É proibida a reprodução ou distribuição sem autorização expressa.</p>
+      <h3>9. Encerramento de Conta</h3>
+      <p>O utilizador pode solicitar o encerramento da sua conta a qualquer momento junto da administração. Os dados associados serão eliminados após confirmação.</p>
+      <h3>10. Lei Aplicável</h3>
+      <p>Os presentes termos regem-se pela legislação moçambicana. Qualquer litígio será resolvido pelos tribunais competentes de Moçambique.</p>
+      <p style="margin-top:16px;color:var(--text3);font-size:10px;">Versão 3.0 · HCJ Global Solutions · Moçambique · 2026</p>
+    </div>
+    <div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('terms-modal')">Li e Aceito</button></div>
+  </div>
+</div>
+
+<script>
+const GEMINI_KEY='AIzaSyB2s8ubM_5XLf1Wut9mFfygK-mw0zfDnjs';
+const GEMINI_URL=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+
+// STATE
+let appUsers=JSON.parse(localStorage.getItem('hcj_users')||'[]');
+let clients=JSON.parse(localStorage.getItem('hcj_clients')||'[]');
+let cases=JSON.parse(localStorage.getItem('hcj_cases')||'[]');
+let storageFiles=JSON.parse(localStorage.getItem('hcj_storage')||'[]');
+let notifications=JSON.parse(localStorage.getItem('hcj_notifs')||JSON.stringify([
+  {id:1,title:'Bem-vindo ao HCJ-OS v3',msg:'Sistema iniciado com sucesso. Todas as funcionalidades activas.',time:'Agora',type:'green',read:false},
+  {id:2,title:'Gemini AI conectado',msg:'Motor de inteligência artificial activo e pronto para análise.',time:'Agora',type:'green',read:false},
+  {id:3,title:'Actualização disponível',msg:'Nova versão do sistema com melhorias de performance.',time:'Hoje',type:'blue',read:false}
+]));
+let currentUser=null;
+let uploadedFiles=[];
+let uploadedFilesRep=[];
+let lastTriageData={};
+let editClientIdx=-1;
+
+// INIT
+window.onload=()=>{
+  setTimeout(()=>{
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(()=>{
+      document.getElementById('splash').style.display='none';
+      document.getElementById('login-screen').classList.add('show');
+      renderLoginUsers();
+    },500);
+  },2500);
+};
+
+// AUTH
+function renderLoginUsers(){
+  const el=document.getElementById('user-list-login');
+  if(!appUsers.length){el.innerHTML='<p style="font-size:11px;color:var(--text3);text-align:center;padding:8px;">Nenhum utilizador. Cria a primeira conta.</p>';return;}
+  const colors=['#00e676','#4fc3f7','#ffb300','#ff4444','#ce93d8'];
+  el.innerHTML=appUsers.map((u,i)=>`
+    <div class="user-pill" onclick="quickLogin(${i})">
+      <div class="user-pill-avatar" style="background:${colors[i%colors.length]}20;color:${colors[i%colors.length]}">${u.name.substring(0,2).toUpperCase()}</div>
+      <div class="user-pill-info"><div class="user-pill-name">${u.name}</div><div class="user-pill-role">${u.role} · ${permLabel(u.permission)}</div></div>
+      <span style="font-size:16px;color:var(--text3)">→</span>
+    </div>`).join('');
+}
+function permLabel(p){return{admin:'Admin',manager:'Gestor',technician:'Técnico',viewer:'Visualizador'}[p]||p;}
+function quickLogin(idx){
+  const u=appUsers[idx];
+  const pin=prompt(`PIN para ${u.name}:`);
+  if(pin===u.pin){loginSuccess(u);}
+  else{alert('PIN incorrecto.');}
+}
+function doLogin(){
+  const name=document.getElementById('login-name-input').value.trim();
+  const pin=document.getElementById('login-pin').value;
+  if(!name){alert('Introduz o nome.');return;}
+  const u=appUsers.find(x=>x.name.toLowerCase()===name.toLowerCase()&&x.pin===pin);
+  if(u){loginSuccess(u);}
+  else{alert('Utilizador ou PIN incorrecto.');}
+}
+function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const role=document.getElementById('reg-role').value.trim();
+  const permission=document.getElementById('reg-permission').value;
+  const pin=document.getElementById('reg-pin').value;
+  if(!name||!pin||pin.length!==4){alert('Nome e PIN de 4 dígitos obrigatórios.');return;}
+  appUsers.push({name,role:role||'Colaborador',permission,pin});
+  saveAll();
+  alert(`Conta criada para ${name}!`);
+  switchLoginTab('existing');
+  renderLoginUsers();
+}
+function addTeamMember(){
+  const name=document.getElementById('au-name').value.trim();
+  const role=document.getElementById('au-role').value.trim();
+  const permission=document.getElementById('au-perm').value;
+  const pin=document.getElementById('au-pin').value;
+  if(!name||!pin||pin.length!==4){alert('Nome e PIN obrigatórios.');return;}
+  appUsers.push({name,role:role||'Colaborador',permission,pin});
+  saveAll();
+  closeModal('add-user-modal');
+  renderTeam();
+  addNotif('Novo membro adicionado',`${name} foi adicionado à equipa como ${role}.`,'green');
+}
+function loginSuccess(u){
+  currentUser=u;
+  document.getElementById('login-screen').classList.remove('show');
+  document.getElementById('sidebar-name').textContent=u.name;
+  document.getElementById('sidebar-role').textContent=permLabel(u.permission);
+  document.getElementById('sidebar-avatar').textContent=u.name.substring(0,2).toUpperCase();
+  document.getElementById('topbar-user').textContent=u.name;
+  updateAll();
+}
+function doLogout(){
+  if(!confirm('Terminar sessão?'))return;
+  currentUser=null;
+  document.getElementById('login-screen').classList.add('show');
+  renderLoginUsers();
+}
+function switchLoginTab(tab){
+  document.getElementById('tab-existing').style.display=tab==='existing'?'block':'none';
+  document.getElementById('tab-new').style.display=tab==='new'?'block':'none';
+  document.querySelectorAll('.login-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='existing'&&i===0)||(tab==='new'&&i===1)));
+}
+
+// NAVIGATION
+function showView(name,el){
+  if(!currentUser&&name!=='tutorial'){return;}
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+  const titles={dashboard:'Dashboard',casos:'Gestão de Casos',clientes:'Clientes',equipa:'Equipa',triagem:'Triagem de Risco',relatorio:'Gerar Relatório',armazenamento:'Armazenamento',notificacoes:'Notificações',integracoes:'Integrações',configuracoes:'Configurações',tutorial:'Como Usar'};
+  document.getElementById('page-title').textContent=titles[name]||name;
+  if(name==='clientes')renderClients();
+  if(name==='casos')renderCases();
+  if(name==='equipa')renderTeam();
+  if(name==='notificacoes')renderNotifications();
+  if(name==='armazenamento')renderStorage();
+}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('collapsed');
+  document.getElementById('main').classList.toggle('expanded');
+}
+
+// DATA
+function saveAll(){
+  localStorage.setItem('hcj_users',JSON.stringify(appUsers));
+  localStorage.setItem('hcj_clients',JSON.stringify(clients));
+  localStorage.setItem('hcj_cases',JSON.stringify(cases));
+  localStorage.setItem('hcj_storage',JSON.stringify(storageFiles));
+  localStorage.setItem('hcj_notifs',JSON.stringify(notifications));
+  updateAll();
+}
+function updateAll(){
+  document.getElementById('kpi-casos').textContent=cases.length;
+  document.getElementById('kpi-clientes').textContent=clients.length;
+  document.getElementById('badge-casos').textContent=cases.length;
+  document.getElementById('storage-count').textContent=storageFiles.length;
+  document.getElementById('storage-reports').textContent=storageFiles.filter(f=>f.type==='report').length;
+  document.getElementById('storage-docs').textContent=storageFiles.filter(f=>f.type==='doc').length;
+  document.getElementById('storage-cases-count').textContent=cases.length;
+  const unread=notifications.filter(n=>!n.read).length;
+  document.getElementById('badge-notif').textContent=unread;
+  document.getElementById('notif-dot').style.display=unread>0?'block':'none';
+  document.getElementById('casos-count-label').textContent=cases.length+' registados';
+  renderDashCases();
+}
+function clearAllData(){
+  localStorage.clear();
+  clients=[];cases=[];storageFiles=[];notifications=[];appUsers=[];
+  saveAll();
+  alert('Dados eliminados.');
+  doLogout();
+}
+
+// GEMINI
+async function callGemini(prompt){
+  const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:3000}})});
+  const data=await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+function riskColor(r){
+  if(!r)return'#fff';r=r.toUpperCase();
+  if(['ALTO','CRÍTICO','URGENTE','CRÍTICA'].includes(r))return'#ff4444';
+  if(['MÉDIO','ELEVADA'].includes(r))return'#ffb300';
+  return'#00e676';
+}
+
+// FILES
+function handleFiles(files,listId,mode){
+  const arr=mode===0?uploadedFiles:uploadedFilesRep;
+  arr.push(...Array.from(files));
+  renderFileList(listId,arr,mode);
+}
+function renderFileList(listId,arr,mode){
+  document.getElementById(listId).innerHTML=arr.map((f,i)=>`
+    <div class="file-item"><span style="color:var(--text2)">📄 ${f.name}</span>
+    <div style="display:flex;gap:8px;align-items:center;"><span style="color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:10px">${(f.size/1024).toFixed(1)}KB</span>
+    <button class="btn btn-ghost" style="padding:2px 8px;font-size:10px;" onclick="removeFile('${listId}',${i},${mode})">✕</button></div></div>`).join('');
+}
+function removeFile(listId,idx,mode){
+  if(mode===0)uploadedFiles.splice(idx,1),renderFileList(listId,uploadedFiles,0);
+  else uploadedFilesRep.splice(idx,1),renderFileList(listId,uploadedFilesRep,1);
+}
+
+// CLIENTS
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+function saveClient(){
+  const nome=document.getElementById('m-nome').value.trim();
+  if(!nome){alert('Nome obrigatório');return;}
+  const c={nome,sector:document.getElementById('m-sector').value,local:document.getElementById('m-local').value,contacto:document.getElementById('m-contacto').value,estado:document.getElementById('m-estado').value,casos:0,data:new Date().toLocaleDateString('pt-PT')};
+  if(editClientIdx>=0)clients[editClientIdx]={...clients[editClientIdx],...c};
+  else clients.push(c);
+  saveAll();closeModal('client-modal');renderClients();
+  addNotif('Cliente adicionado',`${nome} foi registado no sistema.`,'green');
+}
+function deleteClient(idx){
+  if(!confirm(`Remover "${clients[idx].nome}"?`))return;
+  clients.splice(idx,1);saveAll();renderClients();
+}
+function renderClients(){
+  const el=document.getElementById('client-list');
+  if(!clients.length){el.innerHTML='<p style="color:var(--text3);font-size:12px;">Nenhum cliente registado.</p>';return;}
+  const colors=['#ff4444','#4fc3f7','#00e676','#ffb300','#ce93d8','#ff9800'];
+  el.innerHTML=clients.map((c,i)=>`
+    <div class="client-card">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="client-avatar" style="background:${colors[i%colors.length]}20;color:${colors[i%colors.length]}">${c.nome.substring(0,2).toUpperCase()}</div>
+        <div><div style="font-size:13px;font-weight:700;">${c.nome}</div><div style="font-size:11px;color:var(--text2);">${c.sector} · ${c.local||'—'}</div>${c.contacto?`<div style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;">${c.contacto}</div>`:''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge ${c.estado==='Activo'?'badge-green':c.estado==='Proposta'?'badge-amber':'badge-gray'}">${c.estado}</span>
+        <button class="btn btn-ghost" style="padding:4px 8px;font-size:10px;" onclick="editClient(${i})">✏️</button>
+        <button class="btn btn-red" style="padding:4px 8px;font-size:10px;" onclick="deleteClient(${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+function editClient(idx){
+  editClientIdx=idx;const c=clients[idx];
+  document.getElementById('m-nome').value=c.nome;
+  document.getElementById('m-sector').value=c.sector;
+  document.getElementById('m-local').value=c.local||'';
+  document.getElementById('m-contacto').value=c.contacto||'';
+  document.getElementById('m-estado').value=c.estado;
+  openModal('client-modal');
+}
+
+// TEAM
+function renderTeam(){
+  const el=document.getElementById('team-grid');
+  if(!appUsers.length){el.innerHTML='<p style="color:var(--text3);font-size:12px;">Nenhum utilizador registado.</p>';return;}
+  const colors=['#00e676','#4fc3f7','#ffb300','#ff4444','#ce93d8'];
+  el.innerHTML=appUsers.map((u,i)=>`
+    <div class="team-card">
+      <div class="team-avatar" style="background:${colors[i%colors.length]}20;color:${colors[i%colors.length]}">${u.name.substring(0,2).toUpperCase()}</div>
+      <div class="team-name">${u.name}</div>
+      <div class="team-role">${u.role}</div>
+      <div class="team-status"><span class="badge ${u.permission==='admin'?'badge-red':u.permission==='manager'?'badge-amber':u.permission==='technician'?'badge-blue':'badge-gray'}">${permLabel(u.permission)}</span></div>
+      ${u.name!==currentUser?.name?`<button class="btn btn-red" style="margin-top:8px;font-size:10px;padding:3px 8px;" onclick="removeUser(${i})">Remover</button>`:'<div style="font-size:10px;color:var(--green);margin-top:8px;">● Sessão activa</div>'}
+    </div>`).join('');
+}
+function removeUser(idx){
+  if(!confirm(`Remover "${appUsers[idx].name}"?`))return;
+  appUsers.splice(idx,1);saveAll();renderTeam();
+}
+
+// CASES
+function renderCases(){
+  const el=document.getElementById('casos-table-wrap');
+  if(!cases.length){el.innerHTML='<p style="color:var(--text3);font-size:12px;">Nenhum caso registado.</p>';return;}
+  el.innerHTML=`<div class="table-wrap"><table><thead><tr><th>ID</th><th>Cliente</th><th>Serviço</th><th>Sector</th><th>Risco HSE</th><th>Prioridade</th><th>Técnico</th><th>Data</th></tr></thead><tbody>
+  ${cases.map(c=>`<tr><td class="case-id">${c.id}</td><td>${c.cliente}</td><td>${c.servico}</td><td>${c.sector}</td><td style="color:${riskColor(c.risco_hse)};font-weight:700">${c.risco_hse||'—'}</td><td style="color:${riskColor(c.prioridade)};font-weight:700">${c.prioridade||'—'}</td><td style="color:var(--text3);font-size:11px">${c.tecnico||'—'}</td><td style="color:var(--text3);font-size:10px;font-family:'IBM Plex Mono',monospace">${c.data}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+function renderDashCases(){
+  const el=document.getElementById('dash-casos-table');
+  const recent=cases.slice(-5).reverse();
+  if(!recent.length){el.innerHTML='<p style="color:var(--text3);font-size:12px;">Nenhum caso ainda.</p>';return;}
+  el.innerHTML=`<div class="table-wrap"><table><thead><tr><th>ID</th><th>Cliente</th><th>Serviço</th><th>Risco HSE</th><th>Prioridade</th><th>Data</th></tr></thead><tbody>
+  ${recent.map(c=>`<tr><td class="case-id">${c.id}</td><td>${c.cliente}</td><td>${c.servico}</td><td style="color:${riskColor(c.risco_hse)};font-weight:700">${c.risco_hse||'—'}</td><td style="color:${riskColor(c.prioridade)};font-weight:700">${c.prioridade||'—'}</td><td style="color:var(--text3);font-size:10px">${c.data}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+// TRIAGE
+async function runTriage(){
+  const sector=document.getElementById('t-sector').value;
+  const servico=document.getElementById('t-servico').value;
+  const cliente=document.getElementById('t-cliente').value;
+  const local=document.getElementById('t-local').value;
+  const desc=document.getElementById('t-desc').value;
+  if(!sector||!servico||!cliente){alert('Preencha Cliente, Sector e Tipo de Serviço.');return;}
+  const btn=document.getElementById('btn-triagem');
+  btn.disabled=true;btn.textContent='⏳ IA a analisar...';
+  const filesInfo=uploadedFiles.length?`\nFicheiros: ${uploadedFiles.map(f=>f.name).join(', ')}`:'';
+  const prompt=`És especialista sénior HSE/Ambiente/ESG da HCJ Global Solutions, Moçambique. Experiência em mineração, logística e infraestrutura africana.
+
+Analisa com rigor técnico. Responde APENAS em JSON válido sem markdown:
+
+Cliente: ${cliente} | Sector: ${sector} | Serviço: ${servico} | Local: ${local||'Moçambique'} | Descrição: ${desc||'Auditoria geral'}${filesInfo}
+
+{"risco_hse":"BAIXO|MÉDIO|ALTO|CRÍTICO","risco_ambiental":"BAIXO|MÉDIO|ALTO|CRÍTICO","risco_esg":"BAIXO|MÉDIO|ALTO|CRÍTICO","prioridade":"NORMAL|ELEVADA|URGENTE|CRÍTICA","justificativa":"análise técnica detalhada 2-3 frases","acoes":["acção específica 1","acção específica 2","acção específica 3","acção específica 4","acção específica 5"]}`;
+  try{
+    const raw=await callGemini(prompt);
+    const result=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    lastTriageData={cliente,sector,servico,local,desc,...result};
+    ['r-hse','r-amb','r-esg','r-pri'].forEach((id,i)=>{
+      const val=[result.risco_hse,result.risco_ambiental,result.risco_esg,result.prioridade][i];
+      document.getElementById(id).textContent=val;
+      document.getElementById(id).style.color=riskColor(val);
+    });
+    const caseId='#HCJ-'+String(cases.length+1).padStart(3,'0');
+    document.getElementById('triage-id').textContent=caseId;
+    lastTriageData.caseId=caseId;
+    let html=`<div class="action-item" style="border-color:#4fc3f733;margin-bottom:8px"><span class="action-num" style="color:#4fc3f7">IA</span><span style="color:#4fc3f7">${result.justificativa}</span></div>`;
+    html+=result.acoes.map((a,i)=>`<div class="action-item"><span class="action-num">0${i+1}</span><span>${a}</span></div>`).join('');
+    document.getElementById('actions-list').innerHTML=html;
+    document.getElementById('triage-result').classList.add('show');
+    addNotif('Triagem concluída',`Caso ${caseId} — ${cliente} — Risco HSE: ${result.risco_hse}`,'amber');
+  }catch(e){alert('Erro ao contactar IA. Tente novamente.');console.error(e);}
+  btn.disabled=false;btn.textContent='⚡ Executar Triagem com IA';
+}
+function approveAndGoReport(){
+  const d=lastTriageData;
+  if(!d.cliente){alert('Execute a triagem primeiro.');return;}
+  cases.push({id:d.caseId||'#HCJ-001',cliente:d.cliente,servico:d.servico,sector:d.sector,risco_hse:d.risco_hse,prioridade:d.prioridade,tecnico:currentUser?.name||'—',data:new Date().toLocaleDateString('pt-PT')});
+  saveAll();
+  document.getElementById('r-caso').value=d.caseId||'';
+  document.getElementById('r-cliente').value=d.cliente||'';
+  document.getElementById('r-obs').value=d.desc||'';
+  showView('relatorio',document.querySelectorAll('.nav-item')[5]);
+}
+
+// REPORT
+async function generateReport(){
+  const caso=document.getElementById('r-caso').value||'HCJ-001';
+  const cliente=document.getElementById('r-cliente').value||'Cliente';
+  const tipo=document.getElementById('r-tipo').value;
+  const sector=document.getElementById('r-sector').value;
+  const obs=document.getElementById('r-obs').value;
+  const normas={hse:'ISO 45001:2018',ambiental:'ISO 14001:2015',qualidade:'ISO 9001:2015',esg:'GRI Standards 2021'};
+  const norma=normas[tipo];
+  const filesInfo=uploadedFilesRep.length?`\nDocumentos: ${uploadedFilesRep.map(f=>f.name).join(', ')}`:'';
+  const btn=document.getElementById('btn-report');
+  btn.disabled=true;btn.textContent='⏳ IA a gerar relatório...';
+  const prompt=`És consultor técnico sénior HCJ Global Solutions Moçambique. Especialista ${norma}, IFC Performance Standards, GRI Standards. Experiência em grandes mineradoras e empresas logística África.
+
+Relatório COMPLETO E DETALHADO:
+- Caso: #${caso} | Cliente: ${cliente} | Sector: ${sector} | Norma: ${norma} | Data: ${new Date().toLocaleDateString('pt-PT')}
+- Campo: ${obs||'Auditoria geral sistema gestão'}${filesInfo}
+
+JSON válido sem markdown. Cada campo detalhado e profissional:
+{"resumo":"4-5 frases contexto cliente âmbito principais achados recomendação estratégica","metodologia":"3-4 frases normas técnicas entrevistas documentos inspecções","diagnostico":"5-6 frases estado actual sistema lacunas áreas críticas contexto operacional","causa_raiz":"3-4 frases factores sistémicos originam não conformidades e riscos","riscos":[{"id":"R-01","descricao":"risco detalhado específico ao sector","classificacao":"Alto","norma":"${norma}","probabilidade":"Alta"},{"id":"R-02","descricao":"risco detalhado","classificacao":"Alto","norma":"${norma}","probabilidade":"Média"},{"id":"R-03","descricao":"risco detalhado","classificacao":"Médio","norma":"IFC PS 2","probabilidade":"Alta"},{"id":"R-04","descricao":"risco detalhado","classificacao":"Médio","norma":"ISO 14001","probabilidade":"Média"},{"id":"R-05","descricao":"risco detalhado","classificacao":"Baixo","norma":"GRI 403","probabilidade":"Baixa"}],"nao_conformidades":[{"ref":"NC-01","descricao":"NC detalhada com evidência objectiva","gravidade":"Maior","requisito":"cláusula específica","prazo":"30 dias"},{"ref":"NC-02","descricao":"NC detalhada","gravidade":"Maior","requisito":"cláusula","prazo":"45 dias"},{"ref":"NC-03","descricao":"NC detalhada","gravidade":"Menor","requisito":"cláusula","prazo":"60 dias"},{"ref":"NC-04","descricao":"NC detalhada","gravidade":"Menor","requisito":"cláusula","prazo":"90 dias"}],"recomendacoes":["recomendação técnica detalhada com justificação 1","recomendação 2","recomendação 3","recomendação 4","recomendação 5","recomendação 6"],"plano_acao":[{"acao":"acção correctiva específica","responsavel":"Gestor HSE","prazo":"30 dias","indicador":"KPI mensurável"},{"acao":"acção 2","responsavel":"Director Operacional","prazo":"45 dias","indicador":"KPI"},{"acao":"acção 3","responsavel":"Equipa Técnica","prazo":"60 dias","indicador":"KPI"},{"acao":"acção 4","responsavel":"Gestão de Topo","prazo":"90 dias","indicador":"KPI"}],"conclusao":"3-4 frases avaliação global nível conformidade prioridades acção perspectivas melhoria"}`;
+  try{
+    const raw=await callGemini(prompt);
+    const r=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    document.getElementById('rep-titulo').textContent=`Relatório Técnico — ${norma} — #${caso}`;
+    document.getElementById('rep-identificacao').innerHTML=`<table class="report-table"><tbody><tr><td style="font-weight:700;width:130px">Caso</td><td>#${caso}</td></tr><tr><td style="font-weight:700">Cliente</td><td>${cliente}</td></tr><tr><td style="font-weight:700">Norma</td><td>${norma}</td></tr><tr><td style="font-weight:700">Sector</td><td>${sector}</td></tr><tr><td style="font-weight:700">Data</td><td>${new Date().toLocaleDateString('pt-PT')}</td></tr><tr><td style="font-weight:700">Técnico</td><td>${currentUser?.name||'HCJ Global Solutions'}</td></tr><tr><td style="font-weight:700">Elaborado por</td><td>HCJ Global Solutions — HCJ-OS v3.0</td></tr></tbody></table>`;
+    document.getElementById('rep-resumo').textContent=r.resumo;
+    document.getElementById('rep-metodologia').textContent=r.metodologia;
+    document.getElementById('rep-diag').textContent=r.diagnostico;
+    document.getElementById('rep-causa').textContent=r.causa_raiz;
+    document.getElementById('rep-riscos').innerHTML=r.riscos.map(x=>`<tr><td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3)">${x.id}</td><td>${x.descricao}</td><td style="color:${riskColor(x.classificacao)};font-weight:700">${x.classificacao}</td><td style="font-size:11px;color:var(--text3)">${x.norma}</td><td style="font-size:11px;color:var(--text2)">${x.probabilidade}</td></tr>`).join('');
+    document.getElementById('rep-nc').innerHTML=r.nao_conformidades.map(x=>`<tr><td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3)">${x.ref}</td><td>${x.descricao}</td><td style="color:${x.gravidade==='Maior'?'#ff4444':'#ffb300'};font-weight:700">${x.gravidade}</td><td style="font-size:11px;color:var(--text3)">${x.requisito}</td><td style="color:var(--text3);font-size:11px">${x.prazo}</td></tr>`).join('');
+    document.getElementById('rep-rec').innerHTML=r.recomendacoes.map((rec,i)=>`<div class="action-item" style="margin-bottom:5px"><span class="action-num">R-0${i+1}</span><span>${rec}</span></div>`).join('');
+    document.getElementById('rep-plano').innerHTML=r.plano_acao.map(p=>`<tr><td>${p.acao}</td><td style="color:var(--text3);font-size:11px">${p.responsavel}</td><td style="color:var(--amber);font-size:11px">${p.prazo}</td><td style="font-size:11px;color:var(--text2)">${p.indicador}</td></tr>`).join('');
+    document.getElementById('rep-conclusao').textContent=r.conclusao;
+    document.getElementById('report-output').classList.add('show');
+    addNotif('Relatório gerado',`Relatório #${caso} para ${cliente} pronto para validação.`,'blue');
+  }catch(e){alert('Erro ao gerar relatório. Tente novamente.');console.error(e);}
+  btn.disabled=false;btn.textContent='📄 Gerar Relatório Completo com IA';
+}
+
+// EXPORT
+function exportPDF(){
+  const content=document.getElementById('report-content').innerHTML;
+  const titulo=document.getElementById('rep-titulo').textContent;
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${titulo}</title>
+  <style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;color:#1a1a1a;font-size:13px;line-height:1.6;}h1{font-size:20px;border-bottom:3px solid #00aa55;padding-bottom:10px;color:#00aa55;}.report-section{margin-bottom:28px;page-break-inside:avoid;}.report-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#00aa55;border-bottom:1px solid #e0e0e0;padding-bottom:4px;margin-bottom:12px;}p{color:#333;margin-bottom:8px;}table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px;}th{background:#f0f0f0;padding:7px 8px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #ddd;}td{padding:7px 8px;border-bottom:1px solid #eee;}.action-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:12px;}.action-num{color:#00aa55;font-weight:700;min-width:32px;}@media print{body{margin:20px;}}</style></head><body>
+  <h1>${titulo}</h1><p style="color:#666;font-size:11px;border-bottom:1px solid #eee;padding-bottom:8px;margin-bottom:20px">HCJ Global Solutions · Moçambique · ${new Date().toLocaleDateString('pt-PT')}</p>
+  ${content}</body></html>`);
+  win.document.close();setTimeout(()=>win.print(),600);
+}
+function exportWord(){
+  const titulo=document.getElementById('rep-titulo').textContent;
+  const ids=['rep-resumo','rep-metodologia','rep-diag','rep-causa','rep-conclusao'];
+  const labels=['RESUMO EXECUTIVO','METODOLOGIA','DIAGNÓSTICO TÉCNICO','ANÁLISE DE CAUSA RAIZ','CONCLUSÃO'];
+  let text=titulo+'\n'+'='.repeat(70)+'\nHCJ Global Solutions · '+new Date().toLocaleDateString('pt-PT')+'\n\n';
+  ids.forEach((id,i)=>{const el=document.getElementById(id);if(el)text+=labels[i]+'\n'+'-'.repeat(50)+'\n'+(el.textContent||'').trim()+'\n\n';});
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`HCJ-Relatorio-${new Date().toISOString().slice(0,10)}.txt`;a.click();
+}
+function saveToStorage(){
+  const titulo=document.getElementById('rep-titulo').textContent;
+  storageFiles.push({id:'REP-'+Date.now(),name:titulo,type:'report',date:new Date().toLocaleDateString('pt-PT'),size:'Auto-gerado',tecnico:currentUser?.name||'—'});
+  saveAll();alert('Relatório guardado no Armazenamento.');
+}
+
+// STORAGE
+function uploadToStorage(files){
+  Array.from(files).forEach(f=>{
+    storageFiles.push({id:'DOC-'+Date.now()+Math.random(),name:f.name,type:'doc',date:new Date().toLocaleDateString('pt-PT'),size:(f.size/1024).toFixed(1)+'KB',tecnico:currentUser?.name||'—'});
+  });
+  saveAll();renderStorage();
+}
+function renderStorage(){
+  const el=document.getElementById('storage-list');
+  if(!storageFiles.length){el.innerHTML='<p style="color:var(--text3);font-size:12px;">Nenhum documento guardado.</p>';return;}
+  el.innerHTML=storageFiles.map((f,i)=>`
+    <div class="storage-file">
+      <span style="font-size:16px">${f.type==='report'?'📄':'📎'}</span>
+      <div style="flex:1"><div style="font-size:12px;color:var(--text)">${f.name}</div><div style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace">${f.date} · ${f.size} · ${f.tecnico}</div></div>
+      <span class="badge ${f.type==='report'?'badge-blue':'badge-gray'}">${f.type==='report'?'Relatório':'Documento'}</span>
+      <button class="btn btn-red" style="padding:3px 8px;font-size:10px;" onclick="deleteStorageFile(${i})">✕</button>
+    </div>`).join('');
+}
+function deleteStorageFile(idx){
+  if(!confirm('Eliminar ficheiro?'))return;
+  storageFiles.splice(idx,1);saveAll();renderStorage();
+}
+
+// NOTIFICATIONS
+function addNotif(title,msg,type){
+  notifications.unshift({id:Date.now(),title,msg,time:new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}),type,read:false});
+  saveAll();
+}
+function renderNotifications(){
+  const el=document.getElementById('notif-list');
+  if(!notifications.length){el.innerHTML='<p style="color:var(--text3);font-size:12px;">Sem notificações.</p>';return;}
+  el.innerHTML=notifications.map(n=>`
+    <div class="notif-item ${n.read?'':'unread'}" onclick="markRead(${n.id})">
+      <div class="notif-dot-sm" style="background:${n.type==='green'?'var(--green)':n.type==='amber'?'var(--amber)':n.type==='red'?'var(--red)':'var(--blue)'}"></div>
+      <div class="notif-content"><div style="font-weight:700;font-size:12px">${n.title}</div><div style="font-size:12px;color:var(--text2);margin-top:2px">${n.msg}</div><div class="notif-time">${n.time}</div></div>
+      ${!n.read?'<span class="badge badge-green" style="font-size:8px;">Nova</span>':''}
+    </div>`).join('');
+}
+function markRead(id){
+  const n=notifications.find(x=>x.id===id);if(n)n.read=true;saveAll();renderNotifications();
+}
+function markAllRead(){
+  notifications.forEach(n=>n.read=true);saveAll();renderNotifications();
+}
+
+// INTEGRATIONS
+function showIntegrationInfo(type){
+  const info={
+    powerbi:{title:'Conectar Power BI',content:'<p style="color:var(--text2);font-size:13px;line-height:1.7;">1. Exporta os dados do HCJ-OS em formato Excel/CSV<br>2. Abre o Power BI Desktop<br>3. Clica em "Obter Dados" → Excel<br>4. Selecciona o ficheiro exportado<br>5. Cria os visuais com base nos campos: risco_hse, risco_ambiental, prioridade, cliente, sector<br><br><strong style="color:var(--green)">Dica:</strong> Usa o KoboToolbox como fonte de dados em tempo real via API REST no Power BI.</p>'},
+    kobo:{title:'Conectar KoboToolbox',content:'<p style="color:var(--text2);font-size:13px;line-height:1.7;">1. Cria formulário de inspecção no KoboToolbox<br>2. Vai a Settings → REST Services<br>3. Adiciona endpoint de destino<br>4. No Power BI usa o conector Web com URL:<br><code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">https://kf.kobotoolbox.org/api/v2/assets/{ID}/data/</code><br>5. Autentica com token da tua conta KoboToolbox</p>'},
+    gee:{title:'Google Earth Engine',content:'<p style="color:var(--text2);font-size:13px;line-height:1.7;">1. Acede a earthengine.google.com<br>2. Cria script Python ou JavaScript<br>3. Define área de interesse (Moatize, Tete)<br>4. Exporta resultados para Google Drive<br>5. Importa no HCJ-OS via upload de ficheiro<br><br><strong style="color:var(--green)">Casos de uso:</strong> Monitoramento de cobertura florestal, detecção de áreas de mineração, análise NDVI.</p>'},
+    email:{title:'Configurar Email',content:'<p style="color:var(--text2);font-size:13px;line-height:1.7;">Para envio automático de relatórios por email precisas de um servidor backend.<br><br>Na versão actual, usa o botão <strong>Exportar PDF</strong> e anexa manualmente ao email.<br><br>Na versão cloud futura, esta funcionalidade será automática via SMTP configurável.</p>'},
+    drive:{title:'Google Drive',content:'<p style="color:var(--text2);font-size:13px;line-height:1.7;">1. Exporta o relatório em PDF<br>2. Vai a drive.google.com<br>3. Faz upload do ficheiro<br>4. Partilha com os stakeholders via link<br><br><strong style="color:var(--green)">Dica:</strong> Cria uma pasta "HCJ-OS Relatórios" no Drive e organiza por cliente e ano.</p>'},
+    whatsapp:{title:'WhatsApp Business',content:'<p style="color:var(--text2);font-size:13px;line-height:1.7;">Para notificações automáticas via WhatsApp precisas da API WhatsApp Business.<br><br>Opções gratuitas para começar:<br>• <strong>Twilio</strong> — trial gratuito<br>• <strong>CallMeBot</strong> — gratuito para uso pessoal<br><br>Na versão cloud futura esta integração será nativa no HCJ-OS.</p>'},
+    gis:{title:'ArcGIS / QGIS',content:'<p style="color:var(--text2);font-size:13px;line-height:1.7;">1. Exporta dados de casos em CSV<br>2. Abre ArcGIS ou QGIS<br>3. Importa CSV como layer<br>4. Define coordenadas GPS dos casos<br>5. Visualiza distribuição geográfica de riscos<br><br><strong style="color:var(--green)">Dica:</strong> Adiciona campo lat/lon no formulário de triagem para mapeamento automático.</p>'}
+  };
+  const i=info[type];
+  if(!i)return;
+  document.getElementById('integration-modal-title').innerHTML=i.title+' <button class="modal-close" onclick="closeModal(\'integration-modal\')">✕</button>';
+  document.getElementById('integration-modal-content').innerHTML=i.content;
+  openModal('integration-modal');
+}
+
+updateAll();
+</script>
+</body>
+</html>
