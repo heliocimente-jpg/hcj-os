@@ -1575,6 +1575,7 @@ function persistSession(user){
 // INIT
 window.onload=()=>{
   initTheme();
+  migrateUserPermissions(); // corrige dados antigos sem RBAC
   setTimeout(()=>{
     document.getElementById('splash').classList.add('hide');
     setTimeout(()=>{
@@ -1589,6 +1590,30 @@ window.onload=()=>{
     },500);
   },2500);
 };
+
+// Migração: corrige utilizadores criados antes do sistema RBAC.
+// Se todos os utilizadores têm permission='admin', significa que os dados
+// são antigos e precisam de ser corrigidos com base no cargo (role).
+function migrateUserPermissions(){
+  if(!appUsers.length) return;
+  const allAdmin = appUsers.every(u=>u.permission==='admin'||!u.permission);
+  if(!allAdmin) return; // já migrados, não fazer nada
+  appUsers.forEach(u=>{
+    const role=(u.role||'').toLowerCase();
+    if(role.includes('gestor')||role.includes('manager')||role.includes('coordenador')){
+      u.permission='manager';
+    } else if(role.includes('técnico')||role.includes('tecnico')||role.includes('inspector')||role.includes('inspetor')){
+      u.permission='technician';
+    } else if(role.includes('visualizador')||role.includes('observador')||role.includes('cliente')||role.includes('visitante')){
+      u.permission='viewer';
+    } else if(u.name===appUsers[0]?.name){
+      u.permission='admin'; // primeiro utilizador = admin
+    } else {
+      u.permission='viewer'; // por defeito = visualizador (mais seguro)
+    }
+  });
+  localStorage.setItem('hcj_users', JSON.stringify(appUsers));
+}
 
 // AUTH
 function renderLoginUsers(){
