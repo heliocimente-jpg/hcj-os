@@ -19,13 +19,32 @@
   --radius:10px;--radius-sm:6px;
 }
 body.theme-light{
-  --bg:#f4f6f8;--surface:#ffffff;--surface2:#f0f2f5;--surface3:#e8eaee;
-  --border:#dde2e8;--border2:#c8cfd8;--text:#1a1d24;--text2:#5a6472;--text3:#8893a0;
-  --green-dim:#00e6760f;--amber-dim:#ffb3000f;--red-dim:#ff44440f;--blue-dim:#4fc3f70f;--purple-dim:#ce93d80f;
+  --bg:#eef1f5;--surface:#ffffff;--surface2:#f5f7fa;--surface3:#e8ecf1;
+  --border:#d0d7e0;--border2:#b8c2ce;--text:#0d1117;--text2:#374151;--text3:#6b7280;
+  --green:#00875a;--green-dim:#00875a18;--green2:#006644;
+  --amber:#b45309;--amber-dim:#b4530918;
+  --red:#dc2626;--red-dim:#dc262618;
+  --blue:#1d4ed8;--blue-dim:#1d4ed818;
+  --purple:#7c3aed;--purple-dim:#7c3aed18;
 }
-body.theme-light input,body.theme-light select,body.theme-light textarea{color:#1a1d24!important;}
-body.theme-light input::placeholder,body.theme-light textarea::placeholder{color:#8893a0!important;opacity:1;}
-body.theme-light select option{color:#1a1d24;background:#ffffff;}
+body.theme-light .sidebar{background:#1e293b;border-color:#334155;}
+body.theme-light .sidebar *{color:#e2e8f0;}
+body.theme-light .nav-item{color:#cbd5e1;}
+body.theme-light .nav-item:hover,.theme-light .nav-item.active{background:#334155;color:#ffffff;}
+body.theme-light .logo-mark,.theme-light .logo-sub,.theme-light .logo-version{color:#e2e8f0!important;}
+body.theme-light .user-name-sm,.theme-light .user-role-sm{color:#e2e8f0!important;}
+body.theme-light .nav-label{color:#94a3b8!important;}
+body.theme-light input,body.theme-light select,body.theme-light textarea{color:#0d1117!important;background:#ffffff;border-color:#d0d7e0;}
+body.theme-light input::placeholder,body.theme-light textarea::placeholder{color:#9ca3af!important;opacity:1;}
+body.theme-light select option{color:#0d1117;background:#ffffff;}
+body.theme-light .card{background:#ffffff;border-color:#d0d7e0;}
+body.theme-light .topbar{background:#ffffff;border-color:#d0d7e0;}
+body.theme-light .page-title{color:#0d1117;}
+body.theme-light .page-sub{color:#374151;}
+body.theme-light .kpi-card{background:#ffffff;border-color:#d0d7e0;}
+body.theme-light .kpi-label{color:#374151;}
+body.theme-light .modal{background:#ffffff;border-color:#d0d7e0;}
+body.theme-light .modal-title{color:#0d1117;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{transition:background 0.3s,color 0.3s;}
 html{scroll-behavior:smooth;}
@@ -1273,7 +1292,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div class="view" id="view-localizacao">
       <div class="page-header">
         <div><div class="page-title">Localização / Satélite</div><div class="page-sub">Visualização geoespacial das áreas de inspecção</div></div>
-        <button class="btn btn-primary" onclick="openModal('location-modal')">+ Adicionar Ponto</button>
+        <button class="btn btn-primary" onclick="openModal('location-modal')" id="btn-add-ponto">+ Adicionar Ponto</button>
       </div>
 
       <div class="alert alert-blue" id="network-diagnostic" style="margin-bottom:14px;">
@@ -1310,7 +1329,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
     <!-- ARMAZENAMENTO -->
     <div class="view" id="view-armazenamento">
-      <div class="page-header"><div><div class="page-title">Armazenamento</div><div class="page-sub">Todos os documentos e relatórios guardados</div></div><button class="btn btn-primary" onclick="document.getElementById('upload-storage').click()">+ Adicionar Documento<input type="file" id="upload-storage" style="display:none" multiple onchange="uploadToStorage(this.files)"></button></div>
+      <div class="page-header"><div><div class="page-title">Armazenamento</div><div class="page-sub">Todos os documentos e relatórios guardados</div></div><button class="btn btn-primary" id="btn-add-doc" onclick="document.getElementById('upload-storage').click()">+ Adicionar Documento<input type="file" id="upload-storage" style="display:none" multiple onchange="uploadToStorage(this.files)"></button></div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
         <div class="kpi-card kpi-blue"><div class="kpi-label">Total Ficheiros</div><div class="kpi-value" id="storage-count" style="color:var(--blue)">0</div><div class="kpi-delta">No sistema</div></div>
         <div class="kpi-card kpi-green"><div class="kpi-label">Relatórios</div><div class="kpi-value" id="storage-reports" style="color:var(--green)">0</div><div class="kpi-delta">Gerados</div></div>
@@ -1756,7 +1775,7 @@ function showView(name,el){
   if(name==='equipa')renderTeam();
   if(name==='notificacoes')renderNotifications();
   if(name==='armazenamento')renderStorage();
-  if(name==='localizacao'){renderLocations();setTimeout(()=>loadStaticSatelliteImage(currentLat,currentLon,currentZoom),100);}
+  if(name==='localizacao'){renderLocations();setTimeout(()=>{ if(!hcjMap) initHcjMap(); else hcjMap.invalidateSize(); },100);}
 }
 function showReadonlyBanner(view){
   const viewEl=document.getElementById('view-'+view);
@@ -1971,9 +1990,16 @@ function renderCases(){
   </tbody></table></div>`;
 }
 function updateTopbarActions(){
-  // Botão "+ Novo Caso" só aparece para Técnico, Gestor, Admin
+  const isViewer = !canEdit();
+  // Botão "+ Novo Caso" na topbar
   const novoBtn=document.querySelector('.topbar-right .btn-primary');
-  if(novoBtn) novoBtn.style.display=canEdit()?'':'none';
+  if(novoBtn) novoBtn.style.display=isViewer?'none':'';
+  // Botão "+ Adicionar Ponto" no mapa
+  const pontoBtn=document.getElementById('btn-add-ponto');
+  if(pontoBtn) pontoBtn.style.display=isViewer?'none':'';
+  // Botão "+ Adicionar Documento"
+  const docBtn=document.getElementById('btn-add-doc');
+  if(docBtn) docBtn.style.display=isViewer?'none':'';
 }
 function renderDashCases(){
   const el=document.getElementById('dash-casos-table');
@@ -2224,38 +2250,30 @@ function setMapStatus(msg){
   if(el)el.textContent=msg;
 }
 function setMapLayer(layer){
-  if(!hcjMap)return;
+  if(!hcjMap||!hcjMapLayers[layer]) return;
   currentMapLayer=layer;
   document.querySelectorAll('.map-layer-btn').forEach(b=>b.classList.toggle('active', b.dataset.layer===layer));
-  Object.values(hcjMapLayers).forEach(l=>hcjMap.removeLayer(l));
+  // Remove todas as camadas activas
+  Object.values(hcjMapLayers).forEach(l=>{
+    try{ hcjMap.removeLayer(l); }catch(e){}
+  });
+  // Adiciona a camada seleccionada
   hcjMapLayers[layer].addTo(hcjMap);
-  const labels={satellite:'Satélite (Esri World Imagery)',satelliteBackup:'Satélite (Google)',roadmap:'Mapa (OpenStreetMap)',terrain:'Terreno (OpenTopoMap)',hybrid:'Híbrido (Satélite + Limites)'};
+  const labels={satellite:'Satélite (Esri World Imagery)',satelliteBackup:'Satélite (Google)',satelliteBackup2:'Satélite (Sentinel-2)',roadmap:'Mapa (OpenStreetMap)',terrain:'Terreno (OpenTopoMap)',hybrid:'Híbrido (Satélite + Limites)'};
   setMapStatus('Camada '+(labels[layer]||layer));
 }
-let satelliteSourceIdx=0;
-const satelliteSources=[
-  {key:'satellite', name:'Esri World Imagery'},
-  {key:'satelliteBackup', name:'Google Satellite'},
-  {key:'satelliteBackup2', name:'Sentinel-2 (EOX)'},
-];
-function trySatelliteBackup(){
-  if(!hcjMap)return;
-  satelliteSourceIdx=(satelliteSourceIdx+1)%satelliteSources.length;
-  const src=satelliteSources[satelliteSourceIdx];
-  Object.values(hcjMapLayers).forEach(l=>hcjMap.removeLayer(l));
-  currentMapLayer=src.key;
-  document.querySelectorAll('.map-layer-btn').forEach(b=>b.classList.remove('active'));
-  let loaded=false;
-  hcjMapLayers[src.key].once('tileload',()=>{loaded=true;setMapStatus('✅ '+src.name+' a funcionar.');});
-  hcjMapLayers[src.key].once('tileerror',()=>{
-    if(!loaded)setMapStatus('⚠ '+src.name+' falhou. Experimenta de novo ou troca para "Mapa" (OpenStreetMap).');
-  });
-  hcjMapLayers[src.key].addTo(hcjMap);
-  setMapStatus('A testar: '+src.name+'...');
+function setMapZoom(zoom){
+function setMapZoom(zoom){
+  currentZoom=zoom;
+  document.querySelectorAll('.zoom-btn').forEach(b=>b.classList.toggle('active', parseInt(b.dataset.zoom)===zoom));
+  if(hcjMap) hcjMap.setZoom(zoom);
 }
-function updateGoogleMapsLink(query){
-  const btn=document.getElementById('open-google-maps-btn');
-  if(btn) btn.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(query);
+}
+let satelliteSourceIdx=0;
+function trySatelliteBackup(){
+  const sources=['satellite','satelliteBackup','satelliteBackup2','roadmap'];
+  satelliteSourceIdx=(satelliteSourceIdx+1)%sources.length;
+  setMapLayer(sources[satelliteSourceIdx]);
 }
 async function searchMapLocation(){
   const query=document.getElementById('map-search').value.trim();
