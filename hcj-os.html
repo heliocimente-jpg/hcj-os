@@ -1909,10 +1909,28 @@ function renderTeam(){
     <div class="team-card">
       <div class="team-avatar" style="background:${colors[i%colors.length]}20;color:${colors[i%colors.length]}">${u.name.substring(0,2).toUpperCase()}</div>
       <div class="team-name">${u.name}</div>
-      <div class="team-role">${u.role}</div>
-      <div class="team-status"><span class="badge ${u.permission==='admin'?'badge-red':u.permission==='manager'?'badge-amber':u.permission==='technician'?'badge-blue':'badge-gray'}">${permLabel(u.permission)}</span></div>
-      ${u.name!==currentUser?.name?`<button class="btn btn-red" style="margin-top:8px;font-size:10px;padding:3px 8px;" onclick="removeUser(${i})">Remover</button>`:'<div style="font-size:10px;color:var(--green);margin-top:8px;">● Sessão activa</div>'}
+      <div class="team-role">${u.role||''}</div>
+      <div class="team-status" style="margin-top:6px;">
+        <span class="role-badge ${permClass(u.permission)}">${permLabel(u.permission)}</span>
+      </div>
+      ${u.name!==currentUser?.name?`
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;justify-content:center;">
+          <select onchange="changeUserRole(${i},this.value)" style="font-size:10px;padding:3px 6px;border-radius:4px;">
+            <option value="admin" ${u.permission==='admin'?'selected':''}>Admin</option>
+            <option value="manager" ${u.permission==='manager'?'selected':''}>Gestor</option>
+            <option value="technician" ${u.permission==='technician'?'selected':''}>Técnico</option>
+            <option value="viewer" ${u.permission==='viewer'?'selected':''}>Visualizador</option>
+          </select>
+          <button class="btn btn-red" style="font-size:10px;padding:3px 8px;" onclick="removeUser(${i})">Remover</button>
+        </div>`
+      :'<div style="font-size:10px;color:var(--green);margin-top:8px;">● Sessão activa</div>'}
     </div>`).join('');
+}
+function changeUserRole(idx, newPerm){
+  appUsers[idx].permission=newPerm;
+  saveAll();
+  renderTeam();
+  addNotif('Permissão actualizada',`${appUsers[idx]?.name||'Utilizador'} é agora ${permLabel(newPerm)}.`,'blue');
 }
 function removeUser(idx){
   if(!confirm(`Remover "${appUsers[idx].name}"?`))return;
