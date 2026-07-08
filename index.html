@@ -113,7 +113,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .nav-item.active{background:var(--green-dim);color:var(--green);border-color:#00e67625;}
 .nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
 .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;padding:1px 6px;border-radius:10px;font-family:'IBM Plex Mono',monospace;}
-.sidebar-bottom{padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
+.sidebar-bottom{padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
 .status-online{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text2);}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:pulse 2s infinite;flex-shrink:0;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
@@ -1137,6 +1137,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <button class="notif-btn" id="theme-quick-btn" onclick="cycleTheme()" title="Mudar tema">🌙</button>
       <button class="notif-btn" onclick="showView('notificacoes',null)">🔔<div class="notif-dot" id="notif-dot"></div></button>
       <span style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;display:none;" id="topbar-user"></span>
+      <button class="notif-btn" onclick="doLogout()" title="Terminar sessão / trocar de utilizador">⏻</button>
       <button class="btn btn-primary" onclick="showView('triagem',document.querySelectorAll('.nav-item')[4])">+ Novo Caso</button>
     </div>
   </div>
@@ -1244,8 +1245,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
         <div class="file-list" id="file-list"></div>
         <div class="form-grid">
           <div class="form-group"><label>Cliente</label><input type="text" id="t-cliente" placeholder="Nome do cliente"/></div>
-          <div class="form-group"><label>Sector</label><select id="t-sector"><option value="">Seleccionar...</option><option value="mineracao">Mineração</option><option value="oleogas">Óleo e Gás</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="infraestrutura">Infraestruturas</option><option value="industria">Indústria</option><option value="agricultura">Agricultura</option><option value="floresta">Floresta</option><option value="ambiente">Ambiente</option></select></div>
-          <div class="form-group"><label>Tipo de Serviço</label><select id="t-servico"><option value="">Seleccionar...</option><option value="hse">Auditoria HSE</option><option value="ambiental">Conformidade Ambiental</option><option value="iso9001">ISO 9001 — Qualidade</option><option value="esg">Relatório ESG</option><option value="inspecao">Inspecção de Campo</option><option value="florestal">Monitoramento Florestal</option></select></div>
+          <div class="form-group"><label>Sector</label><select id="t-sector"><option value="">Seleccionar...</option><option value="Mineração">Mineração</option><option value="Óleo e Gás">Óleo e Gás</option><option value="Logística">Logística</option><option value="Construção">Construção</option><option value="Infraestruturas">Infraestruturas</option><option value="Indústria">Indústria</option><option value="Agricultura">Agricultura</option><option value="Floresta">Floresta</option><option value="Ambiente">Ambiente</option></select></div>
+          <div class="form-group"><label>Tipo de Serviço</label><select id="t-servico"><option value="">Seleccionar...</option><option value="Auditoria HSE">Auditoria HSE</option><option value="Conformidade Ambiental">Conformidade Ambiental</option><option value="ISO 9001 — Qualidade">ISO 9001 — Qualidade</option><option value="Relatório ESG">Relatório ESG</option><option value="Inspecção de Campo">Inspecção de Campo</option><option value="Monitoramento Florestal">Monitoramento Florestal</option></select></div>
           <div class="form-group"><label>Localização</label><input type="text" id="t-local" placeholder="ex: Moatize, Tete"/></div>
           <div class="form-group full"><label>Descrição da Situação</label><textarea id="t-desc" placeholder="Descreva a situação, dados de campo, observações..." style="min-height:100px;"></textarea></div>
         </div>
@@ -1286,8 +1287,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
         <div class="form-grid">
           <div class="form-group"><label>Número do Caso</label><input type="text" id="r-caso" placeholder="ex: HCJ-025"/></div>
           <div class="form-group"><label>Cliente</label><input type="text" id="r-cliente" placeholder="Nome do cliente"/></div>
-          <div class="form-group"><label>Tipo de Relatório</label><select id="r-tipo"><option value="hse">Auditoria HSE (ISO 45001)</option><option value="ambiental">Conformidade Ambiental (ISO 14001)</option><option value="qualidade">Qualidade (ISO 9001)</option><option value="esg">ESG / Sustentabilidade (GRI)</option></select></div>
-          <div class="form-group"><label>Sector</label><select id="r-sector"><option value="mineracao">Mineração</option><option value="oleogas">Óleo e Gás</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="infraestrutura">Infraestruturas</option><option value="industria">Indústria</option><option value="agricultura">Agricultura</option><option value="floresta">Floresta</option><option value="ambiente">Ambiente</option></select></div>
+          <div class="form-group"><label>Tipo de Relatório</label><select id="r-tipo"><option value="">Escolha o tipo de relatório...</option><option value="ISO 45001:2018">Auditoria HSE (ISO 45001)</option><option value="ISO 14001:2015">Conformidade Ambiental (ISO 14001)</option><option value="ISO 9001:2015">Qualidade (ISO 9001)</option><option value="GRI Standards / ESG">ESG / Sustentabilidade (GRI)</option></select></div>
+          <div class="form-group"><label>Sector</label><select id="r-sector"><option value="">Escolha o sector...</option><option value="Mineração">Mineração</option><option value="Óleo e Gás">Óleo e Gás</option><option value="Logística">Logística</option><option value="Construção">Construção</option><option value="Infraestruturas">Infraestruturas</option><option value="Indústria">Indústria</option><option value="Agricultura">Agricultura</option><option value="Floresta">Floresta</option><option value="Ambiente">Ambiente</option></select></div>
           <div class="form-group full"><label>Observações de Campo</label><textarea id="r-obs" placeholder="Notas de campo, dados de inspecção, não conformidades observadas..." style="min-height:120px;"></textarea></div>
         </div>
         <button class="btn btn-primary" id="btn-report" onclick="generateReport()">📄 Gerar Relatório Completo com IA</button>
@@ -1303,15 +1304,17 @@ svg.leaflet-image-layer.leaflet-interactive path {
           </div>
           <div id="report-content">
             <div class="report-section"><div class="report-section-title">01 — Identificação</div><div id="rep-identificacao"></div></div>
-            <div class="report-section"><div class="report-section-title">02 — Resumo Executivo</div><p id="rep-resumo"></p></div>
-            <div class="report-section"><div class="report-section-title">03 — Âmbito e Metodologia</div><p id="rep-metodologia"></p></div>
-            <div class="report-section"><div class="report-section-title">04 — Diagnóstico Técnico</div><p id="rep-diag"></p></div>
-            <div class="report-section"><div class="report-section-title">05 — Riscos Identificados</div><table class="report-table"><thead><tr><th>Nº</th><th>Risco</th><th>Classificação</th><th>Norma</th><th>Probabilidade</th></tr></thead><tbody id="rep-riscos"></tbody></table></div>
-            <div class="report-section"><div class="report-section-title">06 — Não Conformidades</div><table class="report-table"><thead><tr><th>Ref.</th><th>Descrição</th><th>Gravidade</th><th>Requisito</th><th>Prazo</th></tr></thead><tbody id="rep-nc"></tbody></table></div>
-            <div class="report-section"><div class="report-section-title">07 — Análise de Causa Raiz</div><p id="rep-causa"></p></div>
-            <div class="report-section"><div class="report-section-title">08 — Recomendações Técnicas</div><div id="rep-rec"></div></div>
-            <div class="report-section"><div class="report-section-title">09 — Plano de Acção Corretiva</div><table class="report-table"><thead><tr><th>Acção</th><th>Responsável</th><th>Prazo</th><th>Indicador</th></tr></thead><tbody id="rep-plano"></tbody></table></div>
-            <div class="report-section"><div class="report-section-title">10 — Conclusão</div><p id="rep-conclusao"></p></div>
+            <div class="report-section"><div class="report-section-title">02 — Scorecard Executivo</div><div id="rep-scorecard"></div></div>
+            <div class="report-section"><div class="report-section-title">03 — Resumo Executivo</div><p id="rep-resumo"></p></div>
+            <div class="report-section"><div class="report-section-title">04 — Âmbito e Metodologia</div><p id="rep-metodologia"></p></div>
+            <div class="report-section"><div class="report-section-title">05 — Diagnóstico Técnico</div><p id="rep-diag"></p></div>
+            <div class="report-section"><div class="report-section-title">06 — Riscos Identificados</div><table class="report-table"><thead><tr><th>Nº</th><th>Risco</th><th>Classificação</th><th>Norma</th><th>Probabilidade</th></tr></thead><tbody id="rep-riscos"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title">07 — Não Conformidades</div><table class="report-table"><thead><tr><th>Ref.</th><th>Descrição</th><th>Gravidade</th><th>Requisito</th><th>Prazo</th></tr></thead><tbody id="rep-naoconf"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title">08 — Análise de Causa Raiz</div><p id="rep-causa"></p></div>
+            <div class="report-section"><div class="report-section-title">09 — Recomendações Técnicas</div><div id="rep-rec"></div></div>
+            <div class="report-section"><div class="report-section-title">10 — Plano de Acção Corretiva</div><table class="report-table"><thead><tr><th>Acção</th><th>Responsável</th><th>Prazo</th><th>Indicador</th></tr></thead><tbody id="rep-plano"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title">11 — Evidências Fotográficas</div><div id="rep-fotos"></div></div>
+            <div class="report-section"><div class="report-section-title">12 — Conclusão</div><p id="rep-conclusao"></p></div>
           </div>
           <div class="alert alert-amber">⚠ Relatório gerado por IA. Aguardando validação técnica antes de emissão final.</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
@@ -1638,25 +1641,38 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <script>
 // Motor IA: Groq (LLaMA 3.3 70B) — gratuito, sem restrições geográficas
 const GROQ_URL='https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL='llama-3.3-70b-versatile';
+const GROQ_MODEL='openai/gpt-oss-120b';
 
 // STATE
-let appUsers=JSON.parse(localStorage.getItem('hcj_users')||'[]');
-let clients=JSON.parse(localStorage.getItem('hcj_clients')||'[]');
-let cases=JSON.parse(localStorage.getItem('hcj_cases')||'[]');
-let storageFiles=JSON.parse(localStorage.getItem('hcj_storage')||'[]');
-let auditLog=JSON.parse(localStorage.getItem('hcj_audit')||'[]');
-let notifications=JSON.parse(localStorage.getItem('hcj_notifs')||JSON.stringify([
+// safeParse: nunca deixa uma chave de localStorage corrompida derrubar o script inteiro
+// (causa raiz do "ecrã preto permanente" — antes, um JSON.parse malformado bloqueava o window.onload)
+function safeParse(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if(raw===null || raw===undefined) return fallback;
+    return JSON.parse(raw);
+  }catch(e){
+    console.warn('[HCJ-OS] localStorage corrompido em "'+key+'" — a repor valor por defeito.', e);
+    try{ localStorage.removeItem(key); }catch(_){}
+    return fallback;
+  }
+}
+let appUsers=safeParse('hcj_users',[]);
+let clients=safeParse('hcj_clients',[]);
+let cases=safeParse('hcj_cases',[]);
+let storageFiles=safeParse('hcj_storage',[]);
+let auditLog=safeParse('hcj_audit',[]);
+let notifications=safeParse('hcj_notifs',[
   {id:1,title:'Bem-vindo ao HCJ-OS v3',msg:'Sistema iniciado com sucesso. Todas as funcionalidades activas.',time:'Agora',type:'green',read:false},
   {id:2,title:'Groq AI pronto',msg:'Motor de inteligência artificial activo e pronto para análise.',time:'Agora',type:'green',read:false},
   {id:3,title:'Actualização disponível',msg:'Nova versão do sistema com melhorias de performance.',time:'Hoje',type:'blue',read:false}
-]));
+]);
 let currentUser=null;
 let uploadedFiles=[];
 let uploadedFilesRep=[];
 let lastTriageData={};
 let editClientIdx=-1;
-let mapLocations=JSON.parse(localStorage.getItem('hcj_locations')||'[]');
+let mapLocations=safeParse('hcj_locations',[]);
 let currentMapLayer='satellite';
 
 // ===== THEME SYSTEM =====
@@ -2022,7 +2038,7 @@ function checkCaseDeadlines(){
         c.notifiedSoon=true; changed=true;
       }
     }
-    const riscoAlto=['Crítico','CRÍTICO','Alto','ALTO'].includes(c.risco_hse||c.prioridade);
+    const riscoAlto=isRiskFlagged(c);
     if(riscoAlto && !c.reportGenerated && !c.notifiedRiskPending){
       addNotif('🔴 Risco alto sem relatório', `Caso ${c.id} (${c.cliente}) tem risco ${c.risco_hse||c.prioridade} e ainda não tem relatório técnico gerado.`, 'red');
       c.notifiedRiskPending=true; changed=true;
@@ -2033,12 +2049,28 @@ function checkCaseDeadlines(){
   }
 }
 
+// Flags centralizados de risco — evitam o bug de vocabulário (prioridade usa
+// URGENTE/CRÍTICA, risco_hse/risco_ambiental usam ALTO/CRÍTICO; formas antigas
+// tipo 'Alto'/'Crítico' nunca batiam com o que a IA realmente devolve).
+function isRiskFlagged(c){
+  const hse=(c.risco_hse||'').toUpperCase();
+  const amb=(c.risco_ambiental||'').toUpperCase();
+  const pri=(c.prioridade||'').toUpperCase();
+  return ['ALTO','CRÍTICO'].includes(hse) || ['ALTO','CRÍTICO'].includes(amb) || ['ELEVADA','URGENTE','CRÍTICA'].includes(pri);
+}
+function isCriticalNC(c){
+  const hse=(c.risco_hse||'').toUpperCase();
+  const amb=(c.risco_ambiental||'').toUpperCase();
+  const pri=(c.prioridade||'').toUpperCase();
+  return hse==='CRÍTICO' || amb==='CRÍTICO' || pri==='CRÍTICA';
+}
+
 function updateAll(){
   checkCaseDeadlines();
   // ── KPIs dinâmicos ──
   const totalCasos = cases.length;
-  const riscosAltos = cases.filter(c=>['Alto','Crítico','ALTO','CRÍTICO'].includes(c.risco_hse||c.prioridade)).length;
-  const naoConf = cases.filter(c=>['Crítico','CRÍTICO'].includes(c.prioridade)).length;
+  const riscosAltos = cases.filter(isRiskFlagged).length;
+  const naoConf = cases.filter(isCriticalNC).length;
   const clientesActivos = clients.filter(c=>c.estado==='Activo').length;
 
   document.getElementById('kpi-casos').textContent=totalCasos;
@@ -2090,13 +2122,13 @@ function updateAll(){
       const s=c.sector||'Outro';
       if(!sectorMap[s]) sectorMap[s]={total:0,alto:0};
       sectorMap[s].total++;
-      if(['Alto','Crítico','ALTO','CRÍTICO'].includes(c.risco_hse||c.prioridade)) sectorMap[s].alto++;
+      if(['ALTO','CRÍTICO'].includes((c.risco_hse||'').toUpperCase()) || ['URGENTE','CRÍTICA'].includes((c.prioridade||'').toUpperCase())) sectorMap[s].alto++;
     });
     const sectors=Object.entries(sectorMap).sort((a,b)=>b[1].alto-a[1].alto);
     if(sectors.length===0){
       // Sem dados reais: mostrar referência de mercado
-      const ref=[['Mineração',82,'#ff4444'],['Óleo e Gás',78,'#ff4444'],['Construção',68,'#ffb300'],
-                 ['Logística',55,'#ffb300'],['Infraestrut.',60,'#ffb300'],['Agricultura',38,'#00e676'],
+      const ref=[['Mineração',82,'#ff4444'],['Óleo e Gás',78,'#ff4444'],['Indústria',65,'#ffb300'],['Construção',68,'#ffb300'],
+                 ['Logística',55,'#ffb300'],['Infraestruturas',60,'#ffb300'],['Agricultura',38,'#00e676'],
                  ['Floresta',42,'#00e676'],['Ambiente',45,'#00e676']];
       sectorBars.innerHTML=ref.map(([n,p,c])=>`
         <div class="bar-row">
@@ -2170,7 +2202,7 @@ function checkSmartNotifications(){
   if(now-lastCheck<300000) return; // não verifica mais de 1x a cada 5 minutos
   localStorage.setItem('hcj_lastcheck',now);
 
-  const riscoCritico=cases.filter(c=>['Crítico','CRÍTICO'].includes(c.prioridade||c.risco_hse));
+  const riscoCritico=cases.filter(isCriticalNC);
   if(riscoCritico.length>0){
     const lastAlert=localStorage.getItem('hcj_alert_critico');
     if(lastAlert!==String(riscoCritico.length)){
@@ -2194,11 +2226,11 @@ function clearAllData(){
 // ===== PDF EXPORT — Relatório profissional com logo HCJ =====
 function exportReportPDF(){
   const textSections=[
-    {id:'rep-resumo',title:'2 — Resumo Executivo'},
-    {id:'rep-metodologia',title:'3 — Âmbito e Metodologia'},
-    {id:'rep-diag',title:'4 — Diagnóstico Técnico'},
-    {id:'rep-causa',title:'7 — Análise de Causa Raiz'},
-    {id:'rep-conclusao',title:'10 — Conclusão'}
+    {id:'rep-resumo',title:'3 — Resumo Executivo'},
+    {id:'rep-metodologia',title:'4 — Âmbito e Metodologia'},
+    {id:'rep-diag',title:'5 — Diagnóstico Técnico'},
+    {id:'rep-causa',title:'8 — Análise de Causa Raiz'},
+    {id:'rep-conclusao',title:'12 — Conclusão'}
   ];
   const hasContent = textSections.some(s=>document.getElementById(s.id)?.textContent?.trim()) ||
                       document.getElementById('rep-riscos')?.innerHTML?.trim() ||
@@ -2226,6 +2258,26 @@ function exportReportPDF(){
   const recHtml = document.getElementById('rep-rec')?.innerHTML||'<p style="color:#9ca3af;font-size:10pt;">Sem recomendações geradas.</p>';
   const planoHtml = document.getElementById('rep-plano')?.innerHTML?tableHtml(document.getElementById('rep-plano').innerHTML,['Acção','Responsável','Prazo','Indicador']):'<p style="color:#9ca3af;font-size:10pt;">Sem plano de acção gerado.</p>';
 
+  // Scorecard executivo (secção 2)
+  const pilares = getReportScores(caseNum.replace(/^#/,''));
+  const scorecardHtml = `<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;">
+    ${pilares.map(p=>`<div style="flex:1;min-width:120px;background:#f8f9fa;border:1px solid #e5e7eb;border-radius:8px;padding:16px;text-align:center;">
+      <div style="font-size:26pt;font-weight:800;color:${p.val!==null?p.color:'#9ca3af'};">${p.val!==null?p.val+'%':'—'}</div>
+      <div style="font-size:9pt;letter-spacing:0.5px;color:#6b7280;margin-top:4px;text-transform:uppercase;">${p.label}</div>
+    </div>`).join('')}
+  </div>${pilares.every(p=>p.val===null)?'<p style="font-size:9pt;color:#9ca3af;margin-top:10px;">*Scores numéricos não disponíveis para este caso — ver classificações qualitativas na secção 6.</p>':''}`;
+
+  // Evidências fotográficas (secção 11) — usa as imagens já convertidas em generateReport()
+  const photos = window.lastReportPhotos||[];
+  const fotosHtml = photos.length
+    ? `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;">
+        ${photos.map(p=>`<div style="border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;">
+          <img src="${p.src}" style="width:100%;height:120px;object-fit:cover;display:block;"/>
+          <div style="font-size:7.5pt;color:#6b7280;padding:4px 6px;word-break:break-all;">${p.name}</div>
+        </div>`).join('')}
+      </div>`
+    : '<p style="color:#9ca3af;font-size:10pt;">Nenhuma evidência fotográfica anexada a este caso.</p>';
+
   const html=`<!DOCTYPE html><html lang="pt"><head>
   <meta charset="UTF-8">
   <title>Relatório HCJ — ${caseNum}</title>
@@ -2243,6 +2295,10 @@ function exportReportPDF(){
     .cover-meta-label{color:#8899aa;font-weight:600;}
     .cover-meta-val{color:#e8edf5;}
     .cover-footer{margin-top:40px;font-size:9pt;color:#445566;}
+    .toc{page-break-after:always;padding:60px 50px;max-width:800px;margin:0 auto;}
+    .toc h2{font-size:18pt;color:#0a0c0f;border-bottom:3px solid #d4a017;padding-bottom:10px;margin-bottom:24px;}
+    .toc-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dotted #d1d5db;font-size:11pt;color:#374151;}
+    .toc-num{color:#d4a017;font-weight:700;margin-right:10px;}
     .page{padding:40px 50px;max-width:800px;margin:0 auto;}
     h2{font-size:16pt;font-weight:700;color:#0a0c0f;border-bottom:3px solid #d4a017;padding-bottom:8px;margin:32px 0 16px;}
     .section{margin-bottom:28px;padding:20px;background:#f8f9fa;border-left:4px solid #d4a017;border-radius:0 8px 8px 0;}
@@ -2250,6 +2306,8 @@ function exportReportPDF(){
     .section p{font-size:10.5pt;line-height:1.8;color:#374151;}
     table td,table th{border-bottom:1px solid #e5e7eb;}
     .signature{margin-top:50px;padding-top:20px;border-top:1px solid #d1d5db;font-size:9.5pt;color:#374151;}
+    .sig-grid{display:flex;gap:40px;margin-top:30px;}
+    .sig-box{flex:1;border-top:1px solid #374151;padding-top:8px;font-size:9.5pt;color:#374151;}
     .footer{margin-top:40px;padding-top:16px;border-top:2px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;font-size:8pt;color:#9ca3af;}
     .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:9pt;font-weight:700;}
     .badge-gold{background:#d4a01720;color:#d4a017;border:1px solid #d4a01740;}
@@ -2274,24 +2332,35 @@ function exportReportPDF(){
     </div>
     <div class="cover-footer">HCJ Global Solutions Unipessoal, Lda · Moçambique · Gerado automaticamente pelo HCJ-OS v3</div>
   </div>
+  <div class="toc">
+    <h2>Índice</h2>
+    ${['1 — Identificação do Caso','2 — Scorecard Executivo','3 — Resumo Executivo','4 — Âmbito e Metodologia','5 — Diagnóstico Técnico','6 — Riscos Identificados','7 — Não Conformidades','8 — Análise de Causa Raiz','9 — Recomendações Técnicas','10 — Plano de Acção Corretiva','11 — Evidências Fotográficas','12 — Conclusão']
+      .map(t=>{const[n,...r]=t.split(' — ');return `<div class="toc-row"><span><span class="toc-num">${n}</span>${r.join(' — ')}</span></div>`;}).join('')}
+  </div>
   <div class="page">
-    <h2>Relatório Técnico Completo</h2>
+    <h2>1 — Identificação do Caso</h2>
+    <div class="section">${document.getElementById('rep-identificacao')?.innerHTML||''}</div>
+    <h2>2 — Scorecard Executivo</h2>
+    <div class="section">${scorecardHtml}</div>
     ${textSections.slice(0,3).map(s=>{
       const el=document.getElementById(s.id);
       const content=el?.textContent?.trim()||'';
       if(!content) return '';
       return `<div class="section"><h3>${s.title}</h3><p>${content.replace(/\n/g,'<br>')}</p></div>`;
     }).join('')}
-    <div class="section"><h3>5 — Riscos Identificados</h3>${riscosHtml}</div>
-    <div class="section"><h3>6 — Não Conformidades</h3>${ncHtml}</div>
-    ${(()=>{const el=document.getElementById('rep-causa');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>7 — Análise de Causa Raiz</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
-    <div class="section"><h3>8 — Recomendações Técnicas</h3>${recHtml}</div>
-    <div class="section"><h3>9 — Plano de Acção Correctiva</h3>${planoHtml}</div>
-    ${(()=>{const el=document.getElementById('rep-conclusao');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>10 — Conclusão</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
+    <div class="section"><h3>6 — Riscos Identificados</h3>${riscosHtml}</div>
+    <div class="section"><h3>7 — Não Conformidades</h3>${ncHtml}</div>
+    ${(()=>{const el=document.getElementById('rep-causa');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>8 — Análise de Causa Raiz</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
+    <div class="section"><h3>9 — Recomendações Técnicas</h3>${recHtml}</div>
+    <div class="section"><h3>10 — Plano de Acção Correctiva</h3>${planoHtml}</div>
+    <div class="section"><h3>11 — Evidências Fotográficas</h3>${fotosHtml}</div>
+    ${(()=>{const el=document.getElementById('rep-conclusao');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>12 — Conclusão</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
     <div class="signature">
-      <p><strong>${currentUser?.name||'Auditor HCJ'}</strong> — ${currentUser?.role||'Consultor Técnico'}</p>
-      <p>HCJ Global Solutions, Moatize/Tete, Moçambique</p>
-      <p style="margin-top:8px;color:#9ca3af;">Este documento foi gerado com apoio de IA (Groq/Llama 3.3) e encontra-se pendente de validação técnica final antes de emissão oficial ao cliente.</p>
+      <p style="color:#9ca3af;">Este documento foi elaborado com apoio do motor de análise assistida por IA do HCJ-OS e encontra-se pendente de validação técnica final antes de emissão oficial ao cliente.</p>
+      <div class="sig-grid">
+        <div class="sig-box"><strong>${currentUser?.name||'Auditor HCJ'}</strong><br>${currentUser?.role||'Consultor Técnico'} — HCJ Global Solutions</div>
+        <div class="sig-box"><strong>${cliente}</strong><br>Aceite pelo Cliente (nome, cargo, data)</div>
+      </div>
     </div>
     <div class="footer">
       <span>HCJ Global Solutions Unipessoal, Lda</span>
@@ -2320,12 +2389,11 @@ function exportReportWord(){
   const obs=document.getElementById('r-obs')?.value||'';
   const data=new Date().toLocaleDateString('pt-PT');
   const hora=new Date().toLocaleTimeString('pt-PT');
-  // Recolher conteúdo das secções geradas (textos + tabelas)
-  const textSections=['rep-resumo','rep-metodologia','rep-diag','rep-causa','rep-conclusao'];
-  const textTitles=['Resumo Executivo','Âmbito e Metodologia','Diagnóstico Técnico','Análise de Causa Raiz','Conclusão'];
+  // Recolher conteúdo das secções geradas (textos + tabelas), numeração 3–10;
+  // 1=Identificação, 2=Scorecard, 11=Evidências Fotográficas, 12=Conclusão são tratados à parte.
   let sectionsHTML='';
-  const numOrder=['rep-resumo','rep-metodologia','rep-diag','rep-riscos','rep-naoconf','rep-causa','rep-rec','rep-plano','rep-conclusao'];
-  const numTitles={'rep-resumo':'Resumo Executivo','rep-metodologia':'Âmbito e Metodologia','rep-diag':'Diagnóstico Técnico','rep-riscos':'Riscos Identificados','rep-naoconf':'Não Conformidades','rep-causa':'Análise de Causa Raiz','rep-rec':'Recomendações Técnicas','rep-plano':'Plano de Acção Correctiva','rep-conclusao':'Conclusão'};
+  const numOrder=['rep-resumo','rep-metodologia','rep-diag','rep-riscos','rep-naoconf','rep-causa','rep-rec','rep-plano'];
+  const numTitles={'rep-resumo':'Resumo Executivo','rep-metodologia':'Âmbito e Metodologia','rep-diag':'Diagnóstico Técnico','rep-riscos':'Riscos Identificados','rep-naoconf':'Não Conformidades','rep-causa':'Análise de Causa Raiz','rep-rec':'Recomendações Técnicas','rep-plano':'Plano de Acção Correctiva'};
   const tableHeaders={'rep-riscos':['Nº','Risco','Classificação','Norma','Probabilidade'],'rep-naoconf':['Ref.','Descrição','Gravidade','Requisito','Prazo'],'rep-plano':['Acção','Responsável','Prazo','Indicador']};
   numOrder.forEach((id,i)=>{
     const el=document.getElementById(id);
@@ -2334,17 +2402,39 @@ function exportReportWord(){
     const isRec = id==='rep-rec';
     const txt = isTable||isRec ? el.innerHTML : el.textContent;
     if(!txt||!txt.trim()) return;
+    const n=i+3;
     if(isTable){
-      sectionsHTML+=`<h2>${i+1} — ${numTitles[id]}</h2><table><thead><tr>${tableHeaders[id].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${txt}</tbody></table>`;
+      sectionsHTML+=`<h2>${n} — ${numTitles[id]}</h2><table><thead><tr>${tableHeaders[id].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${txt}</tbody></table>`;
     } else if(isRec){
-      sectionsHTML+=`<h2>${i+1} — ${numTitles[id]}</h2><div>${txt}</div>`;
+      sectionsHTML+=`<h2>${n} — ${numTitles[id]}</h2><div>${txt}</div>`;
     } else {
-      sectionsHTML+=`<h2>${i+1} — ${numTitles[id]}</h2><p>${txt.replace(/\n/g,'</p><p>')}</p>`;
+      sectionsHTML+=`<h2>${n} — ${numTitles[id]}</h2><p>${txt.replace(/\n/g,'</p><p>')}</p>`;
     }
   });
   if(!sectionsHTML){
     alert('Gera o relatório primeiro com a IA antes de exportar.');return;
   }
+
+  // 2 — Scorecard Executivo
+  const pilares=getReportScores(caseNum.replace(/^#/,''));
+  const scorecardHTML=`<h2>2 — Scorecard Executivo</h2>
+    <table><thead><tr>${pilares.map(p=>`<th>${p.label}</th>`).join('')}</tr></thead>
+    <tbody><tr>${pilares.map(p=>`<td style="font-size:16pt;font-weight:700;text-align:center;color:${p.val!==null?p.color:'#999'}">${p.val!==null?p.val+'%':'—'}</td>`).join('')}</tr></tbody></table>
+    ${pilares.every(p=>p.val===null)?'<p style="font-size:9pt;color:#888;">*Scores não disponíveis para este caso — ver classificações qualitativas na secção 6.</p>':''}`;
+
+  // 11 — Evidências Fotográficas
+  const photos=window.lastReportPhotos||[];
+  const fotosHTML=`<h2>11 — Evidências Fotográficas</h2>${
+    photos.length
+      ? `<table><tbody>${photos.map(p=>`<tr><td style="width:160px;"><img src="${p.src}" style="width:150px;height:110px;object-fit:cover;"/></td><td style="vertical-align:middle;">${p.name}</td></tr>`).join('')}</tbody></table>`
+      : '<p style="color:#888;">Nenhuma evidência fotográfica anexada a este caso.</p>'
+  }`;
+
+  // 12 — Conclusão
+  const conclEl=document.getElementById('rep-conclusao');
+  const conclTxt=conclEl?.textContent?.trim()||'';
+  const conclusaoHTML = conclTxt ? `<h2>12 — Conclusão</h2><p>${conclTxt.replace(/\n/g,'</p><p>')}</p>` : '';
+
   const htmlDoc=`<!DOCTYPE html><html><head><meta charset="utf-8">
 <style>
 body{font-family:Calibri,Arial,sans-serif;margin:2cm 2.5cm;color:#1a1a1a;font-size:11pt;line-height:1.7;}
@@ -2361,11 +2451,14 @@ table{width:100%;border-collapse:collapse;margin:10px 0;font-size:10pt;}
 th{background:#1a5c35;color:white;padding:6px 10px;text-align:left;}
 td{padding:5px 10px;border:1px solid #ddd;}
 tr:nth-child(even) td{background:#f8faf8;}
+.sig-grid{width:100%;margin-top:30px;border-collapse:collapse;}
+.sig-grid td{border:none;border-top:1px solid #333;padding-top:8px;font-size:9.5pt;width:50%;}
 .footer{margin-top:36px;padding-top:10px;border-top:1px solid #bbb;font-size:8.5pt;color:#777;text-align:center;}
 .confidencial{background:#dc2626;color:white;display:inline-block;padding:2px 10px;font-size:9pt;font-weight:700;border-radius:3px;margin-top:6px;}
 </style></head><body>
 <div class="hdr"><h1>HCJ GLOBAL SOLUTIONS</h1>
 <p>Consultoria em HSST · Meio Ambiente · Qualidade · ESG — Moatize, Tete, Moçambique</p></div>
+<h2>1 — Identificação do Caso</h2>
 <table class="meta">
 <tr><td>Número do Caso</td><td><strong>${caseNum}</strong></td></tr>
 <tr><td>Cliente</td><td>${client}</td></tr>
@@ -2375,9 +2468,17 @@ tr:nth-child(even) td{background:#f8faf8;}
 <tr><td>Responsável Técnico</td><td>${currentUser?.name||'HCJ Auditor'}</td></tr>
 <tr><td>Classificação</td><td><span class="confidencial">CONFIDENCIAL</span></td></tr>
 </table>
+${scorecardHTML}
 ${sectionsHTML}
+${fotosHTML}
+${conclusaoHTML}
+<p style="font-size:9pt;color:#888;margin-top:20px;">Este documento foi elaborado com apoio do motor de análise assistida por IA do HCJ-OS e encontra-se pendente de validação técnica final antes de emissão oficial ao cliente.</p>
+<table class="sig-grid"><tr>
+<td><strong>${currentUser?.name||'Auditor HCJ'}</strong><br>${currentUser?.role||'Consultor Técnico'} — HCJ Global Solutions</td>
+<td><strong>${client}</strong><br>Aceite pelo Cliente (nome, cargo, data)</td>
+</tr></table>
 <div class="footer">
-Relatório gerado pelo sistema HCJ-OS v3.0 · Groq AI · ${data}<br>
+Relatório gerado pelo sistema HCJ-OS v3.0 · ${data}<br>
 HCJ Global Solutions — Moatize, Tete, Moçambique<br>
 Documento CONFIDENCIAL — uso restrito ao cliente indicado
 </div></body></html>`;
@@ -2738,9 +2839,21 @@ function removeUser(idx){
 function renderCases(){
   const el=document.getElementById('casos-table-wrap');
   if(!cases.length){el.innerHTML='<p style="color:var(--text3);font-size:12px;">Nenhum caso registado.</p>';return;}
-  el.innerHTML=`<div class="table-wrap"><table><thead><tr><th>ID</th><th>Cliente</th><th>Serviço</th><th>Sector</th><th>Risco HSE</th><th>Prioridade</th><th>Técnico</th><th>Data</th></tr></thead><tbody>
-  ${cases.map(c=>`<tr><td class="case-id">${c.id}</td><td>${c.cliente}</td><td>${c.servico}</td><td>${c.sector}</td><td style="color:${riskColor(c.risco_hse)};font-weight:700">${c.risco_hse||'—'}</td><td style="color:${riskColor(c.prioridade)};font-weight:700">${c.prioridade||'—'}</td><td style="color:var(--text3);font-size:11px">${c.tecnico||'—'}</td><td style="color:var(--text3);font-size:10px;font-family:'IBM Plex Mono',monospace">${c.data}</td></tr>`).join('')}
+  const showDelete=canManage();
+  el.innerHTML=`<div class="table-wrap"><table><thead><tr><th>ID</th><th>Cliente</th><th>Serviço</th><th>Sector</th><th>Risco HSE</th><th>Prioridade</th><th>Técnico</th><th>Data</th>${showDelete?'<th></th>':''}</tr></thead><tbody>
+  ${cases.map((c,i)=>`<tr><td class="case-id">${c.id}</td><td>${c.cliente}</td><td>${c.servico}</td><td>${c.sector}</td><td style="color:${riskColor(c.risco_hse)};font-weight:700">${c.risco_hse||'—'}</td><td style="color:${riskColor(c.prioridade)};font-weight:700">${c.prioridade||'—'}</td><td style="color:var(--text3);font-size:11px">${c.tecnico||'—'}</td><td style="color:var(--text3);font-size:10px;font-family:'IBM Plex Mono',monospace">${c.data}</td>${showDelete?`<td><button class="btn btn-ghost" style="padding:2px 8px;font-size:10px;color:var(--red)" onclick="deleteCase(${i})">✕ Apagar</button></td>`:''}</tr>`).join('')}
   </tbody></table></div>`;
+}
+function deleteCase(idx){
+  const c=cases[idx];
+  if(!c) return;
+  if(!confirm(`Apagar permanentemente o caso ${c.id} (${c.cliente})?\n\nEsta ação não pode ser desfeita.`)) return;
+  cases.splice(idx,1);
+  saveAll();
+  logAudit('Caso apagado',`${c.id} — ${c.cliente}`);
+  renderCases();
+  updateAll();
+  showToast('✓ Caso apagado.','green');
 }
 function updateTopbarActions(){
   const isViewer = !canManage();
@@ -2780,7 +2893,9 @@ Analisa com rigor técnico. Responde APENAS em JSON válido sem markdown:
 
 Cliente: ${cliente} | Sector: ${sector} | Serviço: ${servico} | Local: ${local||'Moçambique'} | Descrição: ${desc||'Auditoria geral'}${filesInfo}
 
-{"risco_hse":"BAIXO|MÉDIO|ALTO|CRÍTICO","risco_ambiental":"BAIXO|MÉDIO|ALTO|CRÍTICO","risco_esg":"BAIXO|MÉDIO|ALTO|CRÍTICO","prioridade":"NORMAL|ELEVADA|URGENTE|CRÍTICA","justificativa":"análise técnica detalhada e fundamentada, minimo 5-6 frases, cobrindo contexto, riscos e justificação da classificação","acoes":["acção específica 1","acção específica 2","acção específica 3","acção específica 4","acção específica 5"]}`;
+{"risco_hse":"BAIXO|MÉDIO|ALTO|CRÍTICO","risco_ambiental":"BAIXO|MÉDIO|ALTO|CRÍTICO","risco_esg":"BAIXO|MÉDIO|ALTO|CRÍTICO","prioridade":"NORMAL|ELEVADA|URGENTE|CRÍTICA","score_hsst":85,"score_ambiente":85,"score_qualidade":85,"score_esg":85,"justificativa":"análise técnica detalhada e fundamentada, minimo 5-6 frases, cobrindo contexto, riscos e justificação da classificação","acoes":["acção específica 1","acção específica 2","acção específica 3","acção específica 4","acção específica 5"]}
+
+Os quatro campos score_* devem ser números inteiros de 0 a 100 representando o nível de conformidade estimado em cada pilar (100=conformidade total, 0=não conformidade grave), coerentes com os níveis de risco classificados.`;
   try{
     const raw=await callGemini(prompt);
     const result=JSON.parse(raw.replace(/```json|```/g,'').trim());
@@ -2813,7 +2928,7 @@ Cliente: ${cliente} | Sector: ${sector} | Serviço: ${servico} | Local: ${local|
 function approveAndGoReport(){
   const d=lastTriageData;
   if(!d.cliente){alert('Execute a triagem primeiro.');return;}
-  const novoCaso={id:d.caseId||'#HCJ-001',cliente:d.cliente,servico:d.servico,sector:d.sector,risco_hse:d.risco_hse,prioridade:d.prioridade,tecnico:currentUser?.name||'—',data:new Date().toLocaleDateString('pt-PT'),prazo:computePrazo(d.prioridade||d.risco_hse)};
+  const novoCaso={id:d.caseId||'#HCJ-001',cliente:d.cliente,servico:d.servico,sector:d.sector,risco_hse:d.risco_hse,prioridade:d.prioridade,score_hsst:d.score_hsst,score_ambiente:d.score_ambiente,score_qualidade:d.score_qualidade,score_esg:d.score_esg,tecnico:currentUser?.name||'—',data:new Date().toLocaleDateString('pt-PT'),prazo:computePrazo(d.prioridade||d.risco_hse)};
   cases.push(novoCaso);
   logAudit('Caso criado',`${d.cliente||'—'} · ${d.sector||'—'} · Risco: ${d.risco_hse||'—'}`);
   saveAll();
@@ -2825,13 +2940,28 @@ function approveAndGoReport(){
 }
 
 // REPORT
+// Devolve os 4 scores de pilar (0-100) para um caso: da triagem desta sessão,
+// senão do caso gravado, senão null (caso importado sem triagem IA, ex: KoboToolbox).
+function getReportScores(caso){
+  const src = (lastTriageData && lastTriageData.caseId==='#'+caso) ? lastTriageData :
+              (cases.find(c=>c.id==='#'+caso || c.id===caso) || {});
+  return [
+    {label:'HSST',val:(typeof src.score_hsst==='number')?src.score_hsst:null,color:'#ffb300'},
+    {label:'Ambiente',val:(typeof src.score_ambiente==='number')?src.score_ambiente:null,color:'#00e676'},
+    {label:'Qualidade',val:(typeof src.score_qualidade==='number')?src.score_qualidade:null,color:'#4fc3f7'},
+    {label:'ESG',val:(typeof src.score_esg==='number')?src.score_esg:null,color:'#ce93d8'}
+  ];
+}
 async function generateReport(){
   const caso = document.getElementById('r-caso')?.value||'HCJ-001';
-  const cliente = document.getElementById('r-cliente')?.value||'Cliente';
-  const tipo = document.getElementById('r-tipo')?.value||'Auditoria HSE';
-  const sector = document.getElementById('r-sector')?.value||'Mineração';
+  const cliente = document.getElementById('r-cliente')?.value?.trim();
+  const tipo = document.getElementById('r-tipo')?.value;
+  const sector = document.getElementById('r-sector')?.value;
   const obs = document.getElementById('r-obs')?.value||'';
-  const norma = tipo.includes('45001')?'ISO 45001:2018':tipo.includes('14001')?'ISO 14001:2015':tipo.includes('9001')?'ISO 9001:2015':'ISO 45001:2018';
+  if(!cliente){alert('Indica o nome do cliente antes de gerar o relatório.');return;}
+  if(!tipo){alert('Escolhe o tipo de relatório antes de continuar.');return;}
+  if(!sector){alert('Escolhe o sector antes de continuar.');return;}
+  const norma = tipo;
   const btn = document.getElementById('btn-report');
   if(!obs.trim()){alert('Preenche as Observações de Campo antes de gerar.');return;}
   btn.disabled=true;
@@ -2853,7 +2983,7 @@ async function generateReport(){
           method:'POST',
           headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
           body:JSON.stringify({
-            model:'llama-3.3-70b-versatile',
+            model:'openai/gpt-oss-120b',
             messages:[
               {role:'system',content:'You are a senior HSE consultant at HCJ Global Solutions, Mozambique. Write ONLY in Portuguese (pt-MZ). Be direct, technical and detailed.'},
               {role:'user',content:baseCtx+'\n\n'+instruction}
@@ -2935,6 +3065,47 @@ async function generateReport(){
       <tr><td style="font-weight:600">Tecnico</td><td>${(currentUser&&currentUser.name)||'HCJ Auditor'}</td></tr>
       <tr><td style="font-weight:600">Elaborado por</td><td>HCJ Global Solutions — HCJ-OS v3.0</td></tr>
       </tbody></table>`;
+
+    // ── Scorecard Executivo: usa scores da triagem deste caso; se não existirem
+    // (ex: caso importado do Kobo sem triagem IA), recorre à média global dos pilares ──
+    const scEl=document.getElementById('rep-scorecard');
+    if(scEl){
+      const pilares=getReportScores(caso);
+      scEl.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
+        ${pilares.map(p=>{
+          const v=p.val;
+          return `<div style="background:var(--surface1);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;">
+            <div style="font-size:22px;font-weight:800;color:${v!==null?p.color:'var(--text3)'}">${v!==null?v+'%':'—'}</div>
+            <div style="font-size:10px;letter-spacing:0.5px;color:var(--text3);margin-top:4px;text-transform:uppercase;">${p.label}</div>
+          </div>`;
+        }).join('')}
+      </div>${pilares.every(p=>p.val===null)?'<p style="font-size:10px;color:var(--text3);margin-top:8px;">*Scores não disponíveis para este caso (ex: caso importado sem triagem IA). Ver classificações qualitativas na secção 06.</p>':''}`;
+    }
+
+    // ── Evidências Fotográficas: converte as imagens anexadas na Triagem/Relatório em miniaturas embutidas ──
+    const fotosEl=document.getElementById('rep-fotos');
+    if(fotosEl){
+      const imgFiles=[...uploadedFiles,...uploadedFilesRep].filter(f=>f.type&&f.type.startsWith('image/'));
+      if(!imgFiles.length){
+        fotosEl.innerHTML='<p style="font-size:11px;color:var(--text3);">Nenhuma evidência fotográfica anexada a este caso.</p>';
+        window.lastReportPhotos=[];
+      } else {
+        const readAsDataURL=file=>new Promise(res=>{
+          const r=new FileReader();
+          r.onload=()=>res({name:file.name,src:r.result});
+          r.onerror=()=>res(null);
+          r.readAsDataURL(file);
+        });
+        const results=(await Promise.all(imgFiles.map(readAsDataURL))).filter(Boolean);
+        window.lastReportPhotos=results;
+        fotosEl.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">
+          ${results.map(r=>`<div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+            <img src="${r.src}" style="width:100%;height:110px;object-fit:cover;display:block;"/>
+            <div style="font-size:9px;color:var(--text3);padding:4px 6px;word-break:break-all;">${r.name}</div>
+          </div>`).join('')}
+        </div>`;
+      }
+    }
 
     let resumo='',metodologia='',diagnostico='',causa_raiz='',conclusao='';
     let riscos=[],ncs=[],recs=[],plano=[];
@@ -3172,7 +3343,7 @@ function exportCasesCSV(){
 }
 function exportKPIsCSV(){
   const totalCasos = cases.length;
-  const riscosAltos = cases.filter(c=>['Alto','ALTO','Crítico','CRÍTICO'].includes(c.risco_hse||c.prioridade)).length;
+  const riscosAltos = cases.filter(isRiskFlagged).length;
   const clientesActivos = clients.filter(c=>!c.isDemo).length;
   const naoConf = cases.filter(c=>c.reportGenerated).length;
   const headers = ['data_exportacao','total_casos','riscos_altos','clientes_activos','relatorios_gerados'];
@@ -3495,11 +3666,15 @@ function showIntegrationInfo(type){
     whatsapp:{title:'WhatsApp Business — Configurar Notificações',content:`
       <div style="font-size:13px;color:var(--text2);line-height:1.8;">
         <div style="background:var(--green-dim);border:1px solid var(--green);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
-          <strong style="color:var(--green);">✓ CallMeBot — Gratuito e Funcional Já</strong><br>
-          Envia a mensagem abaixo para <strong style="color:var(--text);">+34 644 66 76 97</strong> no WhatsApp e recebe a tua API Key em segundos.
+          <strong style="color:var(--green);">✓ CallMeBot — Gratuito</strong><br>
+          Envia a mensagem abaixo para <strong style="color:var(--text);">+34 623 78 64 49</strong> no WhatsApp e recebe a tua API Key em segundos.
         </div>
         <div style="background:var(--surface2);border-radius:6px;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--green);margin-bottom:14px;border:1px solid var(--border2);">
           I allow callmebot to send me messages
+        </div>
+        <div style="background:#ffb30015;border:1px solid #ffb30040;border-radius:6px;padding:10px 12px;font-size:11px;color:var(--text2);margin-bottom:14px;">
+          ⚠ A Meta bane periodicamente o número do bot CallMeBot (é uma integração não-oficial), por isso o número muda de vez em quando sem aviso. Se não receberes resposta em 2 minutos: (1) confirma o número mais recente em <strong>callmebot.com/whatsapp</strong>, (2) tenta de novo passadas 24h. Se já tiveres uma API Key mas a perdeste, envia <strong>"Recover APIKey"</strong> ao mesmo contacto.<br><br>
+          <strong>Limitações do CallMeBot:</strong> só envia mensagens para o teu próprio número (não para clientes/equipa), e é um serviço voluntário sem SLA. Para notificações fiáveis à escala de empresa, a HCJ-OS já suporta também a API oficial WhatsApp Business Cloud (Meta) — ver ficheiro <code>whatsapp-proxy</code> no pacote de configuração.
         </div>
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
           <div>
@@ -3564,7 +3739,7 @@ async function syncSheetsNow(){
     casos: cases,
     kpis: {
       total_casos: cases.length,
-      riscos_altos: cases.filter(c=>['Alto','ALTO','Crítico','CRÍTICO'].includes(c.risco_hse||c.prioridade)).length,
+      riscos_altos: cases.filter(isRiskFlagged).length,
       clientes_activos: clients.filter(c=>!c.isDemo).length,
       relatorios_gerados: cases.filter(c=>c.reportGenerated).length,
       data_exportacao: new Date().toISOString()
@@ -3601,7 +3776,7 @@ async function groqTestKey(){
     const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:'Responde apenas: OK'}],max_tokens:5})
+      body:JSON.stringify({model:'openai/gpt-oss-120b',messages:[{role:'user',content:'Responde apenas: OK'}],max_tokens:5})
     });
     if(r.ok){
       if(res) res.innerHTML='<span style="color:var(--green);">✓ Groq AI conectado! Podes gerar relatórios.</span>';
@@ -3668,39 +3843,6 @@ function waNotifyReport(caseNum,client){
 }
 
 // ===== CASO DE DEMONSTRAÇÃO =====
-function createDemoCase(){
-  if(!confirm('Criar caso demo fictício?\n\nDados: Vulcan Resources / Mineração / Moatize\nPermite testar todo o fluxo do APP.')) return;
-  const demoCase={
-    id:'HCJ-DEMO-001',numero:'HCJ-025',cliente:'Vulcan Resources Moçambique',
-    sector:'Mineração',servico:'Auditoria HSE (ISO 45001)',local:'Mina de Moatize, Tete',
-    pilar:'HSST',prioridade:'Alta',status:'triagem',risco_hse:'Alto',risco_ambiental:'Médio',
-    data:new Date().toISOString().split('T')[0],tecnico:currentUser?.name||'HCJ Auditor',
-    descricao:'DEMO — Auditoria à frente de lavra activa. Não conformidades em EPI, sinalização de emergência e sistema de detecção de gases. Requer avaliação imediata — ISO 45001:2018.',
-    triagem_resultado:{nivel:'ALTO',score:78,hsst:'68%',ambiente:'82%',qualidade:'79%',esg:'71%',
-      nao_conformidades:['NC-001: Ausência de detector CO/CH4 — CRÍTICA (24h)','NC-002: EPI respiratórios expirados 34 unidades — CRÍTICA (48h)','NC-003: Sinalização de emergência ausente — CRÍTICA (72h)'],
-      recomendacoes:'Acção imediata nas 3 NCs críticas. Nova auditoria em 30 dias.'},
-    isDemo:true
-  };
-  const cases=JSON.parse(localStorage.getItem('hcj_cases')||'[]');
-  const filtered=cases.filter(c=>!c.isDemo);
-  filtered.unshift(demoCase);
-  localStorage.setItem('hcj_cases',JSON.stringify(filtered));
-  const clients=JSON.parse(localStorage.getItem('hcj_clients')||'[]');
-  if(!clients.some(c=>c.nome==='Vulcan Resources Moçambique')){
-    clients.push({id:'client-demo-1',nome:'Vulcan Resources Moçambique',sector:'Mineração',local:'Moatize, Tete',isDemo:true});
-    localStorage.setItem('hcj_clients',JSON.stringify(clients));
-  }
-  updateAll();
-  logAudit('Caso DEMO criado','HCJ-025 — Vulcan Resources (fictício)');
-  addNotif('Demo criado','Caso HCJ-025 (Vulcan Resources) criado. Vai a Gestão de Casos.','green');
-  showView('casos',null);
-  setTimeout(()=>{
-    const rc=document.getElementById('r-case'); const rcl=document.getElementById('r-client'); const rs=document.getElementById('r-sector');
-    if(rc) rc.value='HCJ-025'; if(rcl) rcl.value='Vulcan Resources Moçambique'; if(rs) rs.value='Mineração';
-  },500);
-  waNotifyRisk('HCJ-025','Vulcan Resources','ALTO — 3 NCs Críticas');
-  showToast('✓ Caso demo HCJ-025 criado! Vai a Gestão de Casos.','green');
-}
 function showToast(msg,type){
   const t=document.createElement('div');
   t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:700;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.4);max-width:90vw;text-align:center;';
