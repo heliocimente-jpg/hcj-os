@@ -358,8 +358,11 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
   .integrations-grid{grid-template-columns:1fr;}
 }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- Leaflet (mapa) removido daqui de propósito: era carregado de forma bloqueante
+     e, em rede instável, prendia o splash/login à espera de um CDN externo.
+     Agora carrega dinamicamente via loadLeafletIfNeeded(), só quando o utilizador
+     abre a vista de Localização — nunca no arranque da app. -->
+<meta name="leaflet-deferred" content="true">
 </head>
 <body>
 <script>
@@ -2615,7 +2618,50 @@ function fetchTileLayer(url, opts){
   return new _FetchTileLayerClass(url, opts);
 }
 
+// Carrega Leaflet (CSS+JS) dinamicamente via JavaScript, só quando é mesmo preciso.
+// Isto garante que o carregamento NUNCA bloqueia o parser da página (ao contrário de
+// <script src> normal no <head>), e nunca pode travar o splash/login. Tem timeout de
+// 10s: se a rede não responder, mostra aviso em vez de ficar preso para sempre.
+let _leafletLoadingPromise = null;
+function loadLeafletIfNeeded(){
+  if(typeof L !== 'undefined') return Promise.resolve();
+  if(_leafletLoadingPromise) return _leafletLoadingPromise;
+
+  _leafletLoadingPromise = new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Tempo esgotado ao carregar biblioteca de mapas (rede lenta/indisponível).'));
+    }, 10000);
+
+    if(!document.querySelector('link[data-leaflet-css]')){
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.setAttribute('data-leaflet-css','1');
+      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+      document.head.appendChild(link);
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    script.onload = () => { clearTimeout(timeoutId); resolve(); };
+    script.onerror = () => { clearTimeout(timeoutId); reject(new Error('Falha ao descarregar biblioteca de mapas.')); };
+    document.head.appendChild(script);
+  });
+
+  return _leafletLoadingPromise;
+}
+
 function initHcjMap(){
+  if(hcjMap)return; // já inicializado
+  setMapStatus('⏳ A carregar biblioteca de mapas...');
+  loadLeafletIfNeeded().then(() => {
+    _doInitHcjMap();
+  }).catch(err => {
+    setMapStatus('⚠ '+err.message+' Toca para tentar novamente.');
+    console.error(err);
+  });
+}
+
+function _doInitHcjMap(){
   if(hcjMap)return; // já inicializado
   if(typeof L==='undefined'){
     setMapStatus('⚠ Biblioteca de mapas não carregou. Recarrega a página.');
