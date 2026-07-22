@@ -363,6 +363,32 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
      Agora carrega dinamicamente via loadLeafletIfNeeded(), só quando o utilizador
      abre a vista de Localização — nunca no arranque da app. -->
 <meta name="leaflet-deferred" content="true">
+<script>
+// Wrapper seguro para hcjStorage. Em alguns contextos (modo anónimo com
+// definições de privacidade restritas, certas políticas de "Site Data",
+// proxies de compressão) o acesso a localStorage pode lançar excepção.
+// Como partes do arranque da app liam localStorage directamente e de forma
+// SÍNCRONA fora de qualquer função, essa excepção travava TODA a app antes
+// mesmo do login aparecer. Este wrapper garante que isso nunca mais acontece:
+// se localStorage falhar, usa memória (os dados não persistem entre sessões
+// nesse caso, mas a app sempre arranca).
+var hcjStorage = (function(){
+  try {
+    var testKey = '__hcj_test__';
+    window.hcjStorage.setItem(testKey, '1');
+    window.hcjStorage.removeItem(testKey);
+    return window.localStorage;
+  } catch(e) {
+    console.warn('localStorage indisponível, a usar armazenamento em memória:', e);
+    var mem = {};
+    return {
+      getItem: function(k){ return Object.prototype.hasOwnProperty.call(mem,k) ? mem[k] : null; },
+      setItem: function(k,v){ mem[k] = String(v); },
+      removeItem: function(k){ delete mem[k]; }
+    };
+  }
+})();
+</script>
 </head>
 <body>
 <script>
@@ -746,12 +772,12 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
           <div class="form-group">
             <label>Token API KoboToolbox</label>
-            <input type="password" id="kobo-token" placeholder="Token da tua conta KoboToolbox" oninput="localStorage.setItem('kobo_token',this.value)"/>
+            <input type="password" id="kobo-token" placeholder="Token da tua conta KoboToolbox" oninput="hcjStorage.setItem('kobo_token',this.value)"/>
             <div style="font-size:10px;color:var(--text3);margin-top:4px;">Vai a kf.kobotoolbox.org → Account → Security → API Key</div>
           </div>
           <div class="form-group">
             <label>UID do Formulário</label>
-            <input type="text" id="kobo-uid" placeholder="ex: aXXXXXXXXXXXXXX" oninput="localStorage.setItem('kobo_uid',this.value)"/>
+            <input type="text" id="kobo-uid" placeholder="ex: aXXXXXXXXXXXXXX" oninput="hcjStorage.setItem('kobo_uid',this.value)"/>
             <div style="font-size:10px;color:var(--text3);margin-top:4px;">Vai ao formulário → Settings → ID do formulário</div>
           </div>
         </div>
@@ -843,17 +869,17 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
               <div class="form-group"><label>Chave API Groq (Motor IA)</label>
 <input type="password" id="groq-key-input" placeholder="gsk_..." 
   style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;margin-top:4px;box-sizing:border-box;"
-  oninput="localStorage.setItem('groq_api_key',this.value)"/>
+  oninput="hcjStorage.setItem('groq_api_key',this.value)"/>
 <div style="font-size:10px;color:var(--text3);margin-top:4px;">Gratuito: <strong>console.groq.com</strong> → API Keys → Create Key → copiar aqui</div>
 <button onclick="groqTestKey()" style="margin-top:6px;background:var(--green);color:#000;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;">🔗 Testar Ligação</button>
 <div id="groq-test-result" style="font-size:11px;margin-top:6px;min-height:16px;"></div></div>
               <div class="form-group"><label>Webhook Google Sheets (sincronização Power BI)</label>
 <input type="text" id="sheets-webhook-input" placeholder="https://script.google.com/macros/s/.../exec"
   style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;margin-top:4px;box-sizing:border-box;"
-  oninput="localStorage.setItem('sheets_webhook_url',this.value)"/>
+  oninput="hcjStorage.setItem('sheets_webhook_url',this.value)"/>
 <div style="font-size:10px;color:var(--text3);margin-top:4px;">Cola aqui o URL do Apps Script Web App (ver guia de configuração). Casos e KPIs serão enviados automaticamente para o Google Sheets.</div>
 <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--text2);">
-  <input type="checkbox" id="sheets-autosync" onchange="localStorage.setItem('sheets_autosync', this.checked?'1':'0')"/> Sincronizar automaticamente ao criar/actualizar caso
+  <input type="checkbox" id="sheets-autosync" onchange="hcjStorage.setItem('sheets_autosync', this.checked?'1':'0')"/> Sincronizar automaticamente ao criar/actualizar caso
 </label>
 <button onclick="syncSheetsNow()" style="margin-top:6px;background:var(--blue);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;">🔄 Sincronizar Agora</button>
 <div id="sheets-sync-result" style="font-size:11px;margin-top:6px;min-height:16px;"></div></div>
@@ -988,12 +1014,12 @@ const GROQ_URL='https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL='llama-3.3-70b-versatile';
 
 // STATE
-let appUsers=JSON.parse(localStorage.getItem('hcj_users')||'[]');
-let clients=JSON.parse(localStorage.getItem('hcj_clients')||'[]');
-let cases=JSON.parse(localStorage.getItem('hcj_cases')||'[]');
-let storageFiles=JSON.parse(localStorage.getItem('hcj_storage')||'[]');
-let auditLog=JSON.parse(localStorage.getItem('hcj_audit')||'[]');
-let notifications=JSON.parse(localStorage.getItem('hcj_notifs')||JSON.stringify([
+let appUsers=JSON.parse(hcjStorage.getItem('hcj_users')||'[]');
+let clients=JSON.parse(hcjStorage.getItem('hcj_clients')||'[]');
+let cases=JSON.parse(hcjStorage.getItem('hcj_cases')||'[]');
+let storageFiles=JSON.parse(hcjStorage.getItem('hcj_storage')||'[]');
+let auditLog=JSON.parse(hcjStorage.getItem('hcj_audit')||'[]');
+let notifications=JSON.parse(hcjStorage.getItem('hcj_notifs')||JSON.stringify([
   {id:1,title:'Bem-vindo ao HCJ-OS v3',msg:'Sistema iniciado com sucesso. Todas as funcionalidades activas.',time:'Agora',type:'green',read:false},
   {id:2,title:'Groq AI pronto',msg:'Motor de inteligência artificial activo e pronto para análise.',time:'Agora',type:'green',read:false},
   {id:3,title:'Actualização disponível',msg:'Nova versão do sistema com melhorias de performance.',time:'Hoje',type:'blue',read:false}
@@ -1003,7 +1029,7 @@ let uploadedFiles=[];
 let uploadedFilesRep=[];
 let lastTriageData={};
 let editClientIdx=-1;
-let mapLocations=JSON.parse(localStorage.getItem('hcj_locations')||'[]');
+let mapLocations=JSON.parse(hcjStorage.getItem('hcj_locations')||'[]');
 let currentMapLayer='satellite';
 
 // ===== THEME SYSTEM =====
@@ -1018,19 +1044,19 @@ function applyTheme(mode){
   if(btn) btn.textContent=icons[mode]||'🌙';
 }
 function setTheme(mode){
-  localStorage.setItem('hcj_theme', mode);
+  hcjStorage.setItem('hcj_theme', mode);
   applyTheme(mode);
 }
 function cycleTheme(){
   const order=['dark','light','auto'];
-  const current=localStorage.getItem('hcj_theme')||'dark';
+  const current=hcjStorage.getItem('hcj_theme')||'dark';
   const next=order[(order.indexOf(current)+1)%order.length];
   setTheme(next);
   const labels={dark:'Tema Escuro',light:'Tema Claro',auto:'Tema Automático'};
   addNotif(labels[next], 'Aparência do sistema actualizada.', 'blue');
 }
 function initTheme(){
-  const saved = localStorage.getItem('hcj_theme') || 'dark';
+  const saved = hcjStorage.getItem('hcj_theme') || 'dark';
   applyTheme(saved);
   if(saved==='auto' && window.matchMedia){
     window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', ()=>applyTheme('auto'));
@@ -1044,7 +1070,7 @@ function initTheme(){
 // do site (cache/modo anónimo/dispositivo diferente). Por isso a sessão
 // activa também é guardada, para não pedir login a cada refresh.
 function restoreSession(){
-  const savedSession = localStorage.getItem('hcj_session');
+  const savedSession = hcjStorage.getItem('hcj_session');
   if(savedSession){
     const u = appUsers.find(x=>x.name===savedSession);
     if(u) return u;
@@ -1052,8 +1078,8 @@ function restoreSession(){
   return null;
 }
 function persistSession(user){
-  if(user) localStorage.setItem('hcj_session', user.name);
-  else localStorage.removeItem('hcj_session');
+  if(user) hcjStorage.setItem('hcj_session', user.name);
+  else hcjStorage.removeItem('hcj_session');
 }
 
 // Rede de segurança: força o splash a desaparecer ao fim de 6s, aconteça o que
@@ -1110,7 +1136,7 @@ function migrateUserPermissions(){
       u.permission='viewer'; // por defeito = visualizador (mais seguro)
     }
   });
-  localStorage.setItem('hcj_users', JSON.stringify(appUsers));
+  hcjStorage.setItem('hcj_users', JSON.stringify(appUsers));
 }
 
 // AUTH
@@ -1332,13 +1358,13 @@ function toggleSidebar(){
 
 // DATA
 function saveAll(){
-  localStorage.setItem('hcj_users',JSON.stringify(appUsers));
-  localStorage.setItem('hcj_clients',JSON.stringify(clients));
-  localStorage.setItem('hcj_cases',JSON.stringify(cases));
-  localStorage.setItem('hcj_storage',JSON.stringify(storageFiles));
-  localStorage.setItem('hcj_notifs',JSON.stringify(notifications));
-  localStorage.setItem('hcj_locations',JSON.stringify(mapLocations));
-  localStorage.setItem('hcj_audit',JSON.stringify(auditLog.slice(-100))); // guarda últimas 100 acções
+  hcjStorage.setItem('hcj_users',JSON.stringify(appUsers));
+  hcjStorage.setItem('hcj_clients',JSON.stringify(clients));
+  hcjStorage.setItem('hcj_cases',JSON.stringify(cases));
+  hcjStorage.setItem('hcj_storage',JSON.stringify(storageFiles));
+  hcjStorage.setItem('hcj_notifs',JSON.stringify(notifications));
+  hcjStorage.setItem('hcj_locations',JSON.stringify(mapLocations));
+  hcjStorage.setItem('hcj_audit',JSON.stringify(auditLog.slice(-100))); // guarda últimas 100 acções
   updateAll();
 }
 
@@ -1349,7 +1375,7 @@ function logAudit(action, detail){
     user: currentUser?.name||'Sistema',
     action, detail
   });
-  localStorage.setItem('hcj_audit', JSON.stringify(auditLog.slice(-100)));
+  hcjStorage.setItem('hcj_audit', JSON.stringify(auditLog.slice(-100)));
 }
 
 // ── MOTOR DE NOTIFICAÇÕES INTELIGENTES (prazo/risco) ──
@@ -1389,7 +1415,7 @@ function checkCaseDeadlines(){
     }
   });
   if(changed){
-    localStorage.setItem('hcj_cases',JSON.stringify(cases));
+    hcjStorage.setItem('hcj_cases',JSON.stringify(cases));
   }
 }
 
@@ -1526,16 +1552,16 @@ function updateAll(){
 // Verifica condições e gera notificações automáticas
 function checkSmartNotifications(){
   const now=Date.now();
-  const lastCheck=parseInt(localStorage.getItem('hcj_lastcheck')||'0');
+  const lastCheck=parseInt(hcjStorage.getItem('hcj_lastcheck')||'0');
   if(now-lastCheck<300000) return; // não verifica mais de 1x a cada 5 minutos
-  localStorage.setItem('hcj_lastcheck',now);
+  hcjStorage.setItem('hcj_lastcheck',now);
 
   const riscoCritico=cases.filter(c=>['Crítico','CRÍTICO'].includes(c.prioridade||c.risco_hse));
   if(riscoCritico.length>0){
-    const lastAlert=localStorage.getItem('hcj_alert_critico');
+    const lastAlert=hcjStorage.getItem('hcj_alert_critico');
     if(lastAlert!==String(riscoCritico.length)){
       addNotif(`⚠ ${riscoCritico.length} caso(s) com risco CRÍTICO`,`Atenção imediata necessária: ${riscoCritico.map(c=>c.cliente).join(', ')}`,'red');
-      localStorage.setItem('hcj_alert_critico',String(riscoCritico.length));
+      hcjStorage.setItem('hcj_alert_critico',String(riscoCritico.length));
     }
   }
   const semCliente=cases.filter(c=>!c.cliente||c.cliente.trim()==='');
@@ -1543,7 +1569,7 @@ function checkSmartNotifications(){
 }
 
 function clearAllData(){
-  localStorage.clear();
+  hcjStorage.clear();
   clients=[];cases=[];storageFiles=[];notifications=[];appUsers=[];auditLog=[];
   saveAll();
   alert('Dados eliminados.');
@@ -1753,8 +1779,8 @@ Documento CONFIDENCIAL — uso restrito ao cliente indicado
 
 // ===== KOBO TOOLBOX API INTEGRATION =====
 function koboLoadSaved(){
-  const token=localStorage.getItem('kobo_token')||'';
-  const uid=localStorage.getItem('kobo_uid')||'';
+  const token=hcjStorage.getItem('kobo_token')||'';
+  const uid=hcjStorage.getItem('kobo_uid')||'';
   if(token) document.getElementById('kobo-token').value=token;
   if(uid) document.getElementById('kobo-uid').value=uid;
 }
@@ -1827,7 +1853,7 @@ async function koboImportData(){
       }
     });
     saveAll();
-    if(imported>0 && localStorage.getItem('sheets_autosync')==='1'){
+    if(imported>0 && hcjStorage.getItem('sheets_autosync')==='1'){
       cases.slice(-imported).forEach(c=>autoSyncCaseToSheets(c));
     }
     result.innerHTML=`<span style="color:var(--green)">✅ ${imported} novo(s) registo(s) importado(s) de ${submissions.length} submissão(ões) totais.</span>`;
@@ -1956,7 +1982,7 @@ function importBackup(file){
 
 // GEMINI
 async function callGemini(prompt){
-  const key=localStorage.getItem('groq_api_key')||'';
+  const key=hcjStorage.getItem('groq_api_key')||'';
   if(!key){
     throw new Error('CHAVE_GROQ_AUSENTE');
   }
@@ -2201,7 +2227,7 @@ async function generateReport(){
   const oldErr = document.querySelector('.report-error-box');
   if(oldErr) oldErr.remove();
   try{
-    const key = localStorage.getItem('groq_api_key')||'';
+    const key = hcjStorage.getItem('groq_api_key')||'';
     if(!key||!key.startsWith('gsk_')) throw new Error('CHAVE_GROQ_AUSENTE');
 
     // ABORDAGEM: 3 pedidos separados simples em vez de 1 JSON gigante
@@ -2917,11 +2943,11 @@ function showIntegrationInfo(type){
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
           <div>
             <label style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;">O teu número WhatsApp (com código país)</label>
-            <input id="wa-phone" type="text" placeholder="ex: +258841234567" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;margin-top:4px;outline:none;" oninput="localStorage.setItem('wa_phone',this.value)"/>
+            <input id="wa-phone" type="text" placeholder="ex: +258841234567" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;margin-top:4px;outline:none;" oninput="hcjStorage.setItem('wa_phone',this.value)"/>
           </div>
           <div>
             <label style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;">API Key recebida do CallMeBot</label>
-            <input id="wa-apikey" type="text" placeholder="ex: 1234567" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;margin-top:4px;outline:none;" oninput="localStorage.setItem('wa_apikey',this.value)"/>
+            <input id="wa-apikey" type="text" placeholder="ex: 1234567" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;margin-top:4px;outline:none;" oninput="hcjStorage.setItem('wa_apikey',this.value)"/>
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -2944,15 +2970,15 @@ function showIntegrationInfo(type){
 
 // ===== GOOGLE SHEETS SYNC (Power BI via Apps Script Web App) =====
 function sheetsLoadConfig(){
-  const url=localStorage.getItem('sheets_webhook_url')||'';
-  const auto=localStorage.getItem('sheets_autosync')==='1';
+  const url=hcjStorage.getItem('sheets_webhook_url')||'';
+  const auto=hcjStorage.getItem('sheets_autosync')==='1';
   const urlEl=document.getElementById('sheets-webhook-input');
   const autoEl=document.getElementById('sheets-autosync');
   if(urlEl) urlEl.value=url;
   if(autoEl) autoEl.checked=auto;
 }
 async function pushToSheets(payload){
-  const url=localStorage.getItem('sheets_webhook_url');
+  const url=hcjStorage.getItem('sheets_webhook_url');
   if(!url) return {ok:false, error:'CHAVE_SHEETS_AUSENTE'};
   try{
     await fetch(url, {
@@ -2968,9 +2994,9 @@ async function pushToSheets(payload){
 }
 async function syncSheetsNow(){
   const res=document.getElementById('sheets-sync-result');
-  const url=localStorage.getItem('sheets_webhook_url')||document.getElementById('sheets-webhook-input')?.value;
+  const url=hcjStorage.getItem('sheets_webhook_url')||document.getElementById('sheets-webhook-input')?.value;
   if(!url){ if(res) res.innerHTML='<span style="color:var(--red);">⚠ Cola primeiro o URL do Web App.</span>'; return; }
-  localStorage.setItem('sheets_webhook_url', url);
+  hcjStorage.setItem('sheets_webhook_url', url);
   if(res) res.innerHTML='<span style="color:var(--text3);">A sincronizar...</span>';
   const result = await pushToSheets({
     tipo:'sync_completo',
@@ -2990,25 +3016,25 @@ async function syncSheetsNow(){
 }
 // Chamado automaticamente ao criar/actualizar um caso, se o autosync estiver activo
 function autoSyncCaseToSheets(caso){
-  if(localStorage.getItem('sheets_autosync')!=='1') return;
-  if(!localStorage.getItem('sheets_webhook_url')) return;
+  if(hcjStorage.getItem('sheets_autosync')!=='1') return;
+  if(!hcjStorage.getItem('sheets_webhook_url')) return;
   pushToSheets({ tipo:'caso_novo', caso });
 }
 
 // ===== GROQ AI =====
 function groqLoadKey(){
-  const k=localStorage.getItem('groq_api_key')||'';
+  const k=hcjStorage.getItem('groq_api_key')||'';
   const el=document.getElementById('groq-key-input');
   if(el&&k) el.value=k;
 }
 async function groqTestKey(){
-  const key=localStorage.getItem('groq_api_key')||document.getElementById('groq-key-input')?.value||'';
+  const key=hcjStorage.getItem('groq_api_key')||document.getElementById('groq-key-input')?.value||'';
   const res=document.getElementById('groq-test-result');
   if(!key.startsWith('gsk_')){
     if(res) res.innerHTML='<span style="color:var(--red);">⚠ Chave inválida. Deve começar por gsk_</span>';
     return;
   }
-  localStorage.setItem('groq_api_key',key);
+  hcjStorage.setItem('groq_api_key',key);
   if(res) res.innerHTML='<span style="color:var(--amber);">⏳ A testar...</span>';
   try{
     const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
@@ -3030,8 +3056,8 @@ async function groqTestKey(){
 
 // ===== WHATSAPP CALLMEBOT =====
 function waLoadSaved(){
-  const phone=localStorage.getItem('wa_phone')||'';
-  const apikey=localStorage.getItem('wa_apikey')||'';
+  const phone=hcjStorage.getItem('wa_phone')||'';
+  const apikey=hcjStorage.getItem('wa_apikey')||'';
   const pi=document.getElementById('wa-phone');
   const ki=document.getElementById('wa-apikey');
   if(pi&&phone) pi.value=phone;
@@ -3045,14 +3071,14 @@ function waSaveAndTest(){
     if(res) res.innerHTML='<span style="color:var(--red);">⚠ Preenche o número e a API Key primeiro.</span>';
     return;
   }
-  localStorage.setItem('wa_phone',phone);
-  localStorage.setItem('wa_apikey',apikey);
+  hcjStorage.setItem('wa_phone',phone);
+  hcjStorage.setItem('wa_apikey',apikey);
   if(res) res.innerHTML='<span style="color:var(--amber);">⏳ A testar...</span>';
   waSendAlert('HCJ-OS: Ligação WhatsApp configurada com sucesso! ✓');
 }
 async function waSendAlert(message){
-  const phone=localStorage.getItem('wa_phone');
-  const apikey=localStorage.getItem('wa_apikey');
+  const phone=hcjStorage.getItem('wa_phone');
+  const apikey=hcjStorage.getItem('wa_apikey');
   const res=document.getElementById('wa-result');
   if(!phone||!apikey){ console.warn('WhatsApp não configurado'); return; }
   const encoded=encodeURIComponent(message);
@@ -3070,12 +3096,12 @@ async function waSendAlert(message){
   img.src=url+'&_='+Date.now();
 }
 function waNotifyRisk(caseNum,client,risk){
-  const p=localStorage.getItem('wa_phone'); const k=localStorage.getItem('wa_apikey');
+  const p=hcjStorage.getItem('wa_phone'); const k=hcjStorage.getItem('wa_apikey');
   if(!p||!k) return;
   waSendAlert('🚨 HCJ-OS ALERTA\nCaso: '+caseNum+'\nCliente: '+client+'\nRisco: '+risk+'\nAcção imediata requerida.\nHCJ Global Solutions');
 }
 function waNotifyReport(caseNum,client){
-  const p=localStorage.getItem('wa_phone'); const k=localStorage.getItem('wa_apikey');
+  const p=hcjStorage.getItem('wa_phone'); const k=hcjStorage.getItem('wa_apikey');
   if(!p||!k) return;
   waSendAlert('📄 HCJ-OS RELATÓRIO\nCaso: '+caseNum+'\nCliente: '+client+'\nData: '+new Date().toLocaleDateString('pt-PT')+'\nHCJ Global Solutions');
 }
@@ -3094,14 +3120,14 @@ function createDemoCase(){
       recomendacoes:'Acção imediata nas 3 NCs críticas. Nova auditoria em 30 dias.'},
     isDemo:true
   };
-  const cases=JSON.parse(localStorage.getItem('hcj_cases')||'[]');
+  const cases=JSON.parse(hcjStorage.getItem('hcj_cases')||'[]');
   const filtered=cases.filter(c=>!c.isDemo);
   filtered.unshift(demoCase);
-  localStorage.setItem('hcj_cases',JSON.stringify(filtered));
-  const clients=JSON.parse(localStorage.getItem('hcj_clients')||'[]');
+  hcjStorage.setItem('hcj_cases',JSON.stringify(filtered));
+  const clients=JSON.parse(hcjStorage.getItem('hcj_clients')||'[]');
   if(!clients.some(c=>c.nome==='Vulcan Resources Moçambique')){
     clients.push({id:'client-demo-1',nome:'Vulcan Resources Moçambique',sector:'Mineração',local:'Moatize, Tete',isDemo:true});
-    localStorage.setItem('hcj_clients',JSON.stringify(clients));
+    hcjStorage.setItem('hcj_clients',JSON.stringify(clients));
   }
   updateAll();
   logAudit('Caso DEMO criado','HCJ-025 — Vulcan Resources (fictício)');
