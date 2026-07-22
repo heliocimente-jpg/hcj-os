@@ -375,8 +375,8 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
 var hcjStorage = (function(){
   try {
     var testKey = '__hcj_test__';
-    window.hcjStorage.setItem(testKey, '1');
-    window.hcjStorage.removeItem(testKey);
+    window.localStorage.setItem(testKey, '1');
+    window.localStorage.removeItem(testKey);
     return window.localStorage;
   } catch(e) {
     console.warn('localStorage indisponível, a usar armazenamento em memória:', e);
@@ -659,8 +659,8 @@ var hcjStorage = (function(){
         <div class="form-grid">
           <div class="form-group"><label>Número do Caso</label><input type="text" id="r-caso" placeholder="ex: HCJ-025"/></div>
           <div class="form-group"><label>Cliente</label><input type="text" id="r-cliente" placeholder="Nome do cliente"/></div>
-          <div class="form-group"><label>Tipo de Relatório</label><select id="r-tipo"><option value="hse">Auditoria HSE (ISO 45001)</option><option value="ambiental">Conformidade Ambiental (ISO 14001)</option><option value="qualidade">Qualidade (ISO 9001)</option><option value="esg">ESG / Sustentabilidade (GRI)</option></select></div>
-          <div class="form-group"><label>Sector</label><select id="r-sector"><option value="mineracao">Mineração</option><option value="oleogas">Óleo e Gás</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="infraestrutura">Infraestruturas</option><option value="industria">Indústria</option><option value="agricultura">Agricultura</option><option value="floresta">Floresta</option><option value="ambiente">Ambiente</option></select></div>
+          <div class="form-group"><label>Tipo de Relatório</label><select id="r-tipo"><option value="" disabled>Seleccionar tipo...</option><option value="hse">Auditoria HSE (ISO 45001)</option><option value="ambiental">Conformidade Ambiental (ISO 14001)</option><option value="qualidade">Qualidade (ISO 9001)</option><option value="esg">ESG / Sustentabilidade (GRI)</option></select></div>
+          <div class="form-group"><label>Sector</label><select id="r-sector"><option value="" disabled>Seleccionar sector...</option><option value="mineracao">Mineração</option><option value="oleogas">Óleo e Gás</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="infraestrutura">Infraestruturas</option><option value="industria">Indústria</option><option value="agricultura">Agricultura</option><option value="floresta">Floresta</option><option value="ambiente">Ambiente</option></select></div>
           <div class="form-group full"><label>Observações de Campo</label><textarea id="r-obs" placeholder="Notas de campo, dados de inspecção, não conformidades observadas..." style="min-height:120px;"></textarea></div>
         </div>
         <button class="btn btn-primary" id="btn-report" onclick="generateReport()">📄 Gerar Relatório Completo com IA</button>
@@ -1357,15 +1357,22 @@ function toggleSidebar(){
 }
 
 // DATA
+let _savingInProgress=false;
 function saveAll(){
-  hcjStorage.setItem('hcj_users',JSON.stringify(appUsers));
-  hcjStorage.setItem('hcj_clients',JSON.stringify(clients));
-  hcjStorage.setItem('hcj_cases',JSON.stringify(cases));
-  hcjStorage.setItem('hcj_storage',JSON.stringify(storageFiles));
-  hcjStorage.setItem('hcj_notifs',JSON.stringify(notifications));
-  hcjStorage.setItem('hcj_locations',JSON.stringify(mapLocations));
-  hcjStorage.setItem('hcj_audit',JSON.stringify(auditLog.slice(-100))); // guarda últimas 100 acções
-  updateAll();
+  if(_savingInProgress) return; // rede de segurança extra: nunca permite saveAll→...→saveAll
+  _savingInProgress=true;
+  try{
+    hcjStorage.setItem('hcj_users',JSON.stringify(appUsers));
+    hcjStorage.setItem('hcj_clients',JSON.stringify(clients));
+    hcjStorage.setItem('hcj_cases',JSON.stringify(cases));
+    hcjStorage.setItem('hcj_storage',JSON.stringify(storageFiles));
+    hcjStorage.setItem('hcj_notifs',JSON.stringify(notifications));
+    hcjStorage.setItem('hcj_locations',JSON.stringify(mapLocations));
+    hcjStorage.setItem('hcj_audit',JSON.stringify(auditLog.slice(-100))); // guarda últimas 100 acções
+    updateAll();
+  } finally {
+    _savingInProgress=false;
+  }
 }
 
 // Regista uma acção no log de auditoria
@@ -1398,20 +1405,22 @@ function checkCaseDeadlines(){
     const deadline=new Date(c.prazo);
     const overdue = now > deadline;
     if(overdue && !c.notifiedOverdue){
+      c.notifiedOverdue=true; changed=true; // define a flag ANTES de notificar (evita reentrância)
       addNotif('⏰ Prazo expirado', `Caso ${c.id} (${c.cliente}) ultrapassou o prazo de acção definido para o risco ${c.risco_hse||c.prioridade||'—'}.`, 'red');
       logAudit('Alerta de prazo expirado', `${c.id} · ${c.cliente}`);
-      c.notifiedOverdue=true; changed=true;
     } else if(!overdue && !c.notifiedSoon){
       const hoursLeft=(deadline-now)/3600000;
       if(hoursLeft<=6){
+        c.notifiedSoon=true; changed=true; // define a flag ANTES de notificar (evita reentrância)
         addNotif('⚠ Prazo a expirar em breve', `Caso ${c.id} (${c.cliente}) tem menos de 6h para o prazo de acção.`, 'amber');
-        c.notifiedSoon=true; changed=true;
       }
     }
     const riscoAlto=['Crítico','CRÍTICO','Alto','ALTO'].includes(c.risco_hse||c.prioridade);
     if(riscoAlto && !c.reportGenerated && !c.notifiedRiskPending){
+      c.notifiedRiskPending=true; changed=true; // define a flag ANTES de notificar — CORRIGE LOOP INFINITO:
+      // antes, addNotif()→saveAll()→updateAll()→checkCaseDeadlines() reentrava aqui
+      // com a flag ainda por definir, chamando addNotif outra vez, para sempre.
       addNotif('🔴 Risco alto sem relatório', `Caso ${c.id} (${c.cliente}) tem risco ${c.risco_hse||c.prioridade} e ainda não tem relatório técnico gerado.`, 'red');
-      c.notifiedRiskPending=true; changed=true;
     }
   });
   if(changed){
@@ -2207,6 +2216,13 @@ function approveAndGoReport(){
   document.getElementById('r-caso').value=d.caseId||'';
   document.getElementById('r-cliente').value=d.cliente||'';
   document.getElementById('r-obs').value=d.desc||'';
+  // Sincronizar Tipo/Sector com os dados reais da triagem (antes ficava sempre na
+  // 1ª opção da lista por defeito do browser, dando a ilusão de "pré-preenchido ao acaso").
+  const sectorMap={'mineração':'mineracao','mineracao':'mineracao','óleo e gás':'oleogas','oleo e gas':'oleogas','logística':'logistica','logistica':'logistica','construção':'construcao','construcao':'construcao','infraestrutura':'infraestrutura','infraestruturas':'infraestrutura','indústria':'industria','industria':'industria','agricultura':'agricultura','floresta':'floresta','ambiente':'ambiente'};
+  const sectorVal=sectorMap[(d.sector||'').toLowerCase().trim()];
+  const rSector=document.getElementById('r-sector');
+  if(sectorVal) rSector.value=sectorVal; else rSector.selectedIndex=0;
+  document.getElementById('r-tipo').value='hse'; // triagem é focada em HSST — valor intencional, não acaso da 1ª opção
   showView('relatorio',document.querySelectorAll('.nav-item')[5]);
 }
 
