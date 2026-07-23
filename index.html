@@ -1024,6 +1024,13 @@ let notifications=JSON.parse(hcjStorage.getItem('hcj_notifs')||JSON.stringify([
   {id:2,title:'Groq AI pronto',msg:'Motor de inteligência artificial activo e pronto para análise.',time:'Agora',type:'green',read:false},
   {id:3,title:'Actualização disponível',msg:'Nova versão do sistema com melhorias de performance.',time:'Hoje',type:'blue',read:false}
 ]));
+// Migração de limpeza: corrige o histórico de notificações já acumulado por um bug
+// anterior (falta de deduplicação) que chegou a gerar milhares de notificações
+// repetidas. Mantém só as 100 mais recentes.
+if(notifications.length>100){
+  notifications=notifications.slice(0,100);
+  hcjStorage.setItem('hcj_notifs',JSON.stringify(notifications));
+}
 let currentUser=null;
 let uploadedFiles=[];
 let uploadedFilesRep=[];
@@ -1574,7 +1581,15 @@ function checkSmartNotifications(){
     }
   }
   const semCliente=cases.filter(c=>!c.cliente||c.cliente.trim()==='');
-  if(semCliente.length>0) addNotif('Casos sem cliente associado',`${semCliente.length} caso(s) sem cliente definido.`,'amber');
+  if(semCliente.length>0){
+    const lastSemCliente=hcjStorage.getItem('hcj_alert_semcliente');
+    if(lastSemCliente!==String(semCliente.length)){
+      addNotif('Casos sem cliente associado',`${semCliente.length} caso(s) sem cliente definido.`,'amber');
+      hcjStorage.setItem('hcj_alert_semcliente',String(semCliente.length));
+    }
+  } else {
+    hcjStorage.removeItem('hcj_alert_semcliente');
+  }
 }
 
 function clearAllData(){
@@ -2228,10 +2243,12 @@ function approveAndGoReport(){
 
 // REPORT
 async function generateReport(){
-  const caso = document.getElementById('r-caso')?.value||'HCJ-001';
+  const caso = (document.getElementById('r-caso')?.value||'HCJ-001').replace(/^#+/,''); // remove # duplicado (o caseId já vem com # da triagem)
   const cliente = document.getElementById('r-cliente')?.value||'Cliente';
   const tipo = document.getElementById('r-tipo')?.value||'Auditoria HSE';
-  const sector = document.getElementById('r-sector')?.value||'Mineração';
+  const sectorSlug = document.getElementById('r-sector')?.value||'mineracao';
+  const SECTOR_LABELS={mineracao:'Mineração',oleogas:'Óleo e Gás',logistica:'Logística',construcao:'Construção',infraestrutura:'Infraestruturas',industria:'Indústria',agricultura:'Agricultura',floresta:'Floresta',ambiente:'Ambiente'};
+  const sector = SECTOR_LABELS[sectorSlug] || sectorSlug; // rótulo amigável em vez do valor interno do <select>
   const obs = document.getElementById('r-obs')?.value||'';
   const norma = tipo.includes('45001')?'ISO 45001:2018':tipo.includes('14001')?'ISO 14001:2015':tipo.includes('9001')?'ISO 9001:2015':'ISO 45001:2018';
   const btn = document.getElementById('btn-report');
@@ -2292,27 +2309,27 @@ async function generateReport(){
     function cleanLine(line){
       return line.trim().replace(/^[#*_\-\s]+/,'').replace(/\*\*/g,'').trim();
     }
-    function extractSection(text, marker){
+    function extractSection(text, marker, allMarkers){
       if(!text) return '';
-      const lines = text.split('\n');
-      let inSection = false;
-      const result = [];
-      const markerUp = marker.toUpperCase();
-      for(const line of lines){
-        const cl = cleanLine(line);
-        const clUp = cl.toUpperCase();
-        if(clUp.startsWith(markerUp+':')){
-          inSection = true;
-          const idx = cl.indexOf(':');
-          const rest = idx>=0 ? cl.substring(idx+1).trim() : '';
-          if(rest) result.push(rest);
-        } else if(inSection && /^[A-Z_]{3,}\s*:/.test(clUp)){
-          break;
-        } else if(inSection && cl){
-          result.push(cl);
+      // Remove markdown (**negrito**, __negrito__, ##título) que a IA por vezes usa
+      // em vez do formato "MARCADOR:" pedido — isto impedia o reconhecimento do marcador.
+      const clean = text.replace(/\*\*/g,'').replace(/__/g,'').replace(/^#+\s*/gm,'');
+      const markers = (allMarkers && allMarkers.length ? allMarkers : [marker]);
+      const escaped = markers.map(m=>m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+      // IMPORTANTE: sensível a maiúsculas (sem flag 'i'). Os marcadores pedidos à IA são
+      // sempre em MAIÚSCULAS; palavras iguais em minúsculas dentro do texto normal
+      // (ex: "a metodologia utilizada...") não devem ser confundidas com um cabeçalho.
+      const pattern = new RegExp('\\b('+escaped.join('|')+')\\s*:?\\s*','g');
+      const matches = [...clean.matchAll(pattern)];
+      if(!matches.length) return '';
+      for(let i=0;i<matches.length;i++){
+        if(matches[i][1]===marker){
+          const start = matches[i].index + matches[i][0].length;
+          const end = (i+1<matches.length) ? matches[i+1].index : clean.length;
+          return clean.slice(start,end).trim();
         }
       }
-      return result.join(' ');
+      return '';
     }
     function extractPipeLines(text, prefix){
       if(!text) return [];
@@ -2361,14 +2378,14 @@ CAUSA_RAIZ:
 [analise causa raiz detalhada, minimo 280 palavras, aplicando metodologia dos 5 Porques as nao conformidades identificadas, distinguindo causas sistemicas de causas isoladas]`,
         2800
       );
-      resumo = extractSection(texto1, 'RESUMO');
-      metodologia = extractSection(texto1, 'METODOLOGIA');
-      diagnostico = extractSection(texto1, 'DIAGNOSTICO');
-      causa_raiz = extractSection(texto1, 'CAUSA_RAIZ');
-      const resumoEl=document.getElementById('rep-resumo'); if(resumoEl) resumoEl.textContent=resumo||texto1;
-      const metEl=document.getElementById('rep-metodologia'); if(metEl) metEl.textContent=metodologia||('Ver texto completo abaixo (formato não reconhecido): '+texto1.slice(0,600));
-      const diagEl=document.getElementById('rep-diag'); if(diagEl) diagEl.textContent=diagnostico||('Ver texto completo abaixo (formato não reconhecido): '+texto1.slice(0,600));
-      const causaElEarly=document.getElementById('rep-causa'); if(causaElEarly) causaElEarly.textContent=causa_raiz||('Ver texto completo abaixo (formato não reconhecido): '+texto1.slice(0,600));
+      resumo = extractSection(texto1, 'RESUMO', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ']);
+      metodologia = extractSection(texto1, 'METODOLOGIA', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ']);
+      diagnostico = extractSection(texto1, 'DIAGNOSTICO', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ']);
+      causa_raiz = extractSection(texto1, 'CAUSA_RAIZ', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ']);
+      const resumoEl=document.getElementById('rep-resumo'); if(resumoEl) resumoEl.textContent=resumo||texto1.replace(/\*\*/g,'');
+      const metEl=document.getElementById('rep-metodologia'); if(metEl) metEl.textContent=metodologia||'Não foi possível extrair esta secção separadamente da resposta da IA — ver Resumo Executivo (secção 02) para o conteúdo completo da análise.';
+      const diagEl=document.getElementById('rep-diag'); if(diagEl) diagEl.textContent=diagnostico||'Não foi possível extrair esta secção separadamente da resposta da IA — ver Resumo Executivo (secção 02) para o conteúdo completo da análise.';
+      const causaElEarly=document.getElementById('rep-causa'); if(causaElEarly) causaElEarly.textContent=causa_raiz||'Não foi possível extrair esta secção separadamente da resposta da IA — ver Resumo Executivo (secção 02) para o conteúdo completo da análise.';
     }catch(err){
       partialError=err;
       const resumoEl=document.getElementById('rep-resumo'); if(resumoEl) resumoEl.textContent='⚠ Falha ao gerar esta secção: '+err.message;
@@ -2920,6 +2937,7 @@ function renderLocations(){
 // NOTIFICATIONS
 function addNotif(title,msg,type){
   notifications.unshift({id:Date.now(),title,msg,time:new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}),type,read:false});
+  if(notifications.length>100) notifications.length=100; // limite de segurança — nunca mais deixa crescer sem controlo
   saveAll();
 }
 function renderNotifications(){
