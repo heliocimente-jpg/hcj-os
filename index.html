@@ -659,8 +659,8 @@ var hcjStorage = (function(){
         <div class="form-grid">
           <div class="form-group"><label>Número do Caso</label><input type="text" id="r-caso" placeholder="ex: HCJ-025"/></div>
           <div class="form-group"><label>Cliente</label><input type="text" id="r-cliente" placeholder="Nome do cliente"/></div>
-          <div class="form-group"><label>Tipo de Relatório</label><select id="r-tipo"><option value="" disabled>Seleccionar tipo...</option><option value="hse">Auditoria HSE (ISO 45001)</option><option value="ambiental">Conformidade Ambiental (ISO 14001)</option><option value="qualidade">Qualidade (ISO 9001)</option><option value="esg">ESG / Sustentabilidade (GRI)</option></select></div>
-          <div class="form-group"><label>Sector</label><select id="r-sector"><option value="" disabled>Seleccionar sector...</option><option value="mineracao">Mineração</option><option value="oleogas">Óleo e Gás</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="infraestrutura">Infraestruturas</option><option value="industria">Indústria</option><option value="agricultura">Agricultura</option><option value="floresta">Floresta</option><option value="ambiente">Ambiente</option></select></div>
+          <div class="form-group"><label>Tipo de Relatório</label><select id="r-tipo"><option value="" disabled selected>Seleccionar tipo...</option><option value="hse">Auditoria HSE (ISO 45001)</option><option value="ambiental">Conformidade Ambiental (ISO 14001)</option><option value="qualidade">Qualidade (ISO 9001)</option><option value="esg">ESG / Sustentabilidade (GRI)</option></select></div>
+          <div class="form-group"><label>Sector</label><select id="r-sector"><option value="" disabled selected>Seleccionar sector...</option><option value="mineracao">Mineração</option><option value="oleogas">Óleo e Gás</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="infraestrutura">Infraestruturas</option><option value="industria">Indústria</option><option value="agricultura">Agricultura</option><option value="floresta">Floresta</option><option value="ambiente">Ambiente</option></select></div>
           <div class="form-group full"><label>Observações de Campo</label><textarea id="r-obs" placeholder="Notas de campo, dados de inspecção, não conformidades observadas..." style="min-height:120px;"></textarea></div>
         </div>
         <button class="btn btn-primary" id="btn-report" onclick="generateReport()">📄 Gerar Relatório Completo com IA</button>
@@ -1016,7 +1016,21 @@ const GROQ_MODEL='llama-3.3-70b-versatile';
 // STATE
 let appUsers=JSON.parse(hcjStorage.getItem('hcj_users')||'[]');
 let clients=JSON.parse(hcjStorage.getItem('hcj_clients')||'[]');
+// Mapa global: valor interno do <select> de sector → rótulo amigável em português.
+// Usado em toda a app (triagem, dashboard, casos, relatório) para nunca mostrar o
+// valor em bruto (ex: "mineracao") ao utilizador, só o rótulo correcto ("Mineração").
+const SECTOR_LABELS={mineracao:'Mineração',oleogas:'Óleo e Gás',logistica:'Logística',construcao:'Construção',infraestrutura:'Infraestruturas',industria:'Indústria',agricultura:'Agricultura',floresta:'Floresta',ambiente:'Ambiente'};
+
 let cases=JSON.parse(hcjStorage.getItem('hcj_cases')||'[]');
+// Migração: casos criados antes desta correção guardaram o valor em bruto do
+// <select> (ex: "mineracao") em vez do rótulo amigável. Corrige os já existentes.
+(function migrarSectorCasos(){
+  let mudou=false;
+  cases.forEach(c=>{
+    if(c.sector && SECTOR_LABELS[c.sector]){ c.sector=SECTOR_LABELS[c.sector]; mudou=true; }
+  });
+  if(mudou) hcjStorage.setItem('hcj_cases',JSON.stringify(cases));
+})();
 let storageFiles=JSON.parse(hcjStorage.getItem('hcj_storage')||'[]');
 let auditLog=JSON.parse(hcjStorage.getItem('hcj_audit')||'[]');
 let notifications=JSON.parse(hcjStorage.getItem('hcj_notifs')||JSON.stringify([
@@ -2175,7 +2189,8 @@ function renderDashCases(){
 
 // TRIAGE
 async function runTriage(){
-  const sector=document.getElementById('t-sector').value;
+  const sectorSlug=document.getElementById('t-sector').value;
+  const sector=SECTOR_LABELS[sectorSlug]||sectorSlug; // converte já aqui para o rótulo amigável — corrige na origem para toda a app
   const servico=document.getElementById('t-servico').value;
   const cliente=document.getElementById('t-cliente').value;
   const local=document.getElementById('t-local').value;
@@ -2231,26 +2246,29 @@ function approveAndGoReport(){
   document.getElementById('r-caso').value=d.caseId||'';
   document.getElementById('r-cliente').value=d.cliente||'';
   document.getElementById('r-obs').value=d.desc||'';
-  // Sincronizar Tipo/Sector com os dados reais da triagem (antes ficava sempre na
-  // 1ª opção da lista por defeito do browser, dando a ilusão de "pré-preenchido ao acaso").
-  const sectorMap={'mineração':'mineracao','mineracao':'mineracao','óleo e gás':'oleogas','oleo e gas':'oleogas','logística':'logistica','logistica':'logistica','construção':'construcao','construcao':'construcao','infraestrutura':'infraestrutura','infraestruturas':'infraestrutura','indústria':'industria','industria':'industria','agricultura':'agricultura','floresta':'floresta','ambiente':'ambiente'};
-  const sectorVal=sectorMap[(d.sector||'').toLowerCase().trim()];
-  const rSector=document.getElementById('r-sector');
-  if(sectorVal) rSector.value=sectorVal; else rSector.selectedIndex=0;
-  document.getElementById('r-tipo').value='hse'; // triagem é focada em HSST — valor intencional, não acaso da 1ª opção
+  // Tipo e Sector ficam SEMPRE em branco (placeholder) — o utilizador escolhe manualmente
+  // sempre, mesmo vindo da triagem. Não fazemos qualquer pré-seleção automática.
+  document.getElementById('r-tipo').selectedIndex=0;
+  document.getElementById('r-sector').selectedIndex=0;
   showView('relatorio',document.querySelectorAll('.nav-item')[5]);
 }
 
 // REPORT
 async function generateReport(){
+  const tipoSlugCheck = document.getElementById('r-tipo')?.value||'';
+  const sectorSlugCheck = document.getElementById('r-sector')?.value||'';
+  if(!tipoSlugCheck){alert('Selecciona o Tipo de Relatório antes de gerar.');return;}
+  if(!sectorSlugCheck){alert('Selecciona o Sector antes de gerar.');return;}
   const caso = (document.getElementById('r-caso')?.value||'HCJ-001').replace(/^#+/,''); // remove # duplicado (o caseId já vem com # da triagem)
   const cliente = document.getElementById('r-cliente')?.value||'Cliente';
-  const tipo = document.getElementById('r-tipo')?.value||'Auditoria HSE';
+  const tipoSlug = document.getElementById('r-tipo')?.value||'hse';
+  const TIPO_LABELS={hse:'Auditoria HSE (ISO 45001)',ambiental:'Conformidade Ambiental (ISO 14001)',qualidade:'Qualidade (ISO 9001)',esg:'ESG / Sustentabilidade (GRI)'};
+  const NORMA_MAP={hse:'ISO 45001:2018',ambiental:'ISO 14001:2015',qualidade:'ISO 9001:2015',esg:'GRI Standards'};
+  const tipo = TIPO_LABELS[tipoSlug] || tipoSlug; // rótulo completo em vez do valor interno do <select>
   const sectorSlug = document.getElementById('r-sector')?.value||'mineracao';
-  const SECTOR_LABELS={mineracao:'Mineração',oleogas:'Óleo e Gás',logistica:'Logística',construcao:'Construção',infraestrutura:'Infraestruturas',industria:'Indústria',agricultura:'Agricultura',floresta:'Floresta',ambiente:'Ambiente'};
   const sector = SECTOR_LABELS[sectorSlug] || sectorSlug; // rótulo amigável em vez do valor interno do <select>
   const obs = document.getElementById('r-obs')?.value||'';
-  const norma = tipo.includes('45001')?'ISO 45001:2018':tipo.includes('14001')?'ISO 14001:2015':tipo.includes('9001')?'ISO 9001:2015':'ISO 45001:2018';
+  const norma = NORMA_MAP[tipoSlug] || 'ISO 45001:2018';
   const btn = document.getElementById('btn-report');
   if(!obs.trim()){alert('Preenche as Observações de Campo antes de gerar.');return;}
   btn.disabled=true;
