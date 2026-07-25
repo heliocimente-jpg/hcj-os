@@ -612,9 +612,10 @@ var hcjStorage = (function(){
           <div style="font-size:24px;margin-bottom:6px;">📎</div>
           <div style="font-size:12px;color:var(--text2);">Anexar ficheiros (PDF, Word, Excel, Imagens, Texto)</div>
           <div style="font-size:10px;color:var(--text3);margin-top:4px;">Clica para seleccionar</div>
-          <input type="file" id="upload-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" onchange="handleFiles(this.files,'file-list',0)">
+          <input type="file" id="upload-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,image/*" onchange="handleFiles(this.files,'file-list',0)">
         </div>
         <div class="file-list" id="file-list"></div>
+        <div id="report-photo-gallery-triagem"></div>
         <div class="form-grid">
           <div class="form-group"><label>Cliente</label><input type="text" id="t-cliente" placeholder="Nome do cliente"/></div>
           <div class="form-group"><label>Sector</label><select id="t-sector"><option value="">Seleccionar...</option><option value="mineracao">Mineração</option><option value="oleogas">Óleo e Gás</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="infraestrutura">Infraestruturas</option><option value="industria">Indústria</option><option value="agricultura">Agricultura</option><option value="floresta">Floresta</option><option value="ambiente">Ambiente</option></select></div>
@@ -653,7 +654,7 @@ var hcjStorage = (function(){
           <div style="font-size:24px;margin-bottom:6px;">📎</div>
           <div style="font-size:12px;color:var(--text2);">Anexar documentos de suporte</div>
           <div style="font-size:10px;color:var(--text3);margin-top:4px;">PDF, Word, Excel, Imagens, Texto</div>
-          <input type="file" id="upload-input-rep" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" onchange="handleFiles(this.files,'file-list-rep',1)">
+          <input type="file" id="upload-input-rep" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,image/*" onchange="handleFiles(this.files,'file-list-rep',1)">
         </div>
         <div class="file-list" id="file-list-rep"></div>
         <div id="report-photo-gallery"></div>
@@ -2089,10 +2090,12 @@ function riskColor(r){
 function handleFiles(files,listId,mode){
   const arr=mode===0?uploadedFiles:uploadedFilesRep;
   const todos=Array.from(files);
-  // No relatório (mode===1), imagens vão para o Anexo Fotográfico (com pré-visualização
-  // e legenda editável); outros ficheiros mantêm o comportamento normal (lista simples).
-  const imagens = mode===1 ? todos.filter(f=>f.type.startsWith('image/')) : [];
-  const outros = mode===1 ? todos.filter(f=>!f.type.startsWith('image/')) : todos;
+  // Imagens (de QUALQUER das duas caixas — Triagem ou Gerar Relatório) vão para o
+  // Anexo Fotográfico partilhado do caso (com pré-visualização e legenda editável).
+  // Outros ficheiros mantêm o comportamento normal (lista simples).
+  const isImageFile = f => f.type.startsWith('image/') || /\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i.test(f.name||'');
+  const imagens = todos.filter(isImageFile);
+  const outros = todos.filter(f=>!isImageFile(f));
   arr.push(...outros);
   renderFileList(listId,arr,mode);
   imagens.forEach(f=>{
@@ -2102,14 +2105,15 @@ function handleFiles(files,listId,mode){
       reportPhotos.push({dataUrl:e.target.result, caption:'', name:f.name});
       renderPhotoGallery();
     };
+    reader.onerror=()=>{
+      alert(`Não foi possível ler a imagem "${f.name}". Tenta escolher a foto directamente da Galeria (não de apps como Google Fotos/Drive), ou tira a foto de novo.`);
+      console.error('Erro ao ler imagem:', f.name, reader.error);
+    };
     reader.readAsDataURL(f);
   });
 }
 function renderPhotoGallery(){
-  const el=document.getElementById('report-photo-gallery');
-  if(!el) return;
-  if(!reportPhotos.length){ el.innerHTML=''; return; }
-  el.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--text2);margin:12px 0 8px;">📷 Anexo Fotográfico (${reportPhotos.length})</div>
+  const html = !reportPhotos.length ? '' : `<div style="font-size:12px;font-weight:600;color:var(--text2);margin:12px 0 8px;">📷 Anexo Fotográfico do Caso (${reportPhotos.length}) <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px;" onclick="if(confirm('Remover todas as fotos deste caso?')){reportPhotos=[];renderPhotoGallery();}">Limpar todas</button></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">` +
     reportPhotos.map((p,i)=>`
       <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg2);">
@@ -2121,6 +2125,12 @@ function renderPhotoGallery(){
           <button class="btn btn-ghost" style="width:100%;margin-top:4px;padding:2px;font-size:10px;" onclick="reportPhotos.splice(${i},1);renderPhotoGallery();">Remover</button>
         </div>
       </div>`).join('') + `</div>`;
+  // Actualiza as duas galerias (Triagem e Gerar Relatório) — é o mesmo conjunto de
+  // fotos do mesmo caso, visível em qualquer uma das duas janelas.
+  ['report-photo-gallery-triagem','report-photo-gallery'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=html;
+  });
 }
 // Mostra o Anexo Fotográfico dentro do relatório já gerado (secção 11, no ecrã)
 function renderPhotoAnnexInReport(){
@@ -2329,7 +2339,8 @@ function approveAndGoReport(){
   // sempre, mesmo vindo da triagem. Não fazemos qualquer pré-seleção automática.
   document.getElementById('r-tipo').selectedIndex=0;
   document.getElementById('r-sector').selectedIndex=0;
-  reportPhotos=[]; renderPhotoGallery(); // limpa fotos de um relatório anterior
+  // As fotos anexadas na Triagem mantêm-se e transitam para o Relatório — já não
+  // são apagadas aqui (usa o botão "Limpar todas" na galeria para começar um caso novo).
   showView('relatorio',document.querySelectorAll('.nav-item')[5]);
 }
 
