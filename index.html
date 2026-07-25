@@ -656,6 +656,7 @@ var hcjStorage = (function(){
           <input type="file" id="upload-input-rep" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" onchange="handleFiles(this.files,'file-list-rep',1)">
         </div>
         <div class="file-list" id="file-list-rep"></div>
+        <div id="report-photo-gallery"></div>
         <div class="form-grid">
           <div class="form-group"><label>Número do Caso</label><input type="text" id="r-caso" placeholder="ex: HCJ-025"/></div>
           <div class="form-group"><label>Cliente</label><input type="text" id="r-cliente" placeholder="Nome do cliente"/></div>
@@ -680,11 +681,12 @@ var hcjStorage = (function(){
             <div class="report-section"><div class="report-section-title">03 — Âmbito e Metodologia</div><p id="rep-metodologia"></p></div>
             <div class="report-section"><div class="report-section-title">04 — Diagnóstico Técnico</div><p id="rep-diag"></p></div>
             <div class="report-section"><div class="report-section-title">05 — Riscos Identificados</div><table class="report-table"><thead><tr><th>Nº</th><th>Risco</th><th>Classificação</th><th>Norma</th><th>Probabilidade</th></tr></thead><tbody id="rep-riscos"></tbody></table></div>
-            <div class="report-section"><div class="report-section-title">06 — Não Conformidades</div><table class="report-table"><thead><tr><th>Ref.</th><th>Descrição</th><th>Gravidade</th><th>Requisito</th><th>Prazo</th></tr></thead><tbody id="rep-nc"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title">06 — Não Conformidades</div><table class="report-table"><thead><tr><th>Ref.</th><th>Descrição</th><th>Gravidade</th><th>Requisito</th><th>Prazo</th></tr></thead><tbody id="rep-naoconf"></tbody></table></div>
             <div class="report-section"><div class="report-section-title">07 — Análise de Causa Raiz</div><p id="rep-causa"></p></div>
             <div class="report-section"><div class="report-section-title">08 — Recomendações Técnicas</div><div id="rep-rec"></div></div>
             <div class="report-section"><div class="report-section-title">09 — Plano de Acção Corretiva</div><table class="report-table"><thead><tr><th>Acção</th><th>Responsável</th><th>Prazo</th><th>Indicador</th></tr></thead><tbody id="rep-plano"></tbody></table></div>
             <div class="report-section"><div class="report-section-title">10 — Conclusão</div><p id="rep-conclusao"></p></div>
+            <div class="report-section" id="rep-fotos-section" style="display:none;"><div class="report-section-title">11 — Anexo Fotográfico</div><div id="rep-fotos-view"></div></div>
           </div>
           <div class="alert alert-amber">⚠ Relatório gerado por IA. Aguardando validação técnica antes de emissão final.</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
@@ -1020,6 +1022,9 @@ let clients=JSON.parse(hcjStorage.getItem('hcj_clients')||'[]');
 // Usado em toda a app (triagem, dashboard, casos, relatório) para nunca mostrar o
 // valor em bruto (ex: "mineracao") ao utilizador, só o rótulo correcto ("Mineração").
 const SECTOR_LABELS={mineracao:'Mineração',oleogas:'Óleo e Gás',logistica:'Logística',construcao:'Construção',infraestrutura:'Infraestruturas',industria:'Indústria',agricultura:'Agricultura',floresta:'Floresta',ambiente:'Ambiente'};
+// Mapa global: valor interno do <select> de Tipo de Relatório → rótulo amigável completo.
+// Usado nas exportações PDF/Word para nunca mostrar o valor em bruto (ex: "hse") na capa.
+const TIPO_LABELS={hse:'Auditoria HSE (ISO 45001)',ambiental:'Conformidade Ambiental (ISO 14001)',qualidade:'Qualidade (ISO 9001)',esg:'ESG / Sustentabilidade (GRI)'};
 
 let cases=JSON.parse(hcjStorage.getItem('hcj_cases')||'[]');
 // Migração: casos criados antes desta correção guardaram o valor em bruto do
@@ -1048,6 +1053,7 @@ if(notifications.length>100){
 let currentUser=null;
 let uploadedFiles=[];
 let uploadedFilesRep=[];
+let reportPhotos=[]; // {dataUrl, caption, name} — imagens anexadas ao relatório, com legenda
 let lastTriageData={};
 let editClientIdx=-1;
 let mapLocations=JSON.parse(hcjStorage.getItem('hcj_locations')||'[]');
@@ -1631,8 +1637,10 @@ function exportReportPDF(){
 
   const caseNum=document.getElementById('r-caso')?.value||'HCJ-001';
   const cliente=document.getElementById('r-cliente')?.value||'—';
-  const sector=document.getElementById('r-sector')?.value||'—';
-  const tipo=document.getElementById('r-tipo')?.value||'Relatório Técnico';
+  const sectorSlugPdf=document.getElementById('r-sector')?.value||'';
+  const sector=SECTOR_LABELS[sectorSlugPdf]||sectorSlugPdf||'—';
+  const tipoSlugPdf=document.getElementById('r-tipo')?.value||'';
+  const tipo=TIPO_LABELS[tipoSlugPdf]||tipoSlugPdf||'Relatório Técnico';
   const data=new Date().toLocaleDateString('pt-PT',{year:'numeric',month:'long',day:'numeric'});
 
   const logoEl=document.querySelector('.login-box img, #splash img, .sidebar-logo img, img[alt*="HCJ" i]');
@@ -1723,6 +1731,16 @@ function exportReportPDF(){
       <span>Documento gerado pelo HCJ-OS v3 · Uso Interno</span>
     </div>
   </div>
+  ${reportPhotos.length?`<div class="page" style="page-break-before:always;">
+    <h2>11 — Anexo Fotográfico</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+      ${reportPhotos.map((p,i)=>`
+        <div style="break-inside:avoid;margin-bottom:16px;">
+          <img src="${p.dataUrl}" style="width:100%;max-height:260px;object-fit:cover;border-radius:6px;border:1px solid #d1d5db;">
+          <p style="font-size:9.5pt;color:#374151;margin-top:6px;"><strong>Fig. ${i+1}</strong> — ${(p.caption||p.name||'Sem legenda').replace(/</g,'&lt;')}</p>
+        </div>`).join('')}
+    </div>
+  </div>`:''}
   </body></html>`;
 
   const win=window.open('','_blank');
@@ -1739,8 +1757,10 @@ function exportReportPDF(){
 function exportReportWord(){
   const caseNum=document.getElementById('r-caso')?.value||'HCJ-001';
   const client=document.getElementById('r-cliente')?.value||'Cliente';
-  const rtype=document.getElementById('r-tipo')?.value||'Relatório Técnico';
-  const sector=document.getElementById('r-sector')?.value||'—';
+  const rtypeSlug=document.getElementById('r-tipo')?.value||'';
+  const rtype=TIPO_LABELS[rtypeSlug]||rtypeSlug||'Relatório Técnico';
+  const sectorSlugW=document.getElementById('r-sector')?.value||'';
+  const sector=SECTOR_LABELS[sectorSlugW]||sectorSlugW||'—';
   const obs=document.getElementById('r-obs')?.value||'';
   const data=new Date().toLocaleDateString('pt-PT');
   const hora=new Date().toLocaleTimeString('pt-PT');
@@ -1800,6 +1820,20 @@ tr:nth-child(even) td{background:#f8faf8;}
 <tr><td>Classificação</td><td><span class="confidencial">CONFIDENCIAL</span></td></tr>
 </table>
 ${sectionsHTML}
+${reportPhotos.length?`<h2>11 — Anexo Fotográfico</h2>
+<table style="border:none;">
+${(()=>{
+  let rows='';
+  for(let i=0;i<reportPhotos.length;i+=2){
+    const p1=reportPhotos[i], p2=reportPhotos[i+1];
+    rows+=`<tr style="border:none;">
+      <td style="border:none;width:50%;text-align:center;padding:10px;"><img src="${p1.dataUrl}" style="max-width:100%;max-height:260px;"><p style="font-size:9pt;"><strong>Fig. ${i+1}</strong> — ${(p1.caption||p1.name||'Sem legenda')}</p></td>
+      <td style="border:none;width:50%;text-align:center;padding:10px;">${p2?`<img src="${p2.dataUrl}" style="max-width:100%;max-height:260px;"><p style="font-size:9pt;"><strong>Fig. ${i+2}</strong> — ${(p2.caption||p2.name||'Sem legenda')}</p>`:''}</td>
+    </tr>`;
+  }
+  return rows;
+})()}
+</table>`:''}
 <div class="footer">
 Relatório gerado pelo sistema HCJ-OS v3.0 · Groq AI · ${data}<br>
 HCJ Global Solutions — Moatize, Tete, Moçambique<br>
@@ -2054,8 +2088,53 @@ function riskColor(r){
 // FILES
 function handleFiles(files,listId,mode){
   const arr=mode===0?uploadedFiles:uploadedFilesRep;
-  arr.push(...Array.from(files));
+  const todos=Array.from(files);
+  // No relatório (mode===1), imagens vão para o Anexo Fotográfico (com pré-visualização
+  // e legenda editável); outros ficheiros mantêm o comportamento normal (lista simples).
+  const imagens = mode===1 ? todos.filter(f=>f.type.startsWith('image/')) : [];
+  const outros = mode===1 ? todos.filter(f=>!f.type.startsWith('image/')) : todos;
+  arr.push(...outros);
   renderFileList(listId,arr,mode);
+  imagens.forEach(f=>{
+    if(f.size>5*1024*1024){ alert(`"${f.name}" é maior que 5MB e foi ignorada (limite por imagem, para não sobrecarregar o relatório).`); return; }
+    const reader=new FileReader();
+    reader.onload=e=>{
+      reportPhotos.push({dataUrl:e.target.result, caption:'', name:f.name});
+      renderPhotoGallery();
+    };
+    reader.readAsDataURL(f);
+  });
+}
+function renderPhotoGallery(){
+  const el=document.getElementById('report-photo-gallery');
+  if(!el) return;
+  if(!reportPhotos.length){ el.innerHTML=''; return; }
+  el.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--text2);margin:12px 0 8px;">📷 Anexo Fotográfico (${reportPhotos.length})</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">` +
+    reportPhotos.map((p,i)=>`
+      <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg2);">
+        <img src="${p.dataUrl}" style="width:100%;height:100px;object-fit:cover;display:block;">
+        <div style="padding:6px;">
+          <input type="text" placeholder="Legenda (ex: Detector CO ausente — Galeria Sul)" value="${p.caption.replace(/"/g,'&quot;')}"
+            oninput="reportPhotos[${i}].caption=this.value"
+            style="width:100%;font-size:10px;padding:4px;border:1px solid var(--border);border-radius:4px;box-sizing:border-box;">
+          <button class="btn btn-ghost" style="width:100%;margin-top:4px;padding:2px;font-size:10px;" onclick="reportPhotos.splice(${i},1);renderPhotoGallery();">Remover</button>
+        </div>
+      </div>`).join('') + `</div>`;
+}
+// Mostra o Anexo Fotográfico dentro do relatório já gerado (secção 11, no ecrã)
+function renderPhotoAnnexInReport(){
+  const sec=document.getElementById('rep-fotos-section');
+  const view=document.getElementById('rep-fotos-view');
+  if(!sec||!view) return;
+  if(!reportPhotos.length){ sec.style.display='none'; view.innerHTML=''; return; }
+  sec.style.display='';
+  view.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">` +
+    reportPhotos.map((p,i)=>`
+      <div>
+        <img src="${p.dataUrl}" style="width:100%;border-radius:8px;border:1px solid var(--border);object-fit:cover;max-height:220px;">
+        <div style="font-size:11px;color:var(--text2);margin-top:6px;"><strong>Fig. ${i+1}</strong> — ${p.caption||p.name||'Sem legenda'}</div>
+      </div>`).join('') + `</div>`;
 }
 function renderFileList(listId,arr,mode){
   document.getElementById(listId).innerHTML=arr.map((f,i)=>`
@@ -2250,6 +2329,7 @@ function approveAndGoReport(){
   // sempre, mesmo vindo da triagem. Não fazemos qualquer pré-seleção automática.
   document.getElementById('r-tipo').selectedIndex=0;
   document.getElementById('r-sector').selectedIndex=0;
+  reportPhotos=[]; renderPhotoGallery(); // limpa fotos de um relatório anterior
   showView('relatorio',document.querySelectorAll('.nav-item')[5]);
 }
 
@@ -2521,6 +2601,7 @@ CONCLUSAO:
 
     lastReportContent=resumo+'\n\n'+metodologia+'\n\n'+diagnostico+'\n\n'+causa_raiz+'\n\n'+conclusao;
     saveReport(caso,cliente);
+    renderPhotoAnnexInReport();
     logAudit('Relatório gerado','Caso '+caso+' - '+cliente);
     addNotif('Relatório gerado','Relatório #'+caso+' para '+cliente+' pronto para validação.','blue');
     waNotifyReport(caso,cliente);
