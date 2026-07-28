@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HCJ-OS v3 — Intelligent Operations Platform</title>
 <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; img-src * data: blob:; connect-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval';">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400&family=Noto+Sans+Arabic:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&display=swap">
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADW0lEQVR42u2WS2hTWRjH/+fem3ubR5ukeXRqR1skrVU7WjvMOEWlKba1+Ci4SEHozIC66KYMgyP4QG4LigOdWYxuJjAuREG5s1EGB0TBZNOW0KoUKWnVVFo1t2HSRpP05nVzXNjiqIumbXSV3+ZwDofv+5//d77DAQoUWAWUiowkuVhKQT5rUkpF5sN1SXKxovjx+lKsWPmA9LM2qQQ3E6GYmGp3jdXX/xBfSZycFS+ebnjYvX30/uUWrjiyo6rWJjnKU7eIX3p648J+cfDakY0AiCjmHjfnjb29TgYAzNzLn6yWWNtYrCmoXduc8U9HLnkfhbuN+vQ+k1k9BID2OnMvBZezV55eAMCcfyhcZDN+1bah+kdeUxdt6bp5EgDGB3o6dHpDdrklyFmAx/N2HB99nlQqXn1dpiRqDGw0BAD3xCZONdToqMlMAQBOJ4C+/JZgIT/Ccyn7yNhr9607E13TE9O24bunGpr7vBnEns4jOi28vzuPApwLI28wzFgtRoPdpGcnn8jaYvX5X2J/t70U8Z3JcGjy/27luw0JANp/rLEyxQhV3zkEI9LJP8Kh8Ex1TUW5psQacN8xt18ovZgmfaAAaF4dWAz4y28DU6f7Pd6oKkBvs2Z5bdH6J8/CA3UdQ+2yLGewjOQrZrHPj3XX1p09vqthNbHIcux3ONqF+tadHfu+3fHP7RHfwcNO2bLmC9UyH41d//53S7R5+7rWP8/1XAYoAUhOLrC5CpAkifXLL/Uz/8Uvjj72VyuJ9NFASFPSVuE9v63j30Bl7ZZKUPaE/77nyuzsLO/z+dS8vQNut5tzuVxq55mrarmOeyho6FWW1awJygauK7jnUOOBxkiKst+MTwR8hIC29zggUsr0EdClnFiyBO5fW4yR8HxWr4tQJcbpHkyyWktFVB4a4gx2e9GXCWZteSROQyVC0rTJ6Pdv3mpStAmGxpI8W9ZQFens/FtdkQMUIASgibln63mGGtNJRjHpUvbdG1VlLsFYt+6NB7msUqoTXshpwiUEYP6FYipDLGmOUY0mlVHI4OCgF4Cy6kvocoENBMCMjEALwGYrEQillERTJMvzlDObtaGpqQwPxHkAMwBSn6oDmaa3rjELF5jDuznX9M7Rz/dDKlCgQIHV8gal9E5dhgf2fgAAAABJRU5ErkJggg=="/>
 <style>
 :root{
@@ -33,6 +35,18 @@ body.theme-light .nav-item:hover,.theme-light .nav-item.active{background:#33415
 body.theme-light .logo-mark,.theme-light .logo-sub,.theme-light .logo-version{color:#e2e8f0!important;}
 body.theme-light .user-name-sm,.theme-light .user-role-sm{color:#e2e8f0!important;}
 body.theme-light .nav-label{color:#94a3b8!important;}
+/* ===== MULTILÍNGUE: tipografia por script + suporte RTL (árabe) ===== */
+body.lang-ar{direction:rtl;font-family:'Noto Sans Arabic','IBM Plex Sans',sans-serif;}
+body.lang-ar .sidebar{border-right:none;border-left:1px solid var(--border);}
+body.lang-ar .nav-item{flex-direction:row-reverse;text-align:right;}
+body.lang-ar .nav-badge{margin-left:0;margin-right:auto;}
+body.lang-ar .topbar-left{flex-direction:row-reverse;}
+body.lang-ar .page-header{flex-direction:row-reverse;}
+body.lang-ar select,body.lang-ar input,body.lang-ar textarea{direction:rtl;}
+body.lang-zh{font-family:'Noto Sans SC','IBM Plex Sans',sans-serif;}
+body.lang-zh .logo-sub,body.lang-zh .nav-label{letter-spacing:0.5px;}
+.lang-select{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:11px;padding:6px 8px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+body.theme-light .lang-select{background:#ffffff;color:#0d1117;}
 body.theme-light input,body.theme-light select,body.theme-light textarea{color:#0d1117!important;background:#ffffff;border-color:#d0d7e0;}
 body.theme-light input::placeholder,body.theme-light textarea::placeholder{color:#9ca3af!important;opacity:1;}
 body.theme-light select option{color:#0d1117;background:#ffffff;}
@@ -422,30 +436,31 @@ var hcjStorage = (function(){
     <script>document.getElementById("hcj-logo-login").src=document.getElementById("hcj-logo-src").src;</script>
     <div class="login-logo">HCJ-OS</div>
     <div class="login-tagline">Intelligent Operations Platform</div>
+    <select class="lang-select" id="lang-select-login" onchange="setLang(this.value)" style="margin-bottom:16px;" title="Language / Idioma / اللغة / 语言"></select>
     <div class="login-tabs">
-      <div class="login-tab active" onclick="switchLoginTab('existing')">Entrar</div>
-      <div class="login-tab" onclick="switchLoginTab('new')">Novo Utilizador</div>
+      <div class="login-tab active" onclick="switchLoginTab('existing')" data-i18n="login_entrar">Entrar</div>
+      <div class="login-tab" onclick="switchLoginTab('new')" data-i18n="login_novo">Novo Utilizador</div>
     </div>
     <div id="tab-existing">
-      <div style="font-size:11px;color:var(--text2);margin-bottom:12px;font-family:'IBM Plex Mono',monospace;">Seleccionar utilizador:</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:12px;font-family:'IBM Plex Mono',monospace;" data-i18n="login_selecionar">Seleccionar utilizador:</div>
       <div class="user-list" id="user-list-login"></div>
-      <div class="login-divider">ou entrar com PIN</div>
+      <div class="login-divider" data-i18n="login_ou_pin">ou entrar com PIN</div>
       <div class="login-form">
-        <input type="text" id="login-name-input" placeholder="Nome de utilizador"/>
-        <input type="password" id="login-pin" placeholder="PIN (4 dígitos)" maxlength="4"/>
-        <button class="login-btn" onclick="doLogin()">Entrar no Sistema</button>
+        <input type="text" id="login-name-input" placeholder="Nome de utilizador" data-i18n-ph="ph_nome_util"/>
+        <input type="password" id="login-pin" placeholder="PIN (4 dígitos)" maxlength="4" data-i18n-ph="ph_pin"/>
+        <button class="login-btn" onclick="doLogin()" data-i18n="btn_entrar_sistema">Entrar no Sistema</button>
       </div>
     </div>
     <div id="tab-new" style="display:none;">
       <div class="login-form">
-        <input type="text" id="reg-name" placeholder="Nome completo"/>
-        <input type="text" id="reg-role" placeholder="Cargo (ex: Técnico HSE)"/>
-        <select id="reg-permission"><option value="admin">Administrador</option><option value="manager">Gestor</option><option value="technician">Técnico</option><option value="viewer">Visualizador</option></select>
-        <input type="password" id="reg-pin" placeholder="Criar PIN (4 dígitos)" maxlength="4"/>
-        <button class="login-btn" onclick="doRegister()">Criar Conta</button>
+        <input type="text" id="reg-name" placeholder="Nome completo" data-i18n-ph="ph_nome_completo"/>
+        <input type="text" id="reg-role" placeholder="Cargo (ex: Técnico HSE)" data-i18n-ph="ph_cargo"/>
+        <select id="reg-permission"><option value="admin" data-i18n="opt_admin">Administrador</option><option value="manager" data-i18n="opt_gestor">Gestor</option><option value="technician" data-i18n="opt_tecnico">Técnico</option><option value="viewer" data-i18n="opt_visualizador">Visualizador</option></select>
+        <input type="password" id="reg-pin" placeholder="Criar PIN (4 dígitos)" maxlength="4" data-i18n-ph="ph_criar_pin"/>
+        <button class="login-btn" onclick="doRegister()" data-i18n="btn_criar_conta">Criar Conta</button>
       </div>
     </div>
-    <a class="terms-link" onclick="openModal('terms-modal')">Termos e Condições de Utilização</a>
+    <a class="terms-link" onclick="openModal('terms-modal')" data-i18n="terms_link">Termos e Condições de Utilização</a>
   </div>
 </div>
 
@@ -468,34 +483,34 @@ var hcjStorage = (function(){
   </div>
   <nav class="nav">
     <div class="nav-section">
-      <div class="nav-label">Principal</div>
-      <div class="nav-item active" data-perm="all" onclick="showView('dashboard',this)"><span class="nav-icon">⬡</span> Dashboard</div>
-      <div class="nav-item" data-perm="all" onclick="showView('casos',this)"><span class="nav-icon">◫</span> Gestão de Casos<span class="nav-badge" id="badge-casos">0</span></div>
-      <div class="nav-item" data-perm="admin,gestor" onclick="showView('clientes',this)"><span class="nav-icon">◈</span> Clientes</div>
-      <div class="nav-item" data-perm="admin" onclick="showView('equipa',this)"><span class="nav-icon">◉</span> Equipa</div>
+      <div class="nav-label" data-i18n="navsec_principal">Principal</div>
+      <div class="nav-item active" data-perm="all" onclick="showView('dashboard',this)"><span class="nav-icon">⬡</span> <span data-i18n="nav_dashboard">Dashboard</span></div>
+      <div class="nav-item" data-perm="all" onclick="showView('casos',this)"><span class="nav-icon">◫</span> <span data-i18n="nav_casos">Gestão de Casos</span><span class="nav-badge" id="badge-casos">0</span></div>
+      <div class="nav-item" data-perm="admin,gestor" onclick="showView('clientes',this)"><span class="nav-icon">◈</span> <span data-i18n="nav_clientes">Clientes</span></div>
+      <div class="nav-item" data-perm="admin" onclick="showView('equipa',this)"><span class="nav-icon">◉</span> <span data-i18n="nav_equipa">Equipa</span></div>
     </div>
     <div class="nav-section">
-      <div class="nav-label">Inteligência IA</div>
-      <div class="nav-item" data-perm="admin,gestor,tecnico" onclick="showView('triagem',this)"><span class="nav-icon">◎</span> Triagem de Risco</div>
-      <div class="nav-item" data-perm="admin,gestor,tecnico" onclick="showView('relatorio',this)"><span class="nav-icon">◻</span> Gerar Relatório</div>
-      <div class="nav-item" data-perm="all" onclick="showView('localizacao',this)"><span class="nav-icon">📍</span> Localização / Satélite</div>
+      <div class="nav-label" data-i18n="navsec_ia">Inteligência IA</div>
+      <div class="nav-item" data-perm="admin,gestor,tecnico" onclick="showView('triagem',this)"><span class="nav-icon">◎</span> <span data-i18n="nav_triagem">Triagem de Risco</span></div>
+      <div class="nav-item" data-perm="admin,gestor,tecnico" onclick="showView('relatorio',this)"><span class="nav-icon">◻</span> <span data-i18n="nav_relatorio">Gerar Relatório</span></div>
+      <div class="nav-item" data-perm="all" onclick="showView('localizacao',this)"><span class="nav-icon">📍</span> <span data-i18n="nav_localizacao">Localização / Satélite</span></div>
     </div>
     <div class="nav-section">
-      <div class="nav-label">Recursos</div>
-      <div class="nav-item" data-perm="all" onclick="showView('armazenamento',this)"><span class="nav-icon">◱</span> Armazenamento</div>
-      <div class="nav-item" data-perm="all" onclick="showView('notificacoes',this)"><span class="nav-icon">◆</span> Notificações<span class="nav-badge" id="badge-notif">3</span></div>
-      <div class="nav-item" data-perm="admin,gestor" onclick="showView('integracoes',this)"><span class="nav-icon">◐</span> Integrações</div>
-      <div class="nav-item" data-perm="admin,gestor" onclick="showView('auditoria',this)"><span class="nav-icon">📋</span> Auditoria</div>
-      <div class="nav-item" data-perm="admin" onclick="showView('configuracoes',this)"><span class="nav-icon">◇</span> Configurações</div>
+      <div class="nav-label" data-i18n="navsec_recursos">Recursos</div>
+      <div class="nav-item" data-perm="all" onclick="showView('armazenamento',this)"><span class="nav-icon">◱</span> <span data-i18n="nav_armazenamento">Armazenamento</span></div>
+      <div class="nav-item" data-perm="all" onclick="showView('notificacoes',this)"><span class="nav-icon">◆</span> <span data-i18n="nav_notificacoes">Notificações</span><span class="nav-badge" id="badge-notif">3</span></div>
+      <div class="nav-item" data-perm="admin,gestor" onclick="showView('integracoes',this)"><span class="nav-icon">◐</span> <span data-i18n="nav_integracoes">Integrações</span></div>
+      <div class="nav-item" data-perm="admin,gestor" onclick="showView('auditoria',this)"><span class="nav-icon">📋</span> <span data-i18n="nav_auditoria">Auditoria</span></div>
+      <div class="nav-item" data-perm="admin" onclick="showView('configuracoes',this)"><span class="nav-icon">◇</span> <span data-i18n="nav_configuracoes">Configurações</span></div>
     </div>
     <div class="nav-section">
-      <div class="nav-label">Ajuda</div>
-      <div class="nav-item" data-perm="all" onclick="showView('tutorial',this)"><span class="nav-icon">◑</span> Como Usar</div>
+      <div class="nav-label" data-i18n="navsec_ajuda">Ajuda</div>
+      <div class="nav-item" data-perm="all" onclick="showView('tutorial',this)"><span class="nav-icon">◑</span> <span data-i18n="nav_tutorial">Como Usar</span></div>
     </div>
   </nav>
   <div class="sidebar-bottom">
-    <div class="status-online"><div class="dot"></div> Sistema operacional</div>
-    <div class="logout-btn" onclick="doLogout()"><span>⏻</span> Terminar Sessão</div>
+    <div class="status-online"><div class="dot"></div> <span data-i18n="status_operacional">Sistema operacional</span></div>
+    <div class="logout-btn" onclick="doLogout()"><span>⏻</span> <span data-i18n="logout_label">Terminar Sessão</span></div>
   </div>
 </aside>
 
@@ -507,10 +522,11 @@ var hcjStorage = (function(){
       <div class="topbar-title" id="page-title">Dashboard</div>
     </div>
     <div class="topbar-right">
+      <select class="lang-select" id="lang-select-topbar" onchange="setLang(this.value)" title="Language / Idioma / اللغة / 语言"></select>
       <button class="notif-btn" id="theme-quick-btn" onclick="cycleTheme()" title="Mudar tema">🌙</button>
       <button class="notif-btn" onclick="showView('notificacoes',null)">🔔<div class="notif-dot" id="notif-dot"></div></button>
       <span style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;display:none;" id="topbar-user"></span>
-      <button class="btn btn-primary" onclick="showView('triagem',document.querySelectorAll('.nav-item')[4])">+ Novo Caso</button>
+      <button class="btn btn-primary" onclick="showView('triagem',document.querySelectorAll('.nav-item')[4])" data-i18n="btn_novo_caso">+ Novo Caso</button>
     </div>
   </div>
 
@@ -583,7 +599,7 @@ var hcjStorage = (function(){
 
     <!-- CASOS -->
     <div class="view" id="view-casos">
-      <div class="page-header"><div><div class="page-title">Gestão de Casos</div><div class="page-sub">Histórico completo de todos os casos</div></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_casos_t">Gestão de Casos</div><div class="page-sub" data-i18n="h_casos_s">Histórico completo de todos os casos</div></div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-secondary" style="font-size:12px;" onclick="exportCasesCSV()">📊 Exportar CSV (casos)</button>
           <button class="btn btn-secondary" style="font-size:12px;" onclick="exportKPIsCSV()">📈 Exportar CSV (KPIs)</button>
@@ -594,19 +610,19 @@ var hcjStorage = (function(){
 
     <!-- CLIENTES -->
     <div class="view" id="view-clientes">
-      <div class="page-header"><div><div class="page-title">Clientes</div><div class="page-sub">CRM — Gestão de relacionamento comercial</div></div><button class="btn btn-primary" onclick="openModal('client-modal')">+ Adicionar Cliente</button></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_clientes_t">Clientes</div><div class="page-sub" data-i18n="h_clientes_s">CRM — Gestão de relacionamento comercial</div></div><button class="btn btn-primary" onclick="openModal('client-modal')" data-i18n="btn_add_cliente">+ Adicionar Cliente</button></div>
       <div class="client-list" id="client-list"><p style="color:var(--text3);font-size:12px;">Nenhum cliente registado.</p></div>
     </div>
 
     <!-- EQUIPA -->
     <div class="view" id="view-equipa">
-      <div class="page-header"><div><div class="page-title">Equipa</div><div class="page-sub">Gestão de utilizadores e permissões</div></div><button class="btn btn-primary" onclick="switchLoginTab('new');openModal('add-user-modal')">+ Adicionar Membro</button></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_equipa_t">Equipa</div><div class="page-sub" data-i18n="h_equipa_s">Gestão de utilizadores e permissões</div></div><button class="btn btn-primary" onclick="switchLoginTab('new');openModal('add-user-modal')" data-i18n="btn_add_membro">+ Adicionar Membro</button></div>
       <div class="team-grid" id="team-grid"></div>
     </div>
 
     <!-- TRIAGEM -->
     <div class="view" id="view-triagem">
-      <div class="page-header"><div><div class="page-title">Triagem de Risco</div><div class="page-sub">Análise automática por IA — Groq LLaMA 3.3</div></div></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_triagem_t">Triagem de Risco</div><div class="page-sub" data-i18n="h_triagem_s">Análise automática por IA — Groq LLaMA 3.3</div></div></div>
       <div class="card">
         <div class="upload-zone" onclick="document.getElementById('upload-input').click()">
           <div style="font-size:24px;margin-bottom:6px;">📎</div>
@@ -648,7 +664,7 @@ var hcjStorage = (function(){
 
     <!-- RELATORIO -->
     <div class="view" id="view-relatorio">
-      <div class="page-header"><div><div class="page-title">Gerar Relatório Técnico</div><div class="page-sub">Output profissional completo — 10 secções</div></div></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_relatorio_t">Gerar Relatório Técnico</div><div class="page-sub" data-i18n="h_relatorio_s">Output profissional completo — 10 secções</div></div></div>
       <div class="card">
         <div class="upload-zone" onclick="document.getElementById('upload-input-rep').click()">
           <div style="font-size:24px;margin-bottom:6px;">📎</div>
@@ -663,9 +679,14 @@ var hcjStorage = (function(){
           <div class="form-group"><label>Cliente</label><input type="text" id="r-cliente" placeholder="Nome do cliente"/></div>
           <div class="form-group"><label>Tipo de Relatório</label><select id="r-tipo"><option value="" disabled selected>Seleccionar tipo...</option><option value="hse">Auditoria HSE (ISO 45001)</option><option value="ambiental">Conformidade Ambiental (ISO 14001)</option><option value="qualidade">Qualidade (ISO 9001)</option><option value="esg">ESG / Sustentabilidade (GRI)</option></select></div>
           <div class="form-group"><label>Sector</label><select id="r-sector"><option value="" disabled selected>Seleccionar sector...</option><option value="mineracao">Mineração</option><option value="oleogas">Óleo e Gás</option><option value="logistica">Logística</option><option value="construcao">Construção</option><option value="infraestrutura">Infraestruturas</option><option value="industria">Indústria</option><option value="agricultura">Agricultura</option><option value="floresta">Floresta</option><option value="ambiente">Ambiente</option></select></div>
+          <div class="form-group"><label data-i18n="lbl_idioma_relatorio">Idioma do Relatório</label><select id="r-idioma"></select></div>
           <div class="form-group full"><label>Observações de Campo</label><textarea id="r-obs" placeholder="Notas de campo, dados de inspecção, não conformidades observadas..." style="min-height:120px;"></textarea></div>
         </div>
-        <button class="btn btn-primary" id="btn-report" onclick="generateReport()">📄 Gerar Relatório Completo com IA</button>
+        <label style="display:flex;align-items:flex-start;gap:8px;margin:4px 0 14px;font-size:11.5px;color:var(--text2);line-height:1.5;">
+          <input type="checkbox" id="r-fotos-autenticas" style="margin-top:2px;">
+          <span data-i18n="chk_fotos_autenticas">Confirmo que as fotografias anexadas foram capturadas no local pela equipa de auditoria (não são imagens de stock/referência).</span>
+        </label>
+        <button class="btn btn-primary" id="btn-report" onclick="generateReport()" data-i18n="btn_gerar_relatorio">📄 Gerar Relatório Completo com IA</button>
         <div class="report-output" id="report-output">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
             <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;" id="rep-titulo">Relatório Técnico</div>
@@ -677,22 +698,23 @@ var hcjStorage = (function(){
             </div>
           </div>
           <div id="report-content">
-            <div class="report-section"><div class="report-section-title">01 — Identificação</div><div id="rep-identificacao"></div></div>
-            <div class="report-section"><div class="report-section-title">02 — Resumo Executivo</div><p id="rep-resumo"></p></div>
-            <div class="report-section"><div class="report-section-title">03 — Âmbito e Metodologia</div><p id="rep-metodologia"></p></div>
-            <div class="report-section"><div class="report-section-title">04 — Diagnóstico Técnico</div><p id="rep-diag"></p></div>
-            <div class="report-section"><div class="report-section-title">05 — Riscos Identificados</div><table class="report-table"><thead><tr><th>Nº</th><th>Risco</th><th>Classificação</th><th>Norma</th><th>Probabilidade</th></tr></thead><tbody id="rep-riscos"></tbody></table></div>
-            <div class="report-section"><div class="report-section-title">06 — Não Conformidades</div><table class="report-table"><thead><tr><th>Ref.</th><th>Descrição</th><th>Gravidade</th><th>Requisito</th><th>Prazo</th></tr></thead><tbody id="rep-naoconf"></tbody></table></div>
-            <div class="report-section"><div class="report-section-title">07 — Análise de Causa Raiz</div><p id="rep-causa"></p></div>
-            <div class="report-section"><div class="report-section-title">08 — Recomendações Técnicas</div><div id="rep-rec"></div></div>
-            <div class="report-section"><div class="report-section-title">09 — Plano de Acção Corretiva</div><table class="report-table"><thead><tr><th>Acção</th><th>Responsável</th><th>Prazo</th><th>Indicador</th></tr></thead><tbody id="rep-plano"></tbody></table></div>
-            <div class="report-section"><div class="report-section-title">10 — Conclusão</div><p id="rep-conclusao"></p></div>
-            <div class="report-section" id="rep-fotos-section" style="display:none;"><div class="report-section-title">11 — Anexo Fotográfico</div><div id="rep-fotos-view"></div></div>
+            <div class="report-section"><div class="report-section-title" id="rst-01">01 — Identificação</div><div id="rep-identificacao"></div></div>
+            <div class="report-section"><div class="report-section-title" id="rst-02">02 — Resumo Executivo</div><p id="rep-resumo"></p></div>
+            <div class="report-section"><div class="report-section-title" id="rst-03">03 — Âmbito e Metodologia</div><p id="rep-metodologia"></p></div>
+            <div class="report-section"><div class="report-section-title" id="rst-04">04 — Diagnóstico Técnico</div><p id="rep-diag"></p></div>
+            <div class="report-section"><div class="report-section-title" id="rst-05">05 — Riscos Identificados</div><table class="report-table"><thead><tr id="rep-riscos-head"><th>Nº</th><th>Risco</th><th>Classificação</th><th>Norma</th><th>Probabilidade</th></tr></thead><tbody id="rep-riscos"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title" id="rst-06">06 — Não Conformidades</div><table class="report-table"><thead><tr id="rep-naoconf-head"><th>Ref.</th><th>Descrição</th><th>Gravidade</th><th>Requisito</th><th>Prazo</th></tr></thead><tbody id="rep-naoconf"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title" id="rst-07">07 — Análise de Causa Raiz</div><p id="rep-causa"></p></div>
+            <div class="report-section"><div class="report-section-title" id="rst-08">08 — Recomendações Técnicas</div><div id="rep-rec"></div></div>
+            <div class="report-section"><div class="report-section-title" id="rst-09">09 — Plano de Acção Corretiva</div><table class="report-table"><thead><tr id="rep-plano-head"><th>Acção</th><th>Responsável</th><th>Prazo</th><th>Indicador</th></tr></thead><tbody id="rep-plano"></tbody></table></div>
+            <div class="report-section"><div class="report-section-title" id="rst-10">10 — Conclusão</div><p id="rep-conclusao"></p></div>
+            <div class="report-section" id="rep-fotos-section" style="display:none;"><div class="report-section-title" id="rst-11">11 — Anexo Fotográfico</div><div id="rep-fotos-view"></div></div>
           </div>
-          <div class="alert alert-amber">⚠ Relatório gerado por IA. Aguardando validação técnica antes de emissão final.</div>
+          <div class="alert alert-amber" id="rep-alert-ia" data-i18n="rep_alert_ia">⚠ Relatório gerado por IA. Aguardando validação técnica antes de emissão final.</div>
+          <div id="rep-alert-fotos" class="alert alert-red" style="display:none;"></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
-            <button class="btn btn-primary" onclick="exportReportPDF()">📄 Exportar PDF Profissional</button>
-            <button class="btn btn-ghost" onclick="exportReportWord()">📝 Exportar Word (.txt)</button>
+            <button class="btn btn-primary" onclick="exportReportPDF()" data-i18n="btn_export_pdf">📄 Exportar PDF Profissional</button>
+            <button class="btn btn-ghost" onclick="exportReportWord()" data-i18n="btn_export_word">📝 Exportar Word (.txt)</button>
           </div>
         </div>
       </div>
@@ -701,7 +723,7 @@ var hcjStorage = (function(){
     <!-- LOCALIZACAO / SATELITE -->
     <div class="view" id="view-localizacao">
       <div class="page-header">
-        <div><div class="page-title">Localização / Satélite</div><div class="page-sub">Visualização geoespacial das áreas de inspecção</div></div>
+        <div><div class="page-title" data-i18n="h_localizacao_t">Localização / Satélite</div><div class="page-sub" data-i18n="h_localizacao_s">Visualização geoespacial das áreas de inspecção</div></div>
         <button class="btn btn-primary" onclick="openModal('location-modal')" id="btn-add-ponto">+ Adicionar Ponto</button>
       </div>
 
@@ -743,7 +765,7 @@ var hcjStorage = (function(){
 
     <!-- ARMAZENAMENTO -->
     <div class="view" id="view-armazenamento">
-      <div class="page-header"><div><div class="page-title">Armazenamento</div><div class="page-sub">Todos os documentos e relatórios guardados</div></div><button class="btn btn-primary" id="btn-add-doc" onclick="document.getElementById('upload-storage').click()">+ Adicionar Documento<input type="file" id="upload-storage" style="display:none" multiple onchange="uploadToStorage(this.files)"></button></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_armazenamento_t">Armazenamento</div><div class="page-sub" data-i18n="h_armazenamento_s">Todos os documentos e relatórios guardados</div></div><button class="btn btn-primary" id="btn-add-doc" onclick="document.getElementById('upload-storage').click()"><span data-i18n="btn_add_doc">+ Adicionar Documento</span><input type="file" id="upload-storage" style="display:none" multiple onchange="uploadToStorage(this.files)"></button></div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
         <div class="kpi-card kpi-blue"><div class="kpi-label">Total Ficheiros</div><div class="kpi-value" id="storage-count" style="color:var(--blue)">0</div><div class="kpi-delta">No sistema</div></div>
         <div class="kpi-card kpi-green"><div class="kpi-label">Relatórios</div><div class="kpi-value" id="storage-reports" style="color:var(--green)">0</div><div class="kpi-delta">Gerados</div></div>
@@ -758,13 +780,13 @@ var hcjStorage = (function(){
 
     <!-- NOTIFICACOES -->
     <div class="view" id="view-notificacoes">
-      <div class="page-header"><div><div class="page-title">Notificações</div><div class="page-sub">Alertas e actualizações do sistema</div></div><button class="btn btn-ghost" onclick="markAllRead()">Marcar todas como lidas</button></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_notif_t">Notificações</div><div class="page-sub" data-i18n="h_notif_s">Alertas e actualizações do sistema</div></div><button class="btn btn-ghost" onclick="markAllRead()" data-i18n="btn_marcar_lidas">Marcar todas como lidas</button></div>
       <div class="notif-list" id="notif-list"></div>
     </div>
 
     <!-- INTEGRACOES -->
     <div class="view" id="view-integracoes">
-      <div class="page-header"><div><div class="page-title">Integrações</div><div class="page-sub">Conectar com ferramentas externas</div></div></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_integ_t">Integrações</div><div class="page-sub" data-i18n="h_integ_s">Conectar com ferramentas externas</div></div></div>
 
       <!-- KOBO INTEGRATION MODULE -->
       <div class="card" style="margin-bottom:14px;border:1px solid var(--green);">
@@ -808,7 +830,7 @@ var hcjStorage = (function(){
     <!-- AUDITORIA -->
     <div class="view" id="view-auditoria">
       <div class="page-header">
-        <div><div class="page-title">Auditoria</div><div class="page-sub">Registo completo de todas as acções do sistema</div></div>
+        <div><div class="page-title" data-i18n="h_audit_t">Auditoria</div><div class="page-sub" data-i18n="h_audit_s">Registo completo de todas as acções do sistema</div></div>
         <button class="btn btn-ghost" onclick="exportAuditCSV()">⬇ Exportar CSV</button>
       </div>
       <div class="card" style="margin-bottom:14px;">
@@ -842,25 +864,29 @@ var hcjStorage = (function(){
 
     <!-- CONFIGURACOES -->
     <div class="view" id="view-configuracoes">
-      <div class="page-header"><div><div class="page-title">Configurações</div><div class="page-sub">Preferências do sistema e conta</div></div></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_config_t">Configurações</div><div class="page-sub" data-i18n="h_config_s">Preferências do sistema e conta</div></div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="card">
           <div class="settings-section">
-            <div class="settings-title">Aparência</div>
+            <div class="settings-title" data-i18n="set_aparencia">Aparência</div>
             <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:10px;">
-              <div><div class="setting-label">Tema da interface</div><div class="setting-sub">Escolhe como o HCJ-OS aparece para ti</div></div>
+              <div><div class="setting-label" data-i18n="set_idioma">Idioma do sistema</div><div class="setting-sub" data-i18n="set_idioma_sub">Idioma da interface e dos relatórios gerados por IA</div></div>
+              <select class="lang-select" id="lang-select-settings" onchange="setLang(this.value)" style="width:100%;padding:8px 10px;"></select>
+            </div>
+            <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:10px;margin-top:14px;">
+              <div><div class="setting-label" data-i18n="set_tema">Tema da interface</div><div class="setting-sub" data-i18n="set_tema_sub">Escolhe como o HCJ-OS aparece para ti</div></div>
               <div style="display:flex;gap:8px;">
-                <div class="theme-option" data-theme="dark" onclick="setTheme('dark')" style="flex:1;text-align:center;padding:10px 8px;border-radius:8px;border:1.5px solid var(--border2);cursor:pointer;font-size:11px;">🌙<br>Escuro</div>
-                <div class="theme-option" data-theme="light" onclick="setTheme('light')" style="flex:1;text-align:center;padding:10px 8px;border-radius:8px;border:1.5px solid var(--border2);cursor:pointer;font-size:11px;">☀️<br>Claro</div>
-                <div class="theme-option" data-theme="auto" onclick="setTheme('auto')" style="flex:1;text-align:center;padding:10px 8px;border-radius:8px;border:1.5px solid var(--border2);cursor:pointer;font-size:11px;">⚙️<br>Automático</div>
+                <div class="theme-option" data-theme="dark" onclick="setTheme('dark')" style="flex:1;text-align:center;padding:10px 8px;border-radius:8px;border:1.5px solid var(--border2);cursor:pointer;font-size:11px;">🌙<br><span data-i18n="theme_escuro">Escuro</span></div>
+                <div class="theme-option" data-theme="light" onclick="setTheme('light')" style="flex:1;text-align:center;padding:10px 8px;border-radius:8px;border:1.5px solid var(--border2);cursor:pointer;font-size:11px;">☀️<br><span data-i18n="theme_claro">Claro</span></div>
+                <div class="theme-option" data-theme="auto" onclick="setTheme('auto')" style="flex:1;text-align:center;padding:10px 8px;border-radius:8px;border:1.5px solid var(--border2);cursor:pointer;font-size:11px;">⚙️<br><span data-i18n="theme_auto">Automático</span></div>
               </div>
             </div>
           </div>
           <div class="settings-section">
-            <div class="settings-title">Sistema</div>
-            <div class="setting-row"><div><div class="setting-label">Notificações</div><div class="setting-sub">Alertas de risco e casos</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-            <div class="setting-row"><div><div class="setting-label">Validação obrigatória</div><div class="setting-sub">Aprovar antes de emitir relatório</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-            <div class="setting-row"><div><div class="setting-label">Guardar automaticamente</div><div class="setting-sub">Casos e relatórios</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="settings-title" data-i18n="set_sistema">Sistema</div>
+            <div class="setting-row"><div><div class="setting-label" data-i18n="set_notif">Notificações</div><div class="setting-sub" data-i18n="set_notif_sub">Alertas de risco e casos</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-row"><div><div class="setting-label" data-i18n="set_valid">Validação obrigatória</div><div class="setting-sub" data-i18n="set_valid_sub">Aprovar antes de emitir relatório</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="setting-row"><div><div class="setting-label" data-i18n="set_autosave">Guardar automaticamente</div><div class="setting-sub" data-i18n="set_autosave_sub">Casos e relatórios</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
           </div>
         </div>
         <div class="card">
@@ -917,7 +943,7 @@ var hcjStorage = (function(){
 
     <!-- TUTORIAL -->
     <div class="view" id="view-tutorial">
-      <div class="page-header"><div><div class="page-title">Como Usar o HCJ-OS</div><div class="page-sub">Guia completo do sistema</div></div></div>
+      <div class="page-header"><div><div class="page-title" data-i18n="h_tutorial_t">Como Usar o HCJ-OS</div><div class="page-sub" data-i18n="h_tutorial_s">Guia completo do sistema</div></div></div>
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div class="card"><div style="display:flex;gap:16px;align-items:flex-start;"><div style="font-size:28px;flex-shrink:0;">1️⃣</div><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Registo e Login</div><div style="font-size:13px;color:var(--text2);line-height:1.7;">Cria a tua conta com nome, cargo e PIN de 4 dígitos. Podes adicionar membros da equipa com diferentes permissões: Administrador, Gestor, Técnico ou Visualizador. Cada pessoa entra com o seu próprio utilizador e PIN.</div></div></div></div>
         <div class="card"><div style="display:flex;gap:16px;align-items:flex-start;"><div style="font-size:28px;flex-shrink:0;">2️⃣</div><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Registar Clientes</div><div style="font-size:13px;color:var(--text2);line-height:1.7;">Vai a <strong>Clientes</strong> e adiciona as empresas com que trabalhas. Define o sector, localização e estado (Activo, Proposta, Inactivo). Podes editar ou remover a qualquer momento quando um contrato terminar.</div></div></div></div>
@@ -1052,6 +1078,395 @@ if(notifications.length>100){
   hcjStorage.setItem('hcj_notifs',JSON.stringify(notifications));
 }
 let currentUser=null;
+
+// ============================================================
+// ===== SISTEMA MULTILÍNGUE (i18n) — HCJ-OS v3 ================
+// Idiomas suportados: PT-PT, EN-GB, FR-FR, ES-ES, ZH-CN, AR
+// Cada utilizador escolhe o seu próprio idioma de interface.
+// O idioma do relatório é independente (permite gerar relatórios
+// em EN para um cliente internacional mesmo trabalhando em PT).
+// ============================================================
+const SUPPORTED_LANGS = ['pt','en','fr','es','zh','ar'];
+const LANG_META = {
+  pt:{native:'Português',flag:'🇵🇹',promptName:'português europeu (Portugal)',locale:'pt-PT',dir:'ltr'},
+  en:{native:'English',flag:'🇬🇧',promptName:'English (British English)',locale:'en-GB',dir:'ltr'},
+  fr:{native:'Français',flag:'🇫🇷',promptName:'français',locale:'fr-FR',dir:'ltr'},
+  es:{native:'Español',flag:'🇪🇸',promptName:'español',locale:'es-ES',dir:'ltr'},
+  zh:{native:'中文',flag:'🇨🇳',promptName:'中文（简体中文，Mandarin Chinese）',locale:'zh-CN',dir:'ltr'},
+  ar:{native:'العربية',flag:'🇸🇦',promptName:'العربية (Arabic)',locale:'ar-SA',dir:'rtl'}
+};
+
+const I18N_UI = {
+  pt:{
+    login_entrar:'Entrar', login_novo:'Novo Utilizador', login_selecionar:'Seleccionar utilizador:', login_ou_pin:'ou entrar com PIN',
+    ph_nome_util:'Nome de utilizador', ph_pin:'PIN (4 dígitos)', btn_entrar_sistema:'Entrar no Sistema',
+    ph_nome_completo:'Nome completo', ph_cargo:'Cargo (ex: Técnico HSE)', ph_criar_pin:'Criar PIN (4 dígitos)', btn_criar_conta:'Criar Conta',
+    opt_admin:'Administrador', opt_gestor:'Gestor', opt_tecnico:'Técnico', opt_visualizador:'Visualizador', terms_link:'Termos e Condições de Utilização',
+    navsec_principal:'Principal', nav_dashboard:'Dashboard', nav_casos:'Gestão de Casos', nav_clientes:'Clientes', nav_equipa:'Equipa',
+    navsec_ia:'Inteligência IA', nav_triagem:'Triagem de Risco', nav_relatorio:'Gerar Relatório', nav_localizacao:'Localização / Satélite',
+    navsec_recursos:'Recursos', nav_armazenamento:'Armazenamento', nav_notificacoes:'Notificações', nav_integracoes:'Integrações', nav_auditoria:'Auditoria', nav_configuracoes:'Configurações',
+    navsec_ajuda:'Ajuda', nav_tutorial:'Como Usar', status_operacional:'Sistema operacional', logout_label:'Terminar Sessão', btn_novo_caso:'+ Novo Caso',
+    h_casos_t:'Gestão de Casos', h_casos_s:'Histórico completo de todos os casos',
+    h_clientes_t:'Clientes', h_clientes_s:'CRM — Gestão de relacionamento comercial', btn_add_cliente:'+ Adicionar Cliente',
+    h_equipa_t:'Equipa', h_equipa_s:'Gestão de utilizadores e permissões', btn_add_membro:'+ Adicionar Membro',
+    h_triagem_t:'Triagem de Risco', h_triagem_s:'Análise automática por IA — Groq LLaMA 3.3',
+    h_relatorio_t:'Gerar Relatório Técnico', h_relatorio_s:'Output profissional completo — 11 secções',
+    h_localizacao_t:'Localização / Satélite', h_localizacao_s:'Visualização geoespacial das áreas de inspecção',
+    h_armazenamento_t:'Armazenamento', h_armazenamento_s:'Todos os documentos e relatórios guardados', btn_add_doc:'+ Adicionar Documento',
+    h_notif_t:'Notificações', h_notif_s:'Alertas e actualizações do sistema', btn_marcar_lidas:'Marcar todas como lidas',
+    h_integ_t:'Integrações', h_integ_s:'Conectar com ferramentas externas',
+    h_audit_t:'Auditoria', h_audit_s:'Registo completo de todas as acções do sistema',
+    h_config_t:'Configurações', h_config_s:'Preferências do sistema e conta',
+    h_tutorial_t:'Como Usar o HCJ-OS', h_tutorial_s:'Guia completo do sistema',
+    set_aparencia:'Aparência', set_idioma:'Idioma do sistema', set_idioma_sub:'Idioma da interface e dos relatórios gerados por IA',
+    set_tema:'Tema da interface', set_tema_sub:'Escolhe como o HCJ-OS aparece para ti', theme_escuro:'Escuro', theme_claro:'Claro', theme_auto:'Automático',
+    set_sistema:'Sistema', set_notif:'Notificações', set_notif_sub:'Alertas de risco e casos',
+    set_valid:'Validação obrigatória', set_valid_sub:'Aprovar antes de emitir relatório',
+    set_autosave:'Guardar automaticamente', set_autosave_sub:'Casos e relatórios',
+    lbl_idioma_relatorio:'Idioma do Relatório', chk_fotos_autenticas:'Confirmo que as fotografias anexadas foram capturadas no local pela equipa de auditoria (não são imagens de stock/referência).',
+    btn_gerar_relatorio:'📄 Gerar Relatório Completo com IA', rep_alert_ia:'⚠ Relatório gerado por IA. Aguardando validação técnica antes de emissão final.',
+    btn_export_pdf:'📄 Exportar PDF Profissional', btn_export_word:'📝 Exportar Word (.txt)'
+  },
+  en:{
+    login_entrar:'Sign In', login_novo:'New User', login_selecionar:'Select user:', login_ou_pin:'or sign in with PIN',
+    ph_nome_util:'Username', ph_pin:'PIN (4 digits)', btn_entrar_sistema:'Sign In',
+    ph_nome_completo:'Full name', ph_cargo:'Role (e.g. HSE Technician)', ph_criar_pin:'Create PIN (4 digits)', btn_criar_conta:'Create Account',
+    opt_admin:'Administrator', opt_gestor:'Manager', opt_tecnico:'Technician', opt_visualizador:'Viewer', terms_link:'Terms & Conditions of Use',
+    navsec_principal:'Main', nav_dashboard:'Dashboard', nav_casos:'Case Management', nav_clientes:'Clients', nav_equipa:'Team',
+    navsec_ia:'AI Intelligence', nav_triagem:'Risk Triage', nav_relatorio:'Generate Report', nav_localizacao:'Location / Satellite',
+    navsec_recursos:'Resources', nav_armazenamento:'Storage', nav_notificacoes:'Notifications', nav_integracoes:'Integrations', nav_auditoria:'Audit Trail', nav_configuracoes:'Settings',
+    navsec_ajuda:'Help', nav_tutorial:'How to Use', status_operacional:'System operational', logout_label:'Sign Out', btn_novo_caso:'+ New Case',
+    h_casos_t:'Case Management', h_casos_s:'Complete history of all cases',
+    h_clientes_t:'Clients', h_clientes_s:'CRM — Client relationship management', btn_add_cliente:'+ Add Client',
+    h_equipa_t:'Team', h_equipa_s:'User and permission management', btn_add_membro:'+ Add Member',
+    h_triagem_t:'Risk Triage', h_triagem_s:'Automated AI analysis — Groq LLaMA 3.3',
+    h_relatorio_t:'Generate Technical Report', h_relatorio_s:'Complete professional output — 11 sections',
+    h_localizacao_t:'Location / Satellite', h_localizacao_s:'Geospatial view of inspection areas',
+    h_armazenamento_t:'Storage', h_armazenamento_s:'All saved documents and reports', btn_add_doc:'+ Add Document',
+    h_notif_t:'Notifications', h_notif_s:'System alerts and updates', btn_marcar_lidas:'Mark all as read',
+    h_integ_t:'Integrations', h_integ_s:'Connect with external tools',
+    h_audit_t:'Audit Trail', h_audit_s:'Complete log of all system actions',
+    h_config_t:'Settings', h_config_s:'System and account preferences',
+    h_tutorial_t:'How to Use HCJ-OS', h_tutorial_s:'Complete system guide',
+    set_aparencia:'Appearance', set_idioma:'System language', set_idioma_sub:'Interface and AI-generated report language',
+    set_tema:'Interface theme', set_tema_sub:'Choose how HCJ-OS looks to you', theme_escuro:'Dark', theme_claro:'Light', theme_auto:'Auto',
+    set_sistema:'System', set_notif:'Notifications', set_notif_sub:'Risk and case alerts',
+    set_valid:'Mandatory validation', set_valid_sub:'Approve before issuing report',
+    set_autosave:'Auto-save', set_autosave_sub:'Cases and reports',
+    lbl_idioma_relatorio:'Report Language', chk_fotos_autenticas:'I confirm the attached photos were taken on-site by the audit team (not stock/reference images).',
+    btn_gerar_relatorio:'📄 Generate Full AI Report', rep_alert_ia:'⚠ AI-generated report. Pending technical validation before final issuance.',
+    btn_export_pdf:'📄 Export Professional PDF', btn_export_word:'📝 Export Word (.txt)'
+  },
+  fr:{
+    login_entrar:'Connexion', login_novo:'Nouvel Utilisateur', login_selecionar:'Sélectionner un utilisateur :', login_ou_pin:'ou connectez-vous avec un code PIN',
+    ph_nome_util:"Nom d'utilisateur", ph_pin:'Code PIN (4 chiffres)', btn_entrar_sistema:'Se connecter',
+    ph_nome_completo:'Nom complet', ph_cargo:'Poste (ex : Technicien HSE)', ph_criar_pin:'Créer un code PIN (4 chiffres)', btn_criar_conta:'Créer un compte',
+    opt_admin:'Administrateur', opt_gestor:'Gestionnaire', opt_tecnico:'Technicien', opt_visualizador:'Observateur', terms_link:"Conditions Générales d'Utilisation",
+    navsec_principal:'Principal', nav_dashboard:'Tableau de bord', nav_casos:'Gestion des dossiers', nav_clientes:'Clients', nav_equipa:'Équipe',
+    navsec_ia:'Intelligence IA', nav_triagem:'Triage des risques', nav_relatorio:'Générer un rapport', nav_localizacao:'Localisation / Satellite',
+    navsec_recursos:'Ressources', nav_armazenamento:'Stockage', nav_notificacoes:'Notifications', nav_integracoes:'Intégrations', nav_auditoria:'Audit', nav_configuracoes:'Paramètres',
+    navsec_ajuda:'Aide', nav_tutorial:"Mode d'emploi", status_operacional:'Système opérationnel', logout_label:'Déconnexion', btn_novo_caso:'+ Nouveau dossier',
+    h_casos_t:'Gestion des dossiers', h_casos_s:'Historique complet de tous les dossiers',
+    h_clientes_t:'Clients', h_clientes_s:'CRM — Gestion de la relation client', btn_add_cliente:'+ Ajouter un client',
+    h_equipa_t:'Équipe', h_equipa_s:'Gestion des utilisateurs et des permissions', btn_add_membro:'+ Ajouter un membre',
+    h_triagem_t:'Triage des risques', h_triagem_s:'Analyse automatisée par IA — Groq LLaMA 3.3',
+    h_relatorio_t:'Générer un rapport technique', h_relatorio_s:'Sortie professionnelle complète — 11 sections',
+    h_localizacao_t:'Localisation / Satellite', h_localizacao_s:"Vue géospatiale des zones d'inspection",
+    h_armazenamento_t:'Stockage', h_armazenamento_s:'Tous les documents et rapports enregistrés', btn_add_doc:'+ Ajouter un document',
+    h_notif_t:'Notifications', h_notif_s:'Alertes et mises à jour du système', btn_marcar_lidas:'Tout marquer comme lu',
+    h_integ_t:'Intégrations', h_integ_s:'Se connecter à des outils externes',
+    h_audit_t:'Audit', h_audit_s:'Journal complet de toutes les actions du système',
+    h_config_t:'Paramètres', h_config_s:'Préférences du système et du compte',
+    h_tutorial_t:"Mode d'emploi du HCJ-OS", h_tutorial_s:'Guide complet du système',
+    set_aparencia:'Apparence', set_idioma:'Langue du système', set_idioma_sub:"Langue de l'interface et des rapports générés par IA",
+    set_tema:"Thème de l'interface", set_tema_sub:'Choisissez comment HCJ-OS vous apparaît', theme_escuro:'Sombre', theme_claro:'Clair', theme_auto:'Auto',
+    set_sistema:'Système', set_notif:'Notifications', set_notif_sub:'Alertes de risques et de dossiers',
+    set_valid:'Validation obligatoire', set_valid_sub:"Approuver avant l'émission du rapport",
+    set_autosave:'Enregistrement automatique', set_autosave_sub:'Dossiers et rapports',
+    lbl_idioma_relatorio:'Langue du rapport', chk_fotos_autenticas:"Je confirme que les photos jointes ont été prises sur site par l'équipe d'audit (pas des images de banque/référence).",
+    btn_gerar_relatorio:'📄 Générer le rapport complet avec IA', rep_alert_ia:"⚠ Rapport généré par IA. En attente de validation technique avant émission finale.",
+    btn_export_pdf:'📄 Exporter en PDF professionnel', btn_export_word:'📝 Exporter en Word (.txt)'
+  },
+  es:{
+    login_entrar:'Entrar', login_novo:'Nuevo Usuario', login_selecionar:'Seleccionar usuario:', login_ou_pin:'o entrar con PIN',
+    ph_nome_util:'Nombre de usuario', ph_pin:'PIN (4 dígitos)', btn_entrar_sistema:'Entrar al sistema',
+    ph_nome_completo:'Nombre completo', ph_cargo:'Cargo (ej: Técnico HSE)', ph_criar_pin:'Crear PIN (4 dígitos)', btn_criar_conta:'Crear cuenta',
+    opt_admin:'Administrador', opt_gestor:'Gestor', opt_tecnico:'Técnico', opt_visualizador:'Visualizador', terms_link:'Términos y Condiciones de Uso',
+    navsec_principal:'Principal', nav_dashboard:'Panel', nav_casos:'Gestión de Casos', nav_clientes:'Clientes', nav_equipa:'Equipo',
+    navsec_ia:'Inteligencia IA', nav_triagem:'Triaje de Riesgos', nav_relatorio:'Generar Informe', nav_localizacao:'Ubicación / Satélite',
+    navsec_recursos:'Recursos', nav_armazenamento:'Almacenamiento', nav_notificacoes:'Notificaciones', nav_integracoes:'Integraciones', nav_auditoria:'Auditoría', nav_configuracoes:'Configuración',
+    navsec_ajuda:'Ayuda', nav_tutorial:'Cómo Usar', status_operacional:'Sistema operativo', logout_label:'Cerrar Sesión', btn_novo_caso:'+ Nuevo Caso',
+    h_casos_t:'Gestión de Casos', h_casos_s:'Historial completo de todos los casos',
+    h_clientes_t:'Clientes', h_clientes_s:'CRM — Gestión de relaciones comerciales', btn_add_cliente:'+ Añadir Cliente',
+    h_equipa_t:'Equipo', h_equipa_s:'Gestión de usuarios y permisos', btn_add_membro:'+ Añadir Miembro',
+    h_triagem_t:'Triaje de Riesgos', h_triagem_s:'Análisis automático por IA — Groq LLaMA 3.3',
+    h_relatorio_t:'Generar Informe Técnico', h_relatorio_s:'Resultado profesional completo — 11 secciones',
+    h_localizacao_t:'Ubicación / Satélite', h_localizacao_s:'Visualización geoespacial de las áreas de inspección',
+    h_armazenamento_t:'Almacenamiento', h_armazenamento_s:'Todos los documentos e informes guardados', btn_add_doc:'+ Añadir Documento',
+    h_notif_t:'Notificaciones', h_notif_s:'Alertas y actualizaciones del sistema', btn_marcar_lidas:'Marcar todas como leídas',
+    h_integ_t:'Integraciones', h_integ_s:'Conectar con herramientas externas',
+    h_audit_t:'Auditoría', h_audit_s:'Registro completo de todas las acciones del sistema',
+    h_config_t:'Configuración', h_config_s:'Preferencias del sistema y de la cuenta',
+    h_tutorial_t:'Cómo Usar HCJ-OS', h_tutorial_s:'Guía completa del sistema',
+    set_aparencia:'Apariencia', set_idioma:'Idioma del sistema', set_idioma_sub:'Idioma de la interfaz y de los informes generados por IA',
+    set_tema:'Tema de la interfaz', set_tema_sub:'Elige cómo se ve HCJ-OS para ti', theme_escuro:'Oscuro', theme_claro:'Claro', theme_auto:'Automático',
+    set_sistema:'Sistema', set_notif:'Notificaciones', set_notif_sub:'Alertas de riesgo y de casos',
+    set_valid:'Validación obligatoria', set_valid_sub:'Aprobar antes de emitir el informe',
+    set_autosave:'Guardado automático', set_autosave_sub:'Casos e informes',
+    lbl_idioma_relatorio:'Idioma del Informe', chk_fotos_autenticas:'Confirmo que las fotografías adjuntas fueron tomadas en el lugar por el equipo de auditoría (no son imágenes de stock/referencia).',
+    btn_gerar_relatorio:'📄 Generar Informe Completo con IA', rep_alert_ia:'⚠ Informe generado por IA. Pendiente de validación técnica antes de la emisión final.',
+    btn_export_pdf:'📄 Exportar PDF Profesional', btn_export_word:'📝 Exportar Word (.txt)'
+  },
+  zh:{
+    login_entrar:'登录', login_novo:'新用户', login_selecionar:'选择用户：', login_ou_pin:'或使用 PIN 码登录',
+    ph_nome_util:'用户名', ph_pin:'PIN 码（4 位数字）', btn_entrar_sistema:'登录系统',
+    ph_nome_completo:'全名', ph_cargo:'职位（例如：HSE 技术员）', ph_criar_pin:'创建 PIN 码（4 位数字）', btn_criar_conta:'创建账户',
+    opt_admin:'管理员', opt_gestor:'经理', opt_tecnico:'技术员', opt_visualizador:'查看者', terms_link:'使用条款',
+    navsec_principal:'主菜单', nav_dashboard:'仪表板', nav_casos:'案例管理', nav_clientes:'客户', nav_equipa:'团队',
+    navsec_ia:'人工智能', nav_triagem:'风险分诊', nav_relatorio:'生成报告', nav_localizacao:'位置 / 卫星',
+    navsec_recursos:'资源', nav_armazenamento:'存储', nav_notificacoes:'通知', nav_integracoes:'集成', nav_auditoria:'审计', nav_configuracoes:'设置',
+    navsec_ajuda:'帮助', nav_tutorial:'使用指南', status_operacional:'系统正常运行', logout_label:'退出登录', btn_novo_caso:'+ 新建案例',
+    h_casos_t:'案例管理', h_casos_s:'所有案例的完整历史记录',
+    h_clientes_t:'客户', h_clientes_s:'CRM — 客户关系管理', btn_add_cliente:'+ 添加客户',
+    h_equipa_t:'团队', h_equipa_s:'用户与权限管理', btn_add_membro:'+ 添加成员',
+    h_triagem_t:'风险分诊', h_triagem_s:'AI 自动分析 — Groq LLaMA 3.3',
+    h_relatorio_t:'生成技术报告', h_relatorio_s:'完整专业输出 — 11 个章节',
+    h_localizacao_t:'位置 / 卫星', h_localizacao_s:'检查区域的地理空间视图',
+    h_armazenamento_t:'存储', h_armazenamento_s:'所有已保存的文档和报告', btn_add_doc:'+ 添加文档',
+    h_notif_t:'通知', h_notif_s:'系统警报与更新', btn_marcar_lidas:'全部标记为已读',
+    h_integ_t:'集成', h_integ_s:'连接外部工具',
+    h_audit_t:'审计', h_audit_s:'系统所有操作的完整记录',
+    h_config_t:'设置', h_config_s:'系统与账户偏好设置',
+    h_tutorial_t:'HCJ-OS 使用指南', h_tutorial_s:'完整系统指南',
+    set_aparencia:'外观', set_idioma:'系统语言', set_idioma_sub:'界面与 AI 生成报告的语言',
+    set_tema:'界面主题', set_tema_sub:'选择 HCJ-OS 对你呈现的方式', theme_escuro:'深色', theme_claro:'浅色', theme_auto:'自动',
+    set_sistema:'系统', set_notif:'通知', set_notif_sub:'风险与案例警报',
+    set_valid:'强制验证', set_valid_sub:'签发报告前需批准',
+    set_autosave:'自动保存', set_autosave_sub:'案例与报告',
+    lbl_idioma_relatorio:'报告语言', chk_fotos_autenticas:'我确认所附照片是由审计团队在现场拍摄的（不是库存/参考图片）。',
+    btn_gerar_relatorio:'📄 使用 AI 生成完整报告', rep_alert_ia:'⚠ 本报告由 AI 生成，最终签发前需经技术验证。',
+    btn_export_pdf:'📄 导出专业 PDF', btn_export_word:'📝 导出 Word (.txt)'
+  },
+  ar:{
+    login_entrar:'تسجيل الدخول', login_novo:'مستخدم جديد', login_selecionar:'اختر المستخدم:', login_ou_pin:'أو الدخول برمز PIN',
+    ph_nome_util:'اسم المستخدم', ph_pin:'رمز PIN (4 أرقام)', btn_entrar_sistema:'الدخول إلى النظام',
+    ph_nome_completo:'الاسم الكامل', ph_cargo:'المسمى الوظيفي (مثال: فني السلامة)', ph_criar_pin:'إنشاء رمز PIN (4 أرقام)', btn_criar_conta:'إنشاء حساب',
+    opt_admin:'مسؤول', opt_gestor:'مدير', opt_tecnico:'فني', opt_visualizador:'مُشاهد', terms_link:'شروط وأحكام الاستخدام',
+    navsec_principal:'الرئيسية', nav_dashboard:'لوحة التحكم', nav_casos:'إدارة الحالات', nav_clientes:'العملاء', nav_equipa:'الفريق',
+    navsec_ia:'ذكاء اصطناعي', nav_triagem:'فرز المخاطر', nav_relatorio:'إنشاء تقرير', nav_localizacao:'الموقع / الأقمار الصناعية',
+    navsec_recursos:'الموارد', nav_armazenamento:'التخزين', nav_notificacoes:'الإشعارات', nav_integracoes:'التكاملات', nav_auditoria:'سجل التدقيق', nav_configuracoes:'الإعدادات',
+    navsec_ajuda:'المساعدة', nav_tutorial:'كيفية الاستخدام', status_operacional:'النظام يعمل بشكل طبيعي', logout_label:'تسجيل الخروج', btn_novo_caso:'+ حالة جديدة',
+    h_casos_t:'إدارة الحالات', h_casos_s:'السجل الكامل لجميع الحالات',
+    h_clientes_t:'العملاء', h_clientes_s:'إدارة علاقات العملاء', btn_add_cliente:'+ إضافة عميل',
+    h_equipa_t:'الفريق', h_equipa_s:'إدارة المستخدمين والصلاحيات', btn_add_membro:'+ إضافة عضو',
+    h_triagem_t:'فرز المخاطر', h_triagem_s:'تحليل آلي بالذكاء الاصطناعي — Groq LLaMA 3.3',
+    h_relatorio_t:'إنشاء تقرير فني', h_relatorio_s:'مخرجات احترافية كاملة — 11 قسمًا',
+    h_localizacao_t:'الموقع / الأقمار الصناعية', h_localizacao_s:'عرض جغرافي لمناطق التفتيش',
+    h_armazenamento_t:'التخزين', h_armazenamento_s:'جميع المستندات والتقارير المحفوظة', btn_add_doc:'+ إضافة مستند',
+    h_notif_t:'الإشعارات', h_notif_s:'تنبيهات وتحديثات النظام', btn_marcar_lidas:'وضع علامة مقروء على الكل',
+    h_integ_t:'التكاملات', h_integ_s:'الاتصال بأدوات خارجية',
+    h_audit_t:'سجل التدقيق', h_audit_s:'سجل كامل لجميع إجراءات النظام',
+    h_config_t:'الإعدادات', h_config_s:'تفضيلات النظام والحساب',
+    h_tutorial_t:'كيفية استخدام HCJ-OS', h_tutorial_s:'دليل النظام الكامل',
+    set_aparencia:'المظهر', set_idioma:'لغة النظام', set_idioma_sub:'لغة الواجهة والتقارير التي ينشئها الذكاء الاصطناعي',
+    set_tema:'مظهر الواجهة', set_tema_sub:'اختر كيف يظهر لك HCJ-OS', theme_escuro:'داكن', theme_claro:'فاتح', theme_auto:'تلقائي',
+    set_sistema:'النظام', set_notif:'الإشعارات', set_notif_sub:'تنبيهات المخاطر والحالات',
+    set_valid:'التحقق الإلزامي', set_valid_sub:'الموافقة قبل إصدار التقرير',
+    set_autosave:'الحفظ التلقائي', set_autosave_sub:'الحالات والتقارير',
+    lbl_idioma_relatorio:'لغة التقرير', chk_fotos_autenticas:'أؤكد أن الصور المرفقة التُقطت في الموقع من قبل فريق التدقيق (وليست صورًا مخزنة/مرجعية).',
+    btn_gerar_relatorio:'📄 إنشاء تقرير كامل بالذكاء الاصطناعي', rep_alert_ia:'⚠ تقرير تم إنشاؤه بالذكاء الاصطناعي. بانتظار التحقق الفني قبل الإصدار النهائي.',
+    btn_export_pdf:'📄 تصدير PDF احترافي', btn_export_word:'📝 تصدير Word (.txt)'
+  }
+};
+
+function getLang(){ return hcjStorage.getItem('hcj_lang') || 'pt'; }
+
+function buildLangSelectors(){
+  const opts = SUPPORTED_LANGS.map(l=>`<option value="${l}">${LANG_META[l].flag} ${LANG_META[l].native}</option>`).join('');
+  ['lang-select-login','lang-select-topbar','lang-select-settings'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=opts;
+  });
+}
+
+function applyI18n(){
+  const lang = getLang();
+  const dict = I18N_UI[lang]||I18N_UI.pt;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key=el.getAttribute('data-i18n');
+    if(dict[key]!==undefined) el.textContent=dict[key];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const key=el.getAttribute('data-i18n-ph');
+    if(dict[key]!==undefined) el.setAttribute('placeholder',dict[key]);
+  });
+  // Sincronizar os 3 selectores de idioma (login / topbar / configurações)
+  ['lang-select-login','lang-select-topbar','lang-select-settings'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=lang;
+  });
+  // Direcção do documento (RTL para árabe) + classe de tipografia por script
+  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.setAttribute('dir', LANG_META[lang].dir);
+  document.body.classList.remove('lang-ar','lang-zh');
+  if(lang==='ar') document.body.classList.add('lang-ar');
+  if(lang==='zh') document.body.classList.add('lang-zh');
+  // Título dinâmico da página actual (topbar) — showView() volta a chamar isto de qualquer forma,
+  // mas ao mudar de idioma sem navegar precisamos de actualizar o título já visível.
+  const activeNav=document.querySelector('.nav-item.active[onclick]');
+  if(activeNav){
+    const m=activeNav.getAttribute('onclick').match(/showView\('([a-z]+)'/);
+    if(m && dict['h_'+m[1]+'_t']){
+      const pt=document.getElementById('page-title');
+      if(pt) pt.textContent = (I18N_TITLES[lang]&&I18N_TITLES[lang][m[1]]) || dict['h_'+m[1]+'_t'];
+    }
+  }
+  // Preencher select de idioma do relatório (independente do idioma da interface)
+  const rIdioma=document.getElementById('r-idioma');
+  if(rIdioma && !rIdioma.dataset.filled){
+    rIdioma.innerHTML = SUPPORTED_LANGS.map(l=>`<option value="${l}" ${l===lang?'selected':''}>${LANG_META[l].flag} ${LANG_META[l].native}</option>`).join('');
+    rIdioma.dataset.filled='1';
+  }
+}
+
+// Títulos por idioma para a topbar/showView (Dashboard e Como Usar não têm h_*_t próprio)
+const I18N_TITLES = {};
+SUPPORTED_LANGS.forEach(l=>{
+  const d=I18N_UI[l];
+  I18N_TITLES[l]={
+    dashboard:d.nav_dashboard, casos:d.h_casos_t, clientes:d.h_clientes_t, equipa:d.h_equipa_t,
+    triagem:d.h_triagem_t, relatorio:d.h_relatorio_t, localizacao:d.h_localizacao_t,
+    armazenamento:d.h_armazenamento_t, notificacoes:d.h_notif_t, integracoes:d.h_integ_t,
+    auditoria:d.h_audit_t, configuracoes:d.h_config_t, tutorial:d.h_tutorial_t
+  };
+});
+
+function setLang(lang){
+  if(!SUPPORTED_LANGS.includes(lang)) lang='pt';
+  hcjStorage.setItem('hcj_lang', lang);
+  applyI18n();
+}
+
+function initLang(){
+  buildLangSelectors();
+  applyI18n();
+}
+// ============================================================
+// ===== I18N DO CONTEÚDO DO RELATÓRIO (secções, tabelas, rótulos) ====
+// Independente do idioma da interface — controlado pelo select #r-idioma.
+// ============================================================
+const REPORT_I18N = {
+  pt:{ locale:'pt-PT', dir:'ltr',
+    sec:{id:'01 — Identificação',resumo:'02 — Resumo Executivo',met:'03 — Âmbito e Metodologia',diag:'04 — Diagnóstico Técnico',riscos:'05 — Riscos Identificados',nc:'06 — Não Conformidades',causa:'07 — Análise de Causa Raiz',rec:'08 — Recomendações Técnicas',plano:'09 — Plano de Acção Corretiva',conc:'10 — Conclusão',fotos:'11 — Anexo Fotográfico'},
+    thRiscos:['Nº','Risco','Classificação','Norma','Probabilidade'], thNC:['Ref.','Descrição','Gravidade','Requisito','Prazo'], thPlano:['Acção','Responsável','Prazo','Indicador'],
+    lbl:{caso:'Caso',nCaso:'Nº do Caso',cliente:'Cliente',norma:'Norma',sector:'Sector',data:'Data',dataEmissao:'Data de Emissão',tecnico:'Técnico',elaboradoPor:'Elaborado por',responsavel:'Responsável',classificacao:'Classificação',confidencial:'Confidencial',relatorioCompleto:'Relatório Técnico Completo',semDados:'Sem dados gerados para esta secção.',semRec:'Sem recomendações geradas.',semPlano:'Sem plano de acção gerado.',disclaimer:'Este documento foi gerado com apoio de IA e encontra-se pendente de validação técnica final antes de emissão oficial ao cliente.',geradoPor:'Documento gerado pelo HCJ-OS v3 · Uso Interno',semLegenda:'Sem legenda',fig:'Fig.'}
+  },
+  en:{ locale:'en-GB', dir:'ltr',
+    sec:{id:'01 — Identification',resumo:'02 — Executive Summary',met:'03 — Scope and Methodology',diag:'04 — Technical Diagnosis',riscos:'05 — Identified Risks',nc:'06 — Non-Conformities',causa:'07 — Root Cause Analysis',rec:'08 — Technical Recommendations',plano:'09 — Corrective Action Plan',conc:'10 — Conclusion',fotos:'11 — Photographic Annex'},
+    thRiscos:['No.','Risk','Classification','Standard','Likelihood'], thNC:['Ref.','Description','Severity','Requirement','Deadline'], thPlano:['Action','Owner','Deadline','Indicator'],
+    lbl:{caso:'Case',nCaso:'Case No.',cliente:'Client',norma:'Standard',sector:'Sector',data:'Date',dataEmissao:'Issue Date',tecnico:'Technician',elaboradoPor:'Prepared by',responsavel:'Responsible',classificacao:'Classification',confidencial:'Confidential',relatorioCompleto:'Complete Technical Report',semDados:'No data generated for this section.',semRec:'No recommendations generated.',semPlano:'No action plan generated.',disclaimer:'This document was generated with AI assistance and is pending final technical validation before official issuance to the client.',geradoPor:'Document generated by HCJ-OS v3 · Internal Use',semLegenda:'No caption',fig:'Fig.'}
+  },
+  fr:{ locale:'fr-FR', dir:'ltr',
+    sec:{id:'01 — Identification',resumo:'02 — Résumé Exécutif',met:'03 — Portée et Méthodologie',diag:'04 — Diagnostic Technique',riscos:'05 — Risques Identifiés',nc:'06 — Non-Conformités',causa:'07 — Analyse des Causes Profondes',rec:'08 — Recommandations Techniques',plano:'09 — Plan d\'Action Corrective',conc:'10 — Conclusion',fotos:'11 — Annexe Photographique'},
+    thRiscos:['N°','Risque','Classification','Norme','Probabilité'], thNC:['Réf.','Description','Gravité','Exigence','Délai'], thPlano:['Action','Responsable','Délai','Indicateur'],
+    lbl:{caso:'Dossier',nCaso:'N° de dossier',cliente:'Client',norma:'Norme',sector:'Secteur',data:'Date',dataEmissao:'Date d\'émission',tecnico:'Technicien',elaboradoPor:'Rédigé par',responsavel:'Responsable',classificacao:'Classification',confidencial:'Confidentiel',relatorioCompleto:'Rapport Technique Complet',semDados:'Aucune donnée générée pour cette section.',semRec:'Aucune recommandation générée.',semPlano:'Aucun plan d\'action généré.',disclaimer:'Ce document a été généré avec l\'assistance de l\'IA et est en attente de validation technique finale avant émission officielle au client.',geradoPor:'Document généré par HCJ-OS v3 · Usage Interne',semLegenda:'Sans légende',fig:'Fig.'}
+  },
+  es:{ locale:'es-ES', dir:'ltr',
+    sec:{id:'01 — Identificación',resumo:'02 — Resumen Ejecutivo',met:'03 — Alcance y Metodología',diag:'04 — Diagnóstico Técnico',riscos:'05 — Riesgos Identificados',nc:'06 — No Conformidades',causa:'07 — Análisis de Causa Raíz',rec:'08 — Recomendaciones Técnicas',plano:'09 — Plan de Acción Correctiva',conc:'10 — Conclusión',fotos:'11 — Anexo Fotográfico'},
+    thRiscos:['N.º','Riesgo','Clasificación','Norma','Probabilidad'], thNC:['Ref.','Descripción','Gravedad','Requisito','Plazo'], thPlano:['Acción','Responsable','Plazo','Indicador'],
+    lbl:{caso:'Caso',nCaso:'N.º de Caso',cliente:'Cliente',norma:'Norma',sector:'Sector',data:'Fecha',dataEmissao:'Fecha de Emisión',tecnico:'Técnico',elaboradoPor:'Elaborado por',responsavel:'Responsable',classificacao:'Clasificación',confidencial:'Confidencial',relatorioCompleto:'Informe Técnico Completo',semDados:'Sin datos generados para esta sección.',semRec:'Sin recomendaciones generadas.',semPlano:'Sin plan de acción generado.',disclaimer:'Este documento fue generado con apoyo de IA y está pendiente de validación técnica final antes de su emisión oficial al cliente.',geradoPor:'Documento generado por HCJ-OS v3 · Uso Interno',semLegenda:'Sin leyenda',fig:'Fig.'}
+  },
+  zh:{ locale:'zh-CN', dir:'ltr',
+    sec:{id:'01 — 识别信息',resumo:'02 — 执行摘要',met:'03 — 范围与方法',diag:'04 — 技术诊断',riscos:'05 — 已识别风险',nc:'06 — 不符合项',causa:'07 — 根本原因分析',rec:'08 — 技术建议',plano:'09 — 纠正措施计划',conc:'10 — 结论',fotos:'11 — 照片附件'},
+    thRiscos:['编号','风险','分类','标准','可能性'], thNC:['编号','描述','严重程度','要求','期限'], thPlano:['措施','负责人','期限','指标'],
+    lbl:{caso:'案例',nCaso:'案例编号',cliente:'客户',norma:'标准',sector:'行业',data:'日期',dataEmissao:'签发日期',tecnico:'技术员',elaboradoPor:'编制人',responsavel:'负责人',classificacao:'分类',confidencial:'保密',relatorioCompleto:'完整技术报告',semDados:'本节暂无生成数据。',semRec:'暂无生成的建议。',semPlano:'暂无生成的行动计划。',disclaimer:'本文件由人工智能协助生成，在正式提交客户前尚待技术验证。',geradoPor:'文档由 HCJ-OS v3 生成 · 内部使用',semLegenda:'无说明',fig:'图'}
+  },
+  ar:{ locale:'ar-SA', dir:'rtl',
+    sec:{id:'01 — تحديد الهوية',resumo:'02 — الملخص التنفيذي',met:'03 — النطاق والمنهجية',diag:'04 — التشخيص الفني',riscos:'05 — المخاطر المحددة',nc:'06 — حالات عدم المطابقة',causa:'07 — تحليل السبب الجذري',rec:'08 — التوصيات الفنية',plano:'09 — خطة الإجراءات التصحيحية',conc:'10 — الخاتمة',fotos:'11 — الملحق التصويري'},
+    thRiscos:['رقم','الخطر','التصنيف','المعيار','الاحتمالية'], thNC:['المرجع','الوصف','الخطورة','المتطلب','الموعد النهائي'], thPlano:['الإجراء','المسؤول','الموعد النهائي','المؤشر'],
+    lbl:{caso:'الحالة',nCaso:'رقم الحالة',cliente:'العميل',norma:'المعيار',sector:'القطاع',data:'التاريخ',dataEmissao:'تاريخ الإصدار',tecnico:'الفني',elaboradoPor:'أُعد بواسطة',responsavel:'المسؤول',classificacao:'التصنيف',confidencial:'سري',relatorioCompleto:'التقرير الفني الكامل',semDados:'لا توجد بيانات لهذا القسم.',semRec:'لا توجد توصيات.',semPlano:'لا توجد خطة إجراءات.',disclaimer:'تم إنشاء هذه الوثيقة بمساعدة الذكاء الاصطناعي وهي بانتظار التحقق الفني النهائي قبل الإصدار الرسمي للعميل.',geradoPor:'وثيقة تم إنشاؤها بواسطة HCJ-OS v3 · للاستخدام الداخلي',semLegenda:'بدون تعليق',fig:'شكل'}
+  }
+};
+
+function getReportLang(){
+  const sel=document.getElementById('r-idioma');
+  return (sel && sel.value) ? sel.value : getLang();
+}
+
+// ============================================================
+// ===== BASE FIXA DE REFERÊNCIAS NORMATIVAS (verificadas, NÃO geradas por IA) ====
+// Resolve o problema de "confabulação de normas": a IA já não inventa artigos/decretos,
+// apenas ESCOLHE desta lista fechada. Se a resposta da IA não corresponder a nenhuma
+// entrada, o sistema marca a linha como "a validar" em vez de publicar uma referência falsa.
+// Fontes: Lei n.º 13/2023 (Lei do Trabalho, Cap. VI); Lei n.º 20/97 (Lei do Ambiente);
+// Decretos n.º 62/2013, 94/2024, 54/2015, 18/2004, 11/2006, 83/2014; ISO 45001:2018,
+// ISO 14001:2015, ISO 9001:2015; GRI Standards. Verificado via pesquisa jul/2026 —
+// revalidar periodicamente junto do Boletim da República, pois a legislação evolui.
+// ============================================================
+const REFERENCE_NORMS = {
+  hsst:[
+    'ISO 45001:2018 — Cláusula 8.1 (Planeamento e Controlo Operacional)',
+    'ISO 45001:2018 — Cláusula 8.2 (Preparação e Resposta a Emergências)',
+    'ISO 45001:2018 — Cláusula 6.1 (Ações para Abordar Riscos e Oportunidades)',
+    'ISO 45001:2018 — Cláusula 9.1 (Monitorização, Medição, Análise e Avaliação)',
+    'ISO 45001:2018 — Cláusula 7.2 (Competência) / 7.3 (Consciencialização)',
+    'Lei n.º 13/2023, de 25 de Agosto (Lei do Trabalho) — Capítulo VI, Art. 220',
+    'Decreto n.º 62/2013, de 4 de Dezembro — Regime Jurídico de Acidentes de Trabalho e Doenças Profissionais',
+    'Decreto n.º 94/2024, de 30 de Dezembro — Regulamento de Avaliação e Controlo das Exposições Ocupacionais a Agentes de Risco Físico, Químico e Biológico',
+    'Decreto-Executivo n.º 6/96, de 2 de Fevereiro — Regulamento Geral dos Serviços de Segurança e Higiene no Trabalho nas Empresas'
+  ],
+  ambiente:[
+    'ISO 14001:2015 — Cláusula 8.1 (Planeamento e Controlo Operacional)',
+    'ISO 14001:2015 — Cláusula 9.1 (Monitorização, Medição, Análise e Avaliação)',
+    'Lei n.º 20/97, de 1 de Outubro — Lei do Ambiente (Lei-Quadro), Art. 9',
+    'Decreto n.º 54/2015, de 31 de Dezembro — Regulamento sobre o Processo de Avaliação do Impacto Ambiental',
+    'Decreto n.º 18/2004, de 2 de Junho — Regulamento sobre Padrões de Qualidade Ambiental e de Emissão de Efluentes',
+    'Decreto n.º 11/2006, de 15 de Junho — Regulamento de Inspecção Ambiental',
+    'Decreto n.º 83/2014, de 31 de Dezembro — Regulamento sobre Gestão de Resíduos Perigosos'
+  ],
+  qualidade:[
+    'ISO 9001:2015 — Cláusula 7.5 (Informação Documentada)',
+    'ISO 9001:2015 — Cláusula 8.5 (Produção e Prestação de Serviço)',
+    'ISO 9001:2015 — Cláusula 9.1 (Monitorização, Medição, Análise e Avaliação)',
+    'ISO 9001:2015 — Cláusula 10.2 (Não Conformidade e Ação Corretiva)'
+  ],
+  esg:[
+    'GRI 403 — Saúde e Segurança no Trabalho',
+    'GRI 305 — Emissões',
+    'GRI 306 — Resíduos',
+    'GRI 2 — Divulgações Gerais / Governança'
+  ]
+};
+function flatRefList(tipoSlug){
+  const map={hse:'hsst',ambiental:'ambiente',qualidade:'qualidade',esg:'esg'};
+  const primary = REFERENCE_NORMS[map[tipoSlug]]||REFERENCE_NORMS.hsst;
+  // Inclui sempre HSST + Ambiente como contexto (riscos cruzados são comuns em auditorias industriais)
+  return [...new Set([...primary, ...REFERENCE_NORMS.hsst, ...REFERENCE_NORMS.ambiente])];
+}
+// Confirma se uma referência devolvida pela IA corresponde a uma entrada real da lista;
+// caso contrário marca-a como não verificada em vez de a publicar como facto.
+function validateNormRef(text, allowedList){
+  if(!text) return {ok:false, value:'⚠ referência não especificada — a validar'};
+  const norm = s => s.toLowerCase().replace(/[.,ºª°]/g,'').replace(/\s+/g,' ').trim();
+  const t = norm(text);
+  const hit = allowedList.find(r => norm(r).includes(t) || t.includes(norm(r).split('—')[0].trim()));
+  return hit ? {ok:true, value:hit} : {ok:false, value:text+' ⚠ (referência não confirmada na base normativa — validar manualmente antes de emitir)'};
+}
+
+// Actualiza os títulos de secção visíveis no ecrã (report-content) de acordo com o idioma escolhido para o relatório
+function applyReportSectionTitles(){
+  const rl = REPORT_I18N[getReportLang()]||REPORT_I18N.pt;
+  const map={'rst-01':rl.sec.id,'rst-02':rl.sec.resumo,'rst-03':rl.sec.met,'rst-04':rl.sec.diag,'rst-05':rl.sec.riscos,'rst-06':rl.sec.nc,'rst-07':rl.sec.causa,'rst-08':rl.sec.rec,'rst-09':rl.sec.plano,'rst-10':rl.sec.conc,'rst-11':rl.sec.fotos};
+  Object.keys(map).forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=map[id]; });
+  const setHead=(id,heads)=>{ const el=document.getElementById(id); if(el) el.innerHTML=heads.map(h=>`<th>${h}</th>`).join(''); };
+  setHead('rep-riscos-head', rl.thRiscos);
+  setHead('rep-naoconf-head', rl.thNC);
+  setHead('rep-plano-head', rl.thPlano);
+  const reportContent=document.getElementById('report-content');
+  if(reportContent) reportContent.setAttribute('dir', rl.dir);
+}
+
+
 let uploadedFiles=[];
 let uploadedFilesRep=[];
 let reportPhotos=[]; // {dataUrl, caption, name} — imagens anexadas ao relatório, com legenda
@@ -1128,6 +1543,7 @@ setTimeout(()=>{
 // de desaparecer indefinidamente.
 document.addEventListener('DOMContentLoaded', ()=>{
   initTheme();
+  initLang();
   migrateUserPermissions(); // corrige dados antigos sem RBAC
   setInterval(()=>{ if(currentUser) checkCaseDeadlines(); }, 10*60*1000); // verifica prazos a cada 10 min
   setTimeout(()=>{
@@ -1343,7 +1759,7 @@ function showView(name,el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   if(el)el.classList.add('active');
-  const titles={dashboard:'Dashboard',casos:'Gestão de Casos',clientes:'Clientes',equipa:'Equipa',triagem:'Triagem de Risco',relatorio:'Gerar Relatório',localizacao:'Localização / Satélite',armazenamento:'Armazenamento',notificacoes:'Notificações',integracoes:'Integrações',auditoria:'Auditoria',configuracoes:'Configurações',tutorial:'Como Usar'};
+  const titles=I18N_TITLES[getLang()]||I18N_TITLES.pt;
   document.getElementById('page-title').textContent=titles[name]||name;
   if(name==='configuracoes'){ groqLoadKey(); sheetsLoadConfig(); }
   // Mostrar banner de só leitura para Visualizador em views permitidas
@@ -1624,12 +2040,13 @@ function clearAllData(){
 // BACKUP / RESTORE — protege contra perda de dados ao limpar cache ou trocar de dispositivo
 // ===== PDF EXPORT — Relatório profissional com logo HCJ =====
 function exportReportPDF(){
+  const rl = REPORT_I18N[getReportLang()]||REPORT_I18N.pt;
   const textSections=[
-    {id:'rep-resumo',title:'2 — Resumo Executivo'},
-    {id:'rep-metodologia',title:'3 — Âmbito e Metodologia'},
-    {id:'rep-diag',title:'4 — Diagnóstico Técnico'},
-    {id:'rep-causa',title:'7 — Análise de Causa Raiz'},
-    {id:'rep-conclusao',title:'10 — Conclusão'}
+    {id:'rep-resumo',title:rl.sec.resumo},
+    {id:'rep-metodologia',title:rl.sec.met},
+    {id:'rep-diag',title:rl.sec.diag},
+    {id:'rep-causa',title:rl.sec.causa},
+    {id:'rep-conclusao',title:rl.sec.conc}
   ];
   const hasContent = textSections.some(s=>document.getElementById(s.id)?.textContent?.trim()) ||
                       document.getElementById('rep-riscos')?.innerHTML?.trim() ||
@@ -1641,51 +2058,51 @@ function exportReportPDF(){
   const sectorSlugPdf=document.getElementById('r-sector')?.value||'';
   const sector=SECTOR_LABELS[sectorSlugPdf]||sectorSlugPdf||'—';
   const tipoSlugPdf=document.getElementById('r-tipo')?.value||'';
-  const tipo=TIPO_LABELS[tipoSlugPdf]||tipoSlugPdf||'Relatório Técnico';
-  const data=new Date().toLocaleDateString('pt-PT',{year:'numeric',month:'long',day:'numeric'});
+  const tipo=TIPO_LABELS[tipoSlugPdf]||tipoSlugPdf||rl.lbl.relatorioCompleto;
+  const data=new Date().toLocaleDateString(rl.locale,{year:'numeric',month:'long',day:'numeric'});
+  const isDraft = !!window.reportIsUnverifiedDraft;
 
   const logoEl=document.querySelector('.login-box img, #splash img, .sidebar-logo img, img[alt*="HCJ" i]');
   const logoSrc=logoEl?.src||'';
 
   function tableHtml(rowsHtml, headers){
-    if(!rowsHtml) return '<p style="color:#9ca3af;font-size:10pt;">Sem dados gerados para esta secção.</p>';
+    if(!rowsHtml) return `<p style="color:#9ca3af;font-size:10pt;">${rl.lbl.semDados}</p>`;
     return `<table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:9.5pt;">
-      <thead><tr style="background:#0a0c0f;color:#d4a017;">${headers.map(h=>`<th style="padding:6px 8px;text-align:left;">${h}</th>`).join('')}</tr></thead>
+      <thead><tr style="background:#0a0c0f;color:#d4a017;">${headers.map(h=>`<th style="padding:6px 8px;text-align:${rl.dir==='rtl'?'right':'left'};">${h}</th>`).join('')}</tr></thead>
       <tbody>${rowsHtml}</tbody></table>`;
   }
 
-  const riscosHtml = tableHtml(document.getElementById('rep-riscos')?.innerHTML||'', ['Nº','Risco','Classificação','Norma','Probabilidade']);
-  const ncHtml = tableHtml(document.getElementById('rep-naoconf')?.innerHTML||'', ['Ref.','Descrição','Gravidade','Requisito','Prazo']);
-  const recHtml = document.getElementById('rep-rec')?.innerHTML||'<p style="color:#9ca3af;font-size:10pt;">Sem recomendações geradas.</p>';
-  const planoHtml = document.getElementById('rep-plano')?.innerHTML?tableHtml(document.getElementById('rep-plano').innerHTML,['Acção','Responsável','Prazo','Indicador']):'<p style="color:#9ca3af;font-size:10pt;">Sem plano de acção gerado.</p>';
+  const riscosHtml = tableHtml(document.getElementById('rep-riscos')?.innerHTML||'', rl.thRiscos);
+  const ncHtml = tableHtml(document.getElementById('rep-naoconf')?.innerHTML||'', rl.thNC);
+  const recHtml = document.getElementById('rep-rec')?.innerHTML||`<p style="color:#9ca3af;font-size:10pt;">${rl.lbl.semRec}</p>`;
+  const planoHtml = document.getElementById('rep-plano')?.innerHTML?tableHtml(document.getElementById('rep-plano').innerHTML,rl.thPlano):`<p style="color:#9ca3af;font-size:10pt;">${rl.lbl.semPlano}</p>`;
 
-  const html=`<!DOCTYPE html><html lang="pt"><head>
+  const html=`<!DOCTYPE html><html lang="${getReportLang()}" dir="${rl.dir}"><head>
   <meta charset="UTF-8">
-  <title>Relatório HCJ — ${caseNum}</title>
+  <title>HCJ — ${caseNum}</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400&family=Noto+Sans+Arabic:wght@400;600;700&family=Noto+Sans+SC:wght@400;600;700&display=swap');
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'IBM Plex Sans',sans-serif;font-size:11pt;color:#1a1d24;background:#fff;padding:0;}
+    body{font-family:${rl.dir==='rtl'?"'Noto Sans Arabic'":"'IBM Plex Sans'"},'Noto Sans SC',sans-serif;font-size:11pt;color:#1a1d24;background:#fff;padding:0;}
     .cover{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0c0f 0%,#111418 100%);color:#fff;page-break-after:always;padding:60px 40px;text-align:center;}
     .cover img{width:120px;margin-bottom:24px;}
     .cover h1{font-size:28pt;font-weight:700;color:#d4a017;margin-bottom:8px;letter-spacing:2px;}
     .cover h2{font-size:16pt;font-weight:400;color:#8899aa;margin-bottom:40px;}
-    .cover-meta{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:24px 40px;margin-top:20px;text-align:left;min-width:360px;}
+    .cover-meta{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:24px 40px;margin-top:20px;text-align:${rl.dir==='rtl'?'right':'left'};min-width:360px;}
     .cover-meta-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:11pt;}
     .cover-meta-row:last-child{border:none;}
     .cover-meta-label{color:#8899aa;font-weight:600;}
     .cover-meta-val{color:#e8edf5;}
     .cover-footer{margin-top:40px;font-size:9pt;color:#445566;}
-    .page{padding:40px 50px;max-width:800px;margin:0 auto;}
+    .draft-stamp{position:absolute;top:40px;${rl.dir==='rtl'?'left':'right'}:40px;border:3px solid #dc2626;color:#dc2626;padding:8px 18px;font-weight:800;font-size:13pt;letter-spacing:2px;transform:rotate(8deg);border-radius:6px;}
+    .page{padding:40px 50px;max-width:800px;margin:0 auto;position:relative;}
     h2{font-size:16pt;font-weight:700;color:#0a0c0f;border-bottom:3px solid #d4a017;padding-bottom:8px;margin:32px 0 16px;}
-    .section{margin-bottom:28px;padding:20px;background:#f8f9fa;border-left:4px solid #d4a017;border-radius:0 8px 8px 0;}
+    .section{margin-bottom:28px;padding:20px;background:#f8f9fa;border-${rl.dir==='rtl'?'right':'left'}:4px solid #d4a017;border-radius:0 8px 8px 0;}
     .section h3{font-size:12pt;font-weight:700;color:#d4a017;margin-bottom:10px;}
     .section p{font-size:10.5pt;line-height:1.8;color:#374151;}
     table td,table th{border-bottom:1px solid #e5e7eb;}
     .signature{margin-top:50px;padding-top:20px;border-top:1px solid #d1d5db;font-size:9.5pt;color:#374151;}
     .footer{margin-top:40px;padding-top:16px;border-top:2px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;font-size:8pt;color:#9ca3af;}
-    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:9pt;font-weight:700;}
-    .badge-gold{background:#d4a01720;color:#d4a017;border:1px solid #d4a01740;}
     @media print{
       .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
       .section{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
@@ -1694,51 +2111,53 @@ function exportReportPDF(){
   </style>
   </head><body>
   <div class="cover">
+    ${isDraft?`<div class="draft-stamp">DRAFT</div>`:''}
     ${logoSrc?`<img src="${logoSrc}" alt="HCJ Logo"/>`:'<div style="font-size:48px;margin-bottom:24px;">🛡</div>'}
     <h1>HCJ GLOBAL SOLUTIONS</h1>
     <h2>${tipo}</h2>
     <div class="cover-meta">
-      <div class="cover-meta-row"><span class="cover-meta-label">Nº do Caso</span><span class="cover-meta-val">${caseNum}</span></div>
-      <div class="cover-meta-row"><span class="cover-meta-label">Cliente</span><span class="cover-meta-val">${cliente}</span></div>
-      <div class="cover-meta-row"><span class="cover-meta-label">Sector</span><span class="cover-meta-val">${sector}</span></div>
-      <div class="cover-meta-row"><span class="cover-meta-label">Data de Emissão</span><span class="cover-meta-val">${data}</span></div>
-      <div class="cover-meta-row"><span class="cover-meta-label">Responsável</span><span class="cover-meta-val">${currentUser?.name||'—'}</span></div>
-      <div class="cover-meta-row"><span class="cover-meta-label">Classificação</span><span class="cover-meta-val">Confidencial</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-label">${rl.lbl.nCaso}</span><span class="cover-meta-val">${caseNum}</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-label">${rl.lbl.cliente}</span><span class="cover-meta-val">${cliente}</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-label">${rl.lbl.sector}</span><span class="cover-meta-val">${sector}</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-label">${rl.lbl.dataEmissao}</span><span class="cover-meta-val">${data}</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-label">${rl.lbl.responsavel}</span><span class="cover-meta-val">${currentUser?.name||'—'}</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-label">${rl.lbl.classificacao}</span><span class="cover-meta-val">${rl.lbl.confidencial}</span></div>
     </div>
-    <div class="cover-footer">HCJ Global Solutions Unipessoal, Lda · Moçambique · Gerado automaticamente pelo HCJ-OS v3</div>
+    <div class="cover-footer">HCJ Global Solutions Unipessoal, Lda · Moçambique · HCJ-OS v3</div>
   </div>
   <div class="page">
-    <h2>Relatório Técnico Completo</h2>
+    ${isDraft?`<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:14px 18px;margin-bottom:20px;color:#991b1b;font-size:10pt;font-weight:600;">${document.getElementById('rep-alert-fotos')?.textContent||'⚠ RASCUNHO — fotografias não confirmadas como capturadas no local.'}</div>`:''}
+    <h2>${rl.lbl.relatorioCompleto}</h2>
     ${textSections.slice(0,3).map(s=>{
       const el=document.getElementById(s.id);
       const content=el?.textContent?.trim()||'';
       if(!content) return '';
       return `<div class="section"><h3>${s.title}</h3><p>${content.replace(/\n/g,'<br>')}</p></div>`;
     }).join('')}
-    <div class="section"><h3>5 — Riscos Identificados</h3>${riscosHtml}</div>
-    <div class="section"><h3>6 — Não Conformidades</h3>${ncHtml}</div>
-    ${(()=>{const el=document.getElementById('rep-causa');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>7 — Análise de Causa Raiz</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
-    <div class="section"><h3>8 — Recomendações Técnicas</h3>${recHtml}</div>
-    <div class="section"><h3>9 — Plano de Acção Correctiva</h3>${planoHtml}</div>
-    ${(()=>{const el=document.getElementById('rep-conclusao');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>10 — Conclusão</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
+    <div class="section"><h3>${rl.sec.riscos}</h3>${riscosHtml}</div>
+    <div class="section"><h3>${rl.sec.nc}</h3>${ncHtml}</div>
+    ${(()=>{const el=document.getElementById('rep-causa');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>${rl.sec.causa}</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
+    <div class="section"><h3>${rl.sec.rec}</h3>${recHtml}</div>
+    <div class="section"><h3>${rl.sec.plano}</h3>${planoHtml}</div>
+    ${(()=>{const el=document.getElementById('rep-conclusao');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>${rl.sec.conc}</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
     <div class="signature">
-      <p><strong>${currentUser?.name||'Auditor HCJ'}</strong> — ${currentUser?.role||'Consultor Técnico'}</p>
+      <p><strong>${currentUser?.name||'Auditor HCJ'}</strong> — ${currentUser?.role||'—'}</p>
       <p>HCJ Global Solutions, Moatize/Tete, Moçambique</p>
-      <p style="margin-top:8px;color:#9ca3af;">Este documento foi gerado com apoio de IA (Groq/Llama 3.3) e encontra-se pendente de validação técnica final antes de emissão oficial ao cliente.</p>
+      <p style="margin-top:8px;color:#9ca3af;">${rl.lbl.disclaimer}</p>
     </div>
     <div class="footer">
       <span>HCJ Global Solutions Unipessoal, Lda</span>
       <span>${data}</span>
-      <span>Documento gerado pelo HCJ-OS v3 · Uso Interno</span>
+      <span>${rl.lbl.geradoPor}</span>
     </div>
   </div>
   ${reportPhotos.length?`<div class="page" style="page-break-before:always;">
-    <h2>11 — Anexo Fotográfico</h2>
+    <h2>${rl.sec.fotos}</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
       ${reportPhotos.map((p,i)=>`
         <div style="break-inside:avoid;margin-bottom:16px;">
           <img src="${p.dataUrl}" style="width:100%;max-height:260px;object-fit:cover;border-radius:6px;border:1px solid #d1d5db;">
-          <p style="font-size:9.5pt;color:#374151;margin-top:6px;"><strong>Fig. ${i+1}</strong> — ${(p.caption||p.name||'Sem legenda').replace(/</g,'&lt;')}</p>
+          <p style="font-size:9.5pt;color:#374151;margin-top:6px;"><strong>${rl.lbl.fig} ${i+1}</strong> — ${(p.caption||p.name||rl.lbl.semLegenda).replace(/</g,'&lt;')}</p>
         </div>`).join('')}
     </div>
   </div>`:''}
@@ -1756,23 +2175,23 @@ function exportReportPDF(){
 }
 
 function exportReportWord(){
+  const rl = REPORT_I18N[getReportLang()]||REPORT_I18N.pt;
   const caseNum=document.getElementById('r-caso')?.value||'HCJ-001';
   const client=document.getElementById('r-cliente')?.value||'Cliente';
   const rtypeSlug=document.getElementById('r-tipo')?.value||'';
-  const rtype=TIPO_LABELS[rtypeSlug]||rtypeSlug||'Relatório Técnico';
+  const rtype=TIPO_LABELS[rtypeSlug]||rtypeSlug||rl.lbl.relatorioCompleto;
   const sectorSlugW=document.getElementById('r-sector')?.value||'';
   const sector=SECTOR_LABELS[sectorSlugW]||sectorSlugW||'—';
   const obs=document.getElementById('r-obs')?.value||'';
-  const data=new Date().toLocaleDateString('pt-PT');
-  const hora=new Date().toLocaleTimeString('pt-PT');
+  const data=new Date().toLocaleDateString(rl.locale);
+  const hora=new Date().toLocaleTimeString(rl.locale);
+  const isDraft = !!window.reportIsUnverifiedDraft;
   // Recolher conteúdo das secções geradas (textos + tabelas)
-  const textSections=['rep-resumo','rep-metodologia','rep-diag','rep-causa','rep-conclusao'];
-  const textTitles=['Resumo Executivo','Âmbito e Metodologia','Diagnóstico Técnico','Análise de Causa Raiz','Conclusão'];
   let sectionsHTML='';
   const numOrder=['rep-resumo','rep-metodologia','rep-diag','rep-riscos','rep-naoconf','rep-causa','rep-rec','rep-plano','rep-conclusao'];
-  const numTitles={'rep-resumo':'Resumo Executivo','rep-metodologia':'Âmbito e Metodologia','rep-diag':'Diagnóstico Técnico','rep-riscos':'Riscos Identificados','rep-naoconf':'Não Conformidades','rep-causa':'Análise de Causa Raiz','rep-rec':'Recomendações Técnicas','rep-plano':'Plano de Acção Correctiva','rep-conclusao':'Conclusão'};
-  const tableHeaders={'rep-riscos':['Nº','Risco','Classificação','Norma','Probabilidade'],'rep-naoconf':['Ref.','Descrição','Gravidade','Requisito','Prazo'],'rep-plano':['Acção','Responsável','Prazo','Indicador']};
-  numOrder.forEach((id,i)=>{
+  const numTitles={'rep-resumo':rl.sec.resumo,'rep-metodologia':rl.sec.met,'rep-diag':rl.sec.diag,'rep-riscos':rl.sec.riscos,'rep-naoconf':rl.sec.nc,'rep-causa':rl.sec.causa,'rep-rec':rl.sec.rec,'rep-plano':rl.sec.plano,'rep-conclusao':rl.sec.conc};
+  const tableHeaders={'rep-riscos':rl.thRiscos,'rep-naoconf':rl.thNC,'rep-plano':rl.thPlano};
+  numOrder.forEach((id)=>{
     const el=document.getElementById(id);
     if(!el) return;
     const isTable = ['rep-riscos','rep-naoconf','rep-plano'].includes(id);
@@ -1780,19 +2199,19 @@ function exportReportWord(){
     const txt = isTable||isRec ? el.innerHTML : el.textContent;
     if(!txt||!txt.trim()) return;
     if(isTable){
-      sectionsHTML+=`<h2>${i+1} — ${numTitles[id]}</h2><table><thead><tr>${tableHeaders[id].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${txt}</tbody></table>`;
+      sectionsHTML+=`<h2>${numTitles[id]}</h2><table><thead><tr>${tableHeaders[id].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${txt}</tbody></table>`;
     } else if(isRec){
-      sectionsHTML+=`<h2>${i+1} — ${numTitles[id]}</h2><div>${txt}</div>`;
+      sectionsHTML+=`<h2>${numTitles[id]}</h2><div>${txt}</div>`;
     } else {
-      sectionsHTML+=`<h2>${i+1} — ${numTitles[id]}</h2><p>${txt.replace(/\n/g,'</p><p>')}</p>`;
+      sectionsHTML+=`<h2>${numTitles[id]}</h2><p>${txt.replace(/\n/g,'</p><p>')}</p>`;
     }
   });
   if(!sectionsHTML){
     alert('Gera o relatório primeiro com a IA antes de exportar.');return;
   }
-  const htmlDoc=`<!DOCTYPE html><html><head><meta charset="utf-8">
+  const htmlDoc=`<!DOCTYPE html><html dir="${rl.dir}"><head><meta charset="utf-8">
 <style>
-body{font-family:Calibri,Arial,sans-serif;margin:2cm 2.5cm;color:#1a1a1a;font-size:11pt;line-height:1.7;}
+body{font-family:Calibri,Arial,sans-serif;margin:2cm 2.5cm;color:#1a1a1a;font-size:11pt;line-height:1.7;direction:${rl.dir};}
 .hdr{background:#1a5c35;color:white;padding:18px 22px;margin-bottom:18px;}
 .hdr h1{margin:0;font-size:17pt;letter-spacing:1px;}
 .hdr p{margin:3px 0 0;font-size:9.5pt;opacity:0.85;}
@@ -1803,42 +2222,44 @@ h2{color:#1a5c35;font-size:12.5pt;border-bottom:2px solid #1a5c35;padding-bottom
 p{margin:7px 0;text-align:justify;}
 ul{margin:6px 0;}
 table{width:100%;border-collapse:collapse;margin:10px 0;font-size:10pt;}
-th{background:#1a5c35;color:white;padding:6px 10px;text-align:left;}
+th{background:#1a5c35;color:white;padding:6px 10px;text-align:${rl.dir==='rtl'?'right':'left'};}
 td{padding:5px 10px;border:1px solid #ddd;}
 tr:nth-child(even) td{background:#f8faf8;}
 .footer{margin-top:36px;padding-top:10px;border-top:1px solid #bbb;font-size:8.5pt;color:#777;text-align:center;}
 .confidencial{background:#dc2626;color:white;display:inline-block;padding:2px 10px;font-size:9pt;font-weight:700;border-radius:3px;margin-top:6px;}
+.draft-banner{background:#fef2f2;border:2px solid #dc2626;color:#991b1b;padding:10px 14px;font-weight:700;margin-bottom:16px;}
 </style></head><body>
 <div class="hdr"><h1>HCJ GLOBAL SOLUTIONS</h1>
 <p>Consultoria em HSST · Meio Ambiente · Qualidade · ESG — Moatize, Tete, Moçambique</p></div>
+${isDraft?`<div class="draft-banner">${document.getElementById('rep-alert-fotos')?.textContent||'⚠ RASCUNHO — fotografias não confirmadas.'}</div>`:''}
 <table class="meta">
-<tr><td>Número do Caso</td><td><strong>${caseNum}</strong></td></tr>
-<tr><td>Cliente</td><td>${client}</td></tr>
-<tr><td>Tipo de Relatório</td><td>${rtype}</td></tr>
-<tr><td>Sector</td><td>${sector}</td></tr>
-<tr><td>Data de Emissão</td><td>${data} às ${hora}</td></tr>
-<tr><td>Responsável Técnico</td><td>${currentUser?.name||'HCJ Auditor'}</td></tr>
-<tr><td>Classificação</td><td><span class="confidencial">CONFIDENCIAL</span></td></tr>
+<tr><td>${rl.lbl.nCaso}</td><td><strong>${caseNum}</strong></td></tr>
+<tr><td>${rl.lbl.cliente}</td><td>${client}</td></tr>
+<tr><td>${rl.lbl.norma}</td><td>${rtype}</td></tr>
+<tr><td>${rl.lbl.sector}</td><td>${sector}</td></tr>
+<tr><td>${rl.lbl.dataEmissao}</td><td>${data} — ${hora}</td></tr>
+<tr><td>${rl.lbl.tecnico}</td><td>${currentUser?.name||'HCJ Auditor'}</td></tr>
+<tr><td>${rl.lbl.classificacao}</td><td><span class="confidencial">${rl.lbl.confidencial.toUpperCase()}</span></td></tr>
 </table>
 ${sectionsHTML}
-${reportPhotos.length?`<h2>11 — Anexo Fotográfico</h2>
+${reportPhotos.length?`<h2>${rl.sec.fotos}</h2>
 <table style="border:none;">
 ${(()=>{
   let rows='';
   for(let i=0;i<reportPhotos.length;i+=2){
     const p1=reportPhotos[i], p2=reportPhotos[i+1];
     rows+=`<tr style="border:none;">
-      <td style="border:none;width:50%;text-align:center;padding:10px;"><img src="${p1.dataUrl}" style="max-width:100%;max-height:260px;"><p style="font-size:9pt;"><strong>Fig. ${i+1}</strong> — ${(p1.caption||p1.name||'Sem legenda')}</p></td>
-      <td style="border:none;width:50%;text-align:center;padding:10px;">${p2?`<img src="${p2.dataUrl}" style="max-width:100%;max-height:260px;"><p style="font-size:9pt;"><strong>Fig. ${i+2}</strong> — ${(p2.caption||p2.name||'Sem legenda')}</p>`:''}</td>
+      <td style="border:none;width:50%;text-align:center;padding:10px;"><img src="${p1.dataUrl}" style="max-width:100%;max-height:260px;"><p style="font-size:9pt;"><strong>${rl.lbl.fig} ${i+1}</strong> — ${(p1.caption||p1.name||rl.lbl.semLegenda)}</p></td>
+      <td style="border:none;width:50%;text-align:center;padding:10px;">${p2?`<img src="${p2.dataUrl}" style="max-width:100%;max-height:260px;"><p style="font-size:9pt;"><strong>${rl.lbl.fig} ${i+2}</strong> — ${(p2.caption||p2.name||rl.lbl.semLegenda)}</p>`:''}</td>
     </tr>`;
   }
   return rows;
 })()}
 </table>`:''}
 <div class="footer">
-Relatório gerado pelo sistema HCJ-OS v3.0 · Groq AI · ${data}<br>
+${rl.lbl.geradoPor} · ${data}<br>
 HCJ Global Solutions — Moatize, Tete, Moçambique<br>
-Documento CONFIDENCIAL — uso restrito ao cliente indicado
+${rl.lbl.disclaimer}
 </div></body></html>`;
   const blob=new Blob([htmlDoc],{type:'application/msword;charset=utf-8'});
   const a=document.createElement('a');
@@ -2368,6 +2789,32 @@ async function generateReport(){
   // Limpar erros anteriores
   const oldErr = document.querySelector('.report-error-box');
   if(oldErr) oldErr.remove();
+
+  // Idioma escolhido para ESTE relatório (independente do idioma da interface)
+  const reportLang = getReportLang();
+  const rl = REPORT_I18N[reportLang]||REPORT_I18N.pt;
+  const langPromptName = (LANG_META[reportLang]||LANG_META.pt).promptName;
+  applyReportSectionTitles();
+
+  // Aviso de autenticidade fotográfica: se o utilizador não confirmar que as fotos
+  // são do local real, o relatório sai claramente marcado como rascunho/não verificado
+  // — evita que imagens de stock sejam tratadas como prova de auditoria.
+  const fotosConfirmadas = document.getElementById('r-fotos-autenticas')?.checked;
+  const fotoAlertEl = document.getElementById('rep-alert-fotos');
+  if(reportPhotos.length>0 && !fotosConfirmadas){
+    const msgs={pt:'⚠ As fotografias anexadas NÃO foram confirmadas como capturadas no local. Este relatório está marcado como RASCUNHO — não enviar ao cliente como evidência de auditoria sem substituir por fotos reais verificadas.',
+      en:'⚠ Attached photos were NOT confirmed as on-site captures. This report is marked as DRAFT — do not send to the client as audit evidence without replacing with verified real photos.',
+      fr:"⚠ Les photos jointes n'ont PAS été confirmées comme prises sur site. Ce rapport est marqué comme BROUILLON — ne pas envoyer au client comme preuve d'audit sans les remplacer par de vraies photos vérifiées.",
+      es:'⚠ Las fotografías adjuntas NO fueron confirmadas como tomadas en el lugar. Este informe está marcado como BORRADOR — no enviar al cliente como evidencia de auditoría sin sustituir por fotos reales verificadas.',
+      zh:'⚠ 所附照片尚未确认为现场拍摄。本报告标记为草稿——在替换为经核实的真实照片之前，请勿作为审计证据发送给客户。',
+      ar:'⚠ لم يتم تأكيد أن الصور المرفقة التُقطت في الموقع. تم وضع علامة "مسودة" على هذا التقرير — لا ترسله إلى العميل كدليل تدقيق دون استبداله بصور حقيقية موثقة.'};
+    if(fotoAlertEl){ fotoAlertEl.style.display='block'; fotoAlertEl.textContent = msgs[reportLang]||msgs.pt; }
+    window.reportIsUnverifiedDraft = true;
+  } else if(fotoAlertEl){
+    fotoAlertEl.style.display='none';
+    window.reportIsUnverifiedDraft = false;
+  }
+
   try{
     const key = hcjStorage.getItem('groq_api_key')||'';
     if(!key||!key.startsWith('gsk_')) throw new Error('CHAVE_GROQ_AUSENTE');
@@ -2383,10 +2830,10 @@ async function generateReport(){
           body:JSON.stringify({
             model:'llama-3.3-70b-versatile',
             messages:[
-              {role:'system',content:'You are a senior HSE consultant at HCJ Global Solutions, Mozambique. Write ONLY in Portuguese (pt-MZ). Be direct, technical and detailed.'},
+              {role:'system',content:'You are a senior HSE consultant at HCJ Global Solutions, Mozambique. Write the ENTIRE content of every section strictly in '+langPromptName+' — do not mix in any other language. Keep the structural markers (RESUMO:, METODOLOGIA:, DIAGNOSTICO:, CAUSA_RAIZ:, SCORES:, RISCOS:, NAO_CONFORMIDADES:, RECOMENDACOES:, PLANO:, CONCLUSAO:) exactly as given, in Latin capital letters, never translated — they are parsing markers, not visible text. Be direct, technical and detailed. Vary sentence structure throughout the document: never reuse the same sentence template (e.g. "the lack of X may have significant impact on Y") more than twice in the whole report.'},
               {role:'user',content:baseCtx+'\n\n'+instruction}
             ],
-            temperature:0.2,
+            temperature:0.3,
             max_tokens:maxTok||2800
           })
         });
@@ -2452,20 +2899,21 @@ async function generateReport(){
     // Mostrar a área de output desde já, para preenchimento progressivo
     const outputDivEarly=document.getElementById('report-output');
     if(outputDivEarly) outputDivEarly.classList.add('show');
-    document.getElementById('rep-titulo').textContent='Relatório Técnico — '+norma+' — #'+caso;
+    document.getElementById('rep-titulo').textContent=rl.lbl.relatorioCompleto.split(' — ')[0]+' — '+norma+' — #'+caso;
     document.getElementById('rep-identificacao').innerHTML=
       `<table class="report-table"><tbody>
-      <tr><td style="font-weight:600">Caso</td><td>#${caso}</td></tr>
-      <tr><td style="font-weight:600">Cliente</td><td>${cliente}</td></tr>
-      <tr><td style="font-weight:600">Norma</td><td>${norma}</td></tr>
-      <tr><td style="font-weight:600">Sector</td><td>${sector}</td></tr>
-      <tr><td style="font-weight:600">Data</td><td>${new Date().toLocaleDateString('pt-PT')}</td></tr>
-      <tr><td style="font-weight:600">Tecnico</td><td>${(currentUser&&currentUser.name)||'HCJ Auditor'}</td></tr>
-      <tr><td style="font-weight:600">Elaborado por</td><td>HCJ Global Solutions — HCJ-OS v3.0</td></tr>
+      <tr><td style="font-weight:600">${rl.lbl.caso}</td><td>#${caso}</td></tr>
+      <tr><td style="font-weight:600">${rl.lbl.cliente}</td><td>${cliente}</td></tr>
+      <tr><td style="font-weight:600">${rl.lbl.norma}</td><td>${norma}</td></tr>
+      <tr><td style="font-weight:600">${rl.lbl.sector}</td><td>${sector}</td></tr>
+      <tr><td style="font-weight:600">${rl.lbl.data}</td><td>${new Date().toLocaleDateString(rl.locale)}</td></tr>
+      <tr><td style="font-weight:600">${rl.lbl.tecnico}</td><td>${(currentUser&&currentUser.name)||'HCJ Auditor'}</td></tr>
+      <tr><td style="font-weight:600">${rl.lbl.elaboradoPor}</td><td>HCJ Global Solutions — HCJ-OS v3.0</td></tr>
       </tbody></table>`;
 
     let resumo='',metodologia='',diagnostico='',causa_raiz='',conclusao='';
     let riscos=[],ncs=[],recs=[],plano=[];
+    let pillarScores={};
     let partialError=null;
 
     // Pedido 1 — textos narrativos
@@ -2484,13 +2932,35 @@ DIAGNOSTICO:
 [diagnostico tecnico MUITO detalhado, minimo 350 palavras, analisando cada um dos 4 pilares HSST/Ambiente/Qualidade/ESG individualmente com scores estimados, evidencias observadas e implicacoes]
 
 CAUSA_RAIZ:
-[analise causa raiz detalhada, minimo 280 palavras, aplicando metodologia dos 5 Porques as nao conformidades identificadas, distinguindo causas sistemicas de causas isoladas]`,
+[analise causa raiz detalhada, minimo 280 palavras, aplicando metodologia dos 5 Porques as nao conformidades identificadas, distinguindo causas sistemicas de causas isoladas]
+
+SCORES:
+HSST=[numero inteiro 0-100]|Ambiente=[numero inteiro 0-100]|Qualidade=[numero inteiro 0-100]|ESG=[numero inteiro 0-100]
+(estes 4 numeros devem ser EXACTAMENTE os mesmos scores que usaste na secção DIAGNOSTICO acima — nao inventes valores novos aqui)`,
         2800
       );
-      resumo = extractSection(texto1, 'RESUMO', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ']);
-      metodologia = extractSection(texto1, 'METODOLOGIA', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ']);
-      diagnostico = extractSection(texto1, 'DIAGNOSTICO', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ']);
-      causa_raiz = extractSection(texto1, 'CAUSA_RAIZ', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ']);
+      resumo = extractSection(texto1, 'RESUMO', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ','SCORES']);
+      metodologia = extractSection(texto1, 'METODOLOGIA', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ','SCORES']);
+      diagnostico = extractSection(texto1, 'DIAGNOSTICO', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ','SCORES']);
+      causa_raiz = extractSection(texto1, 'CAUSA_RAIZ', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ','SCORES']);
+      const scoresRaw = extractSection(texto1, 'SCORES', ['RESUMO','METODOLOGIA','DIAGNOSTICO','CAUSA_RAIZ','SCORES']);
+      // Parser tolerante: aceita "HSST=40", "HSST: 40", "HSST 40%" etc.
+      pillarScores = {};
+      const CANON_PILLAR = {hsst:'HSST', ambiente:'Ambiente', qualidade:'Qualidade', esg:'ESG'};
+      (scoresRaw||'').split('|').forEach(part=>{
+        const m = part.match(/(HSST|Ambiente|Qualidade|ESG)\D{0,3}(\d{1,3})/i);
+        if(m) pillarScores[CANON_PILLAR[m[1].toLowerCase()]] = Math.min(100, parseInt(m[2],10));
+      });
+      // Rede de segurança: se a IA não devolveu SCORES válido, tenta apanhar percentagens dentro do próprio texto do diagnóstico
+      if(Object.keys(pillarScores).length<4){
+        ['HSST','Ambiente','Qualidade','ESG'].forEach(p=>{
+          if(pillarScores[p]===undefined){
+            const re=new RegExp(p+'\\D{0,15}(\\d{1,3})\\s*%','i');
+            const mm=(diagnostico||'').match(re);
+            if(mm) pillarScores[p]=Math.min(100,parseInt(mm[1],10));
+          }
+        });
+      }
       const resumoEl=document.getElementById('rep-resumo'); if(resumoEl) resumoEl.textContent=resumo||texto1.replace(/\*\*/g,'');
       const metEl=document.getElementById('rep-metodologia'); if(metEl) metEl.textContent=metodologia||'Não foi possível extrair esta secção separadamente da resposta da IA — ver Resumo Executivo (secção 02) para o conteúdo completo da análise.';
       const diagEl=document.getElementById('rep-diag'); if(diagEl) diagEl.textContent=diagnostico||'Não foi possível extrair esta secção separadamente da resposta da IA — ver Resumo Executivo (secção 02) para o conteúdo completo da análise.';
@@ -2504,23 +2974,27 @@ CAUSA_RAIZ:
 
     // Pedido 2 — riscos e não conformidades
     btn.textContent='⏳ Gerando riscos e NCs (2/3)...';
+    const normasPermitidas = flatRefList(tipoSlug);
     try{
       const texto2 = await askGroq(
-        `Com base nas observacoes de campo, gera EXACTAMENTE neste formato:
+        `Com base nas observacoes de campo, gera EXACTAMENTE neste formato.
+
+IMPORTANTE SOBRE REFERENCIAS NORMATIVAS: para a coluna de Norma/Requisito, escolhe SEMPRE uma das seguintes referencias reais (copia o texto EXACTAMENTE como aparece na lista, nao inventes numeros de artigo, decreto ou clausula que nao estejam aqui):
+${normasPermitidas.map(n=>'- '+n).join('\n')}
 
 RISCOS:
-R-001|[descricao risco critico]|Critico|ISO 45001 8.1|Alta
-R-002|[descricao risco grave]|Maior|ISO 45001 6.1|Alta
-R-003|[descricao risco ambiental]|Moderado|ISO 14001 8.1|Media
-R-004|[descricao risco documental]|Menor|ISO 9001 7.5|Media
-R-005|[descricao risco ESG]|Moderado|GRI 403|Baixa
+R-001|[descricao risco critico]|Critico|[uma referencia da lista acima]|Alta
+R-002|[descricao risco grave]|Maior|[uma referencia da lista acima]|Alta
+R-003|[descricao risco ambiental]|Moderado|[uma referencia da lista acima]|Media
+R-004|[descricao risco documental]|Menor|[uma referencia da lista acima]|Media
+R-005|[descricao risco ESG]|Moderado|[uma referencia da lista acima]|Baixa
 
 NAO_CONFORMIDADES:
-NC-001|[descricao NC critica especifica das observacoes]|Maior|ISO 45001 8.1.2|24h
-NC-002|[descricao NC grave]|Maior|Decreto 31/2012 Art.18|48h
-NC-003|[descricao NC sinalização]|Menor|ISO 45001 8.2|15 dias
-NC-004|[descricao NC documental]|Menor|ISO 45001 8.2|20 dias
-NC-005|[descricao NC ambiental]|Menor|ISO 14001 8.1|7 dias
+NC-001|[descricao NC critica especifica das observacoes]|Maior|[uma referencia da lista acima]|24h
+NC-002|[descricao NC grave]|Maior|[uma referencia da lista acima]|48h
+NC-003|[descricao NC sinalização]|Menor|[uma referencia da lista acima]|15 dias
+NC-004|[descricao NC documental]|Menor|[uma referencia da lista acima]|20 dias
+NC-005|[descricao NC ambiental]|Menor|[uma referencia da lista acima]|7 dias
 
 RECOMENDACOES:
 REC-1|[recomendacao urgente 24h especifica e detalhada]
@@ -2544,6 +3018,12 @@ PLANO-5|[accao 5]|HSE Officer|30 dias|[indicador]`,
       ncs = extractPipeLines(texto2, 'NC-');
       recs = extractPipeLines(texto2, 'REC-');
       plano = extractPipeLines(texto2, 'PLANO-');
+
+      // Validação anti-confabulação: cada referência normativa devolvida pela IA é
+      // conferida contra a base fixa (REFERENCE_NORMS). Se não corresponder a nenhuma
+      // entrada real, é marcada como "não confirmada" em vez de publicada como facto.
+      riscos = riscos.map(p=>{ if(p[3]){ const v=validateNormRef(p[3], normasPermitidas); p[3]=v.value; } return p; });
+      ncs = ncs.map(p=>{ if(p[3]){ const v=validateNormRef(p[3], normasPermitidas); p[3]=v.value; } return p; });
 
       const riscosEl=document.getElementById('rep-riscos');
       if(riscosEl && riscos.length>0){
@@ -2586,16 +3066,32 @@ PLANO-5|[accao 5]|HSE Officer|30 dias|[indicador]`,
 
     // Pedido 3 — conclusão
     btn.textContent='⏳ Gerando conclusão (3/3)...';
+    // Scores finais: usa SEMPRE os valores extraídos do Diagnóstico (pedido 1). Se algum
+    // pilar não foi capturado, usa 'N/D' em vez de deixar a IA inventar um número novo —
+    // isto elimina estruturalmente a inconsistência de scores entre secções.
+    const scoreStr = ['HSST','Ambiente','Qualidade','ESG'].map(p=>p+'='+(pillarScores[p]!==undefined?pillarScores[p]+'%':'N/D')).join(', ');
     try{
       const texto3 = await askGroq(
         `Gera a conclusao tecnica formal EXACTAMENTE neste formato:
 
 CONCLUSAO:
-[conclusao formal MUITO detalhada, minimo 350 palavras, com: scores finais por pilar HSST X% Ambiente X% Qualidade X% ESG X%, declaracao de conformidade ou nao conformidade com ${norma}, calendario de seguimento, proxima auditoria recomendada, declaracao de compromisso HCJ Global Solutions. Assinado por ${(currentUser&&currentUser.name)||'Eng. HCJ'} - Consultor Senior HSST, HCJ Global Solutions, Moatize/Tete, Mocambique]`,
+[conclusao formal MUITO detalhada, minimo 350 palavras, com: calendario de seguimento, proxima auditoria recomendada, declaracao de compromisso HCJ Global Solutions. Assinado por ${(currentUser&&currentUser.name)||'Eng. HCJ'} - Consultor Senior HSST, HCJ Global Solutions, Moatize/Tete, Mocambique.
+
+OBRIGATORIO: usa EXACTAMENTE estes scores finais por pilar, ja calculados na seccao de Diagnostico — nao inventes valores diferentes: ${scoreStr}. Inclui tambem uma declaracao clara de conformidade ou nao-conformidade com ${norma} com base nestes scores.]`,
         1800
       );
       conclusao = extractSection(texto3, 'CONCLUSAO');
-      const concEl=document.getElementById('rep-conclusao'); if(concEl) concEl.textContent=conclusao||texto3||'Auditoria concluída com sucesso.';
+      if(!conclusao) conclusao = texto3;
+      // Rede de segurança determinística: garante que os 4 scores que aparecem no texto
+      // final da conclusão são sempre os mesmos do Diagnóstico, mesmo que a IA, por
+      // variação de amostragem, tenha escrito um número ligeiramente diferente.
+      ['HSST','Ambiente','Qualidade','ESG'].forEach(p=>{
+        if(pillarScores[p]!==undefined){
+          const re = new RegExp(p+'\\D{0,10}\\d{1,3}\\s*%','gi');
+          if(re.test(conclusao)) conclusao = conclusao.replace(re, p+' '+pillarScores[p]+'%');
+        }
+      });
+      const concEl=document.getElementById('rep-conclusao'); if(concEl) concEl.textContent=conclusao||'Auditoria concluída com sucesso.';
     }catch(err){
       partialError=err;
       const concEl=document.getElementById('rep-conclusao'); if(concEl) concEl.textContent='⚠ Falha ao gerar esta secção: '+err.message;
