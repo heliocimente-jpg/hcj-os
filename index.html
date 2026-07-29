@@ -403,6 +403,7 @@ var hcjStorage = (function(){
   }
 })();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <script>
@@ -583,7 +584,7 @@ var hcjStorage = (function(){
       <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px;">
         <div class="card">
           <div class="card-header"><div class="card-title">Últimos Casos</div><span class="badge badge-gray" id="casos-count-label">0 registados</span></div>
-          <div id="dash-casos-table"><p style="color:var(--text3);font-size:12px;">Nenhum caso ainda. Crie o primeiro caso na Triagem de Risco.</p></div>
+          <div id="dash-casos-table"><p style="color:var(--text3);font-size:12px;" data-i18n="dash_nenhum_caso_crie">Nenhum caso ainda. Crie o primeiro caso na Triagem de Risco.</p></div>
         </div>
         <div class="card">
           <div class="card-header"><div class="card-title">Actividade Recente</div></div>
@@ -933,7 +934,7 @@ var hcjStorage = (function(){
         <div class="danger-zone">
           <div class="danger-title">⚠ Zona de Perigo</div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-red" onclick="if(confirm('Apagar todos os dados locais?')){clearAllData()}">🗑 Apagar todos os dados</button>
+            <button class="btn btn-red" onclick="if(confirm(tr('msg_confirm_apagar_dados'))){clearAllData()}">🗑 Apagar todos os dados</button>
             <button class="btn btn-red" onclick="doLogout()">⏻ Terminar sessão</button>
             <button class="btn btn-ghost" onclick="openModal('terms-modal')">📄 Ver Termos e Condições</button>
           </div>
@@ -1052,6 +1053,28 @@ const SECTOR_LABELS={mineracao:'Mineração',oleogas:'Óleo e Gás',logistica:'L
 // Mapa global: valor interno do <select> de Tipo de Relatório → rótulo amigável completo.
 // Usado nas exportações PDF/Word para nunca mostrar o valor em bruto (ex: "hse") na capa.
 const TIPO_LABELS={hse:'Auditoria HSE (ISO 45001)',ambiental:'Conformidade Ambiental (ISO 14001)',qualidade:'Qualidade (ISO 9001)',esg:'ESG / Sustentabilidade (GRI)'};
+// Versões traduzidas de TIPO_LABELS/SECTOR_LABELS por idioma de RELATÓRIO (independente do idioma da UI) —
+// resolve o problema de a capa do PDF/Word mostrar sempre "Auditoria HSE (ISO 45001)" em PT mesmo quando
+// o relatório é gerado noutro idioma.
+const TIPO_LABELS_I18N = {
+  pt:{"hse":"Auditoria HSE (ISO 45001)","ambiental":"Conformidade Ambiental (ISO 14001)","qualidade":"Qualidade (ISO 9001)","esg":"ESG / Sustentabilidade (GRI)"},
+  en:{"hse":"HSE Audit (ISO 45001)","ambiental":"Environmental Compliance (ISO 14001)","qualidade":"Quality (ISO 9001)","esg":"ESG / Sustainability (GRI)"},
+  fr:{"hse":"Audit HSE (ISO 45001)","ambiental":"Conformité Environnementale (ISO 14001)","qualidade":"Qualité (ISO 9001)","esg":"ESG / Durabilité (GRI)"},
+  es:{"hse":"Auditoría HSE (ISO 45001)","ambiental":"Conformidad Ambiental (ISO 14001)","qualidade":"Calidad (ISO 9001)","esg":"ESG / Sostenibilidad (GRI)"},
+  zh:{"hse":"HSE 审核（ISO 45001）","ambiental":"环境合规（ISO 14001）","qualidade":"质量（ISO 9001）","esg":"ESG / 可持续发展（GRI）"},
+  ar:{"hse":"تدقيق HSE (ISO 45001)","ambiental":"الامتثال البيئي (ISO 14001)","qualidade":"الجودة (ISO 9001)","esg":"ESG / الاستدامة (GRI)"},
+};
+const SECTOR_LABELS_I18N = {
+  pt:{"mineracao":"Mineração","oleogas":"Óleo e Gás","logistica":"Logística","construcao":"Construção","infraestrutura":"Infraestruturas","industria":"Indústria","agricultura":"Agricultura","floresta":"Floresta","ambiente":"Ambiente"},
+  en:{"mineracao":"Mining","oleogas":"Oil and Gas","logistica":"Logistics","construcao":"Construction","infraestrutura":"Infrastructure","industria":"Industry","agricultura":"Agriculture","floresta":"Forestry","ambiente":"Environment"},
+  fr:{"mineracao":"Mines","oleogas":"Pétrole et Gaz","logistica":"Logistique","construcao":"Construction","infraestrutura":"Infrastructures","industria":"Industrie","agricultura":"Agriculture","floresta":"Foresterie","ambiente":"Environnement"},
+  es:{"mineracao":"Minería","oleogas":"Petróleo y Gas","logistica":"Logística","construcao":"Construcción","infraestrutura":"Infraestructuras","industria":"Industria","agricultura":"Agricultura","floresta":"Silvicultura","ambiente":"Medio Ambiente"},
+  zh:{"mineracao":"采矿","oleogas":"石油和天然气","logistica":"物流","construcao":"建筑","infraestrutura":"基础设施","industria":"工业","agricultura":"农业","floresta":"林业","ambiente":"环境"},
+  ar:{"mineracao":"التعدين","oleogas":"النفط والغاز","logistica":"الخدمات اللوجستية","construcao":"البناء","infraestrutura":"البنية التحتية","industria":"الصناعة","agricultura":"الزراعة","floresta":"الحراجة","ambiente":"البيئة"},
+};
+function tipoLabel(slug, lang){ lang = lang||getReportLang(); return (TIPO_LABELS_I18N[lang]&&TIPO_LABELS_I18N[lang][slug]) || TIPO_LABELS[slug] || slug; }
+function sectorLabel(slug, lang){ lang = lang||getReportLang(); return (SECTOR_LABELS_I18N[lang]&&SECTOR_LABELS_I18N[lang][slug]) || SECTOR_LABELS[slug] || slug; }
+
 
 let cases=JSON.parse(hcjStorage.getItem('hcj_cases')||'[]');
 // Migração: casos criados antes desta correção guardaram o valor em bruto do
@@ -1280,6 +1303,19 @@ const I18N_UI = {
 };
 
 function getLang(){ return hcjStorage.getItem('hcj_lang') || 'pt'; }
+// ===== DICIONÁRIO DE MENSAGENS DINÂMICAS (alerts/confirms/notificações) =====
+// Independente do data-i18n estático — cobre texto gerado em runtime (JS).
+const UI_MSG = {"msg_pin_incorrecto":{"pt":"PIN incorrecto.","en":"Incorrect PIN.","fr":"Code PIN incorrect.","es":"PIN incorrecto.","zh":"PIN 不正确。","ar":"رمز PIN غير صحيح."},"msg_introduz_nome":{"pt":"Introduz o nome.","en":"Enter the name.","fr":"Saisis le nom.","es":"Introduce el nombre.","zh":"请输入姓名。","ar":"أدخل الاسم."},"msg_user_pin_incorrecto":{"pt":"Utilizador ou PIN incorrecto.","en":"Incorrect user or PIN.","fr":"Utilisateur ou PIN incorrect.","es":"Usuario o PIN incorrecto.","zh":"用户名或 PIN 不正确。","ar":"اسم المستخدم أو رمز PIN غير صحيح."},"msg_nome_pin4_obrigatorio":{"pt":"Nome e PIN de 4 dígitos obrigatórios.","en":"Name and a 4-digit PIN are required.","fr":"Nom et code PIN à 4 chiffres obligatoires.","es":"Nombre y PIN de 4 dígitos obligatorios.","zh":"姓名和 4 位数 PIN 为必填项。","ar":"الاسم ورمز PIN المكون من 4 أرقام مطلوبان."},"msg_nome_pin_obrigatorio":{"pt":"Nome e PIN obrigatórios.","en":"Name and PIN are required.","fr":"Nom et PIN obligatoires.","es":"Nombre y PIN obligatorios.","zh":"姓名和 PIN 为必填项。","ar":"الاسم ورمز PIN مطلوبان."},"msg_confirm_logout":{"pt":"Terminar sessão? Voltarás ao ecrã de login.","en":"End session? You will return to the login screen.","fr":"Terminer la session ? Tu reviendras à l'écran de connexion.","es":"¿Cerrar sesión? Volverás a la pantalla de inicio de sesión.","zh":"结束会话？你将返回登录界面。","ar":"هل تريد إنهاء الجلسة؟ ستعود إلى شاشة تسجيل الدخول."},"msg_confirm_apagar_dados":{"pt":"Apagar todos os dados locais?","en":"Delete all local data?","fr":"Supprimer toutes les données locales ?","es":"¿Eliminar todos los datos locales?","zh":"删除所有本地数据？","ar":"هل تريد حذف جميع البيانات المحلية؟"},"msg_dados_eliminados":{"pt":"Dados eliminados.","en":"Data deleted.","fr":"Données supprimées.","es":"Datos eliminados.","zh":"数据已删除。","ar":"تم حذف البيانات."},"msg_gera_relatorio_primeiro":{"pt":"Gera o relatório primeiro com a IA antes de exportar.","en":"Generate the report with AI first before exporting.","fr":"Génère d'abord le rapport avec l'IA avant d'exporter.","es":"Genera primero el informe con la IA antes de exportar.","zh":"请先使用 AI 生成报告，然后再导出。","ar":"قم بإنشاء التقرير أولاً باستخدام الذكاء الاصطناعي قبل التصدير."},"msg_mapeamento_campos":{"pt":"Mapeamento de campos:\n\nO sistema importa automaticamente:\n• cliente / Nome_do_Cliente → Cliente\n• sector / sector_actividade → Sector\n• _geolocation → Localização GPS\n• risco / risco_hse → Nível de Risco\n• _submitted_by → Técnico\n• _submission_time → Data\n\nCertifica-te que os teus formulários KoboToolbox usam estes nomes de campo para importação automática.","en":"Field mapping:\n\nThe system automatically imports:\n• cliente / Nome_do_Cliente → Client\n• sector / sector_actividade → Sector\n• _geolocation → GPS Location\n• risco / risco_hse → Risk Level\n• _submitted_by → Technician\n• _submission_time → Date\n\nMake sure your KoboToolbox forms use these field names for automatic import.","fr":"Mappage des champs :\n\nLe système importe automatiquement :\n• cliente / Nome_do_Cliente → Client\n• sector / sector_actividade → Secteur\n• _geolocation → Localisation GPS\n• risco / risco_hse → Niveau de risque\n• _submitted_by → Technicien\n• _submission_time → Date\n\nAssure-toi que tes formulaires KoboToolbox utilisent ces noms de champs pour l'importation automatique.","es":"Mapeo de campos:\n\nEl sistema importa automáticamente:\n• cliente / Nome_do_Cliente → Cliente\n• sector / sector_actividade → Sector\n• _geolocation → Ubicación GPS\n• risco / risco_hse → Nivel de Riesgo\n• _submitted_by → Técnico\n• _submission_time → Fecha\n\nAsegúrate de que tus formularios de KoboToolbox usen estos nombres de campo para la importación automática.","zh":"字段映射：\n\n系统会自动导入：\n• cliente / Nome_do_Cliente → 客户\n• sector / sector_actividade → 行业\n• _geolocation → GPS 位置\n• risco / risco_hse → 风险等级\n• _submitted_by → 技术员\n• _submission_time → 日期\n\n请确保你的 KoboToolbox 表单使用这些字段名称以便自动导入。","ar":"تخطيط الحقول:\n\nيستورد النظام تلقائيًا:\n• cliente / Nome_do_Cliente ← العميل\n• sector / sector_actividade ← القطاع\n• _geolocation ← موقع GPS\n• risco / risco_hse ← مستوى الخطر\n• _submitted_by ← الفني\n• _submission_time ← التاريخ\n\nتأكد من أن نماذج KoboToolbox الخاصة بك تستخدم أسماء الحقول هذه للاستيراد التلقائي."},"msg_sem_dados_exportar":{"pt":"Sem dados para exportar.","en":"No data to export.","fr":"Aucune donnée à exporter.","es":"Sin datos para exportar.","zh":"没有可导出的数据。","ar":"لا توجد بيانات للتصدير."},"msg_nenhuma_accao_exportar":{"pt":"Nenhuma acção para exportar.","en":"No action to export.","fr":"Aucune action à exporter.","es":"Ninguna acción para exportar.","zh":"没有可导出的操作记录。","ar":"لا يوجد إجراء للتصدير."},"msg_confirm_restaurar":{"pt":"Restaurar cópia de {0}? Isto substitui os dados actuais.","en":"Restore backup from {0}? This will overwrite current data.","fr":"Restaurer la sauvegarde du {0} ? Cela remplacera les données actuelles.","es":"¿Restaurar copia de {0}? Esto sustituirá los datos actuales.","zh":"恢复来自 {0} 的备份？这将覆盖当前数据。","ar":"هل تريد استعادة النسخة الاحتياطية من {0}؟ سيؤدي هذا إلى استبدال البيانات الحالية."},"msg_desconhecida":{"pt":"desconhecida","en":"unknown","fr":"inconnue","es":"desconocida","zh":"未知","ar":"غير معروف"},"msg_backup_restaurado":{"pt":"Cópia de segurança restaurada com sucesso! A sessão será reiniciada.","en":"Backup restored successfully! The session will restart.","fr":"Sauvegarde restaurée avec succès ! La session va redémarrer.","es":"¡Copia de seguridad restaurada con éxito! La sesión se reiniciará.","zh":"备份恢复成功！会话即将重启。","ar":"تمت استعادة النسخة الاحتياطية بنجاح! ستُعاد الجلسة من جديد."},"msg_backup_invalido":{"pt":"Ficheiro de backup inválido.","en":"Invalid backup file.","fr":"Fichier de sauvegarde invalide.","es":"Archivo de copia de seguridad no válido.","zh":"备份文件无效。","ar":"ملف النسخة الاحتياطية غير صالح."},"msg_confirm_remover_fotos":{"pt":"Remover todas as fotos deste caso?","en":"Remove all photos from this case?","fr":"Supprimer toutes les photos de ce dossier ?","es":"¿Eliminar todas las fotos de este caso?","zh":"删除此案例的所有照片？","ar":"هل تريد إزالة جميع صور هذه الحالة؟"},"msg_nome_obrigatorio":{"pt":"Nome obrigatório","en":"Name is required","fr":"Nom obligatoire","es":"Nombre obligatorio","zh":"姓名为必填项","ar":"الاسم مطلوب"},"msg_confirm_remover":{"pt":"Remover \"{0}\"?","en":"Remove \"{0}\"?","fr":"Supprimer « {0} » ?","es":"¿Eliminar «{0}»?","zh":"删除“{0}”？","ar":"هل تريد إزالة \"{0}\"؟"},"msg_preencha_campos_triagem":{"pt":"Preencha Cliente, Sector e Tipo de Serviço.","en":"Please fill in Client, Sector and Service Type.","fr":"Veuillez renseigner Client, Secteur et Type de Service.","es":"Complete Cliente, Sector y Tipo de Servicio.","zh":"请填写客户、行业和服务类型。","ar":"يرجى ملء العميل والقطاع ونوع الخدمة."},"msg_execute_triagem":{"pt":"Execute a triagem primeiro.","en":"Run the triage first.","fr":"Effectue d'abord le triage.","es":"Ejecuta primero el triaje.","zh":"请先执行风险分诊。","ar":"قم بتنفيذ الفرز أولاً."},"msg_seleciona_tipo_relatorio":{"pt":"Selecciona o Tipo de Relatório antes de gerar.","en":"Select the Report Type before generating.","fr":"Sélectionne le type de rapport avant de générer.","es":"Selecciona el Tipo de Informe antes de generar.","zh":"生成前请选择报告类型。","ar":"اختر نوع التقرير قبل الإنشاء."},"msg_seleciona_sector":{"pt":"Selecciona o Sector antes de gerar.","en":"Select the Sector before generating.","fr":"Sélectionne le secteur avant de générer.","es":"Selecciona el Sector antes de generar.","zh":"生成前请选择行业。","ar":"اختر القطاع قبل الإنشاء."},"msg_preenche_observacoes":{"pt":"Preenche as Observações de Campo antes de gerar.","en":"Fill in the Field Observations before generating.","fr":"Renseigne les observations de terrain avant de générer.","es":"Completa las Observaciones de Campo antes de generar.","zh":"生成前请填写现场观察记录。","ar":"املأ ملاحظات الميدان قبل الإنشاء."},"msg_sem_pontos_coords_endereco":{"pt":"Nenhum ponto com coordenadas para exportar. Adiciona localizações com endereço válido primeiro.","en":"No points with coordinates to export. Add locations with a valid address first.","fr":"Aucun point avec coordonnées à exporter. Ajoute d'abord des lieux avec une adresse valide.","es":"Ningún punto con coordenadas para exportar. Añade primero ubicaciones con una dirección válida.","zh":"没有带坐标的点可导出。请先添加带有有效地址的位置。","ar":"لا توجد نقاط بها إحداثيات للتصدير. أضف مواقع بعنوان صالح أولاً."},"msg_sem_pontos_coords":{"pt":"Nenhum ponto com coordenadas para exportar.","en":"No points with coordinates to export.","fr":"Aucun point avec coordonnées à exporter.","es":"Ningún punto con coordenadas para exportar.","zh":"没有带坐标的点可导出。","ar":"لا توجد نقاط بها إحداثيات للتصدير."},"msg_nenhum_caso_exportar":{"pt":"Nenhum caso registado para exportar.","en":"No cases registered to export.","fr":"Aucun dossier enregistré à exporter.","es":"Ningún caso registrado para exportar.","zh":"没有已登记的案例可导出。","ar":"لا توجد حالات مسجلة للتصدير."},"msg_relatorio_guardado_storage":{"pt":"Relatório guardado no Armazenamento.","en":"Report saved to Storage.","fr":"Rapport enregistré dans le Stockage.","es":"Informe guardado en Almacenamiento.","zh":"报告已保存到存储。","ar":"تم حفظ التقرير في وحدة التخزين."},"msg_confirm_eliminar_ficheiro":{"pt":"Eliminar ficheiro?","en":"Delete file?","fr":"Supprimer le fichier ?","es":"¿Eliminar archivo?","zh":"删除文件？","ar":"هل تريد حذف الملف؟"},"msg_nome_endereco_obrigatorios":{"pt":"Nome do local e endereço/localização são obrigatórios.","en":"Location name and address/location are required.","fr":"Le nom du lieu et l'adresse/localisation sont obligatoires.","es":"El nombre del lugar y la dirección/ubicación son obligatorios.","zh":"地点名称和地址/位置为必填项。","ar":"اسم الموقع والعنوان/الموقع مطلوبان."},"msg_confirm_criar_demo":{"pt":"Criar caso demo fictício?\n\nDados: Vulcan Resources / Mineração / Moatize\nPermite testar todo o fluxo do APP.","en":"Create a fictitious demo case?\n\nData: Vulcan Resources / Mining / Moatize\nLets you test the app's full workflow.","fr":"Créer un dossier de démonstration fictif ?\n\nDonnées : Vulcan Resources / Mines / Moatize\nPermet de tester tout le flux de l'application.","es":"¿Crear un caso de demostración ficticio?\n\nDatos: Vulcan Resources / Minería / Moatize\nPermite probar todo el flujo de la app.","zh":"创建一个虚构的演示案例？\n\n数据：Vulcan Resources / 采矿 / Moatize\n可用于测试完整的应用流程。","ar":"هل تريد إنشاء حالة تجريبية وهمية؟\n\nالبيانات: Vulcan Resources / التعدين / Moatize\nتتيح لك اختبار سير العمل الكامل للتطبيق."},"dash_nenhum_caso_crie":{"pt":"Nenhum caso ainda. Crie o primeiro caso na Triagem de Risco.","en":"No cases yet. Create your first case in Risk Triage.","fr":"Aucun dossier pour l'instant. Crée le premier dans le Triage des risques.","es":"Aún no hay casos. Crea el primero en Triaje de Riesgos.","zh":"暂无案例。请在风险分诊中创建第一个案例。","ar":"لا توجد حالات بعد. أنشئ الحالة الأولى في فرز المخاطر."},"dash_kpi_nenhum_caso":{"pt":"Nenhum caso ainda","en":"No cases yet","fr":"Aucun dossier pour l'instant","es":"Aún no hay casos","zh":"暂无案例","ar":"لا توجد حالات بعد"},"dash_kpi_1_caso":{"pt":"1 caso registado","en":"1 case registered","fr":"1 dossier enregistré","es":"1 caso registrado","zh":"已登记 1 个案例","ar":"حالة واحدة مسجلة"},"dash_kpi_n_casos":{"pt":"{0} casos registados","en":"{0} cases registered","fr":"{0} dossiers enregistrés","es":"{0} casos registrados","zh":"已登记 {0} 个案例","ar":"{0} حالة مسجلة"},"dash_kpi_sem_riscos":{"pt":"Sem riscos altos","en":"No high risks","fr":"Aucun risque élevé","es":"Sin riesgos altos","zh":"无高风险项","ar":"لا توجد مخاطر عالية"},"dash_kpi_aguardam_accao":{"pt":"Aguardam acção","en":"Awaiting action","fr":"En attente d'action","es":"En espera de acción","zh":"等待处理","ar":"بانتظار الإجراء"},"dash_kpi_sem_nc":{"pt":"Sem não conformidades","en":"No non-conformities","fr":"Aucune non-conformité","es":"Sin no conformidades","zh":"无不符合项","ar":"لا توجد حالات عدم مطابقة"},"dash_kpi_prioridade_alta":{"pt":"Prioridade alta","en":"High priority","fr":"Priorité haute","es":"Prioridad alta","zh":"高优先级","ar":"أولوية عالية"},"dash_kpi_n_activos":{"pt":"{0} activos","en":"{0} active","fr":"{0} actifs","es":"{0} activos","zh":"{0} 个活跃","ar":"{0} نشط"},"dash_kpi_nenhum_activo":{"pt":"Nenhum activo","en":"None active","fr":"Aucun actif","es":"Ninguno activo","zh":"无活跃项","ar":"لا يوجد نشط"},"dash_nenhuma_actividade":{"pt":"Nenhuma actividade registada.","en":"No activity recorded.","fr":"Aucune activité enregistrée.","es":"Ninguna actividad registrada.","zh":"暂无活动记录。","ar":"لا يوجد نشاط مسجل."},"dash_nenhum_caso_ponto":{"pt":"Nenhum caso ainda.","en":"No cases yet.","fr":"Aucun dossier pour l'instant.","es":"Aún no hay casos.","zh":"暂无案例。","ar":"لا توجد حالات بعد."},"msg_aparencia_actualizada":{"pt":"Aparência do sistema actualizada.","en":"System appearance updated.","fr":"Apparence du système mise à jour.","es":"Apariencia del sistema actualizada.","zh":"系统外观已更新。","ar":"تم تحديث مظهر النظام."},"msg_novo_membro_titulo":{"pt":"Novo membro adicionado","en":"New member added","fr":"Nouveau membre ajouté","es":"Nuevo miembro añadido","zh":"已添加新成员","ar":"تمت إضافة عضو جديد"},"msg_novo_membro_corpo":{"pt":"{0} foi adicionado à equipa como {1}.","en":"{0} was added to the team as {1}.","fr":"{0} a été ajouté(e) à l'équipe en tant que {1}.","es":"{0} fue añadido/a al equipo como {1}.","zh":"{0} 已作为 {1} 加入团队。","ar":"تمت إضافة {0} إلى الفريق بصفته {1}."},"msg_prazo_expirado_titulo":{"pt":"Prazo expirado","en":"Deadline expired","fr":"Délai expiré","es":"Plazo vencido","zh":"期限已过","ar":"انتهى الموعد النهائي"},"msg_prazo_expirado_corpo":{"pt":"Caso {0} ({1}) ultrapassou o prazo de acção definido para o risco {2}.","en":"Case {0} ({1}) has exceeded the action deadline set for risk {2}.","fr":"Le dossier {0} ({1}) a dépassé le délai d'action défini pour le risque {2}.","es":"El caso {0} ({1}) superó el plazo de acción definido para el riesgo {2}.","zh":"案例 {0}（{1}）已超过针对风险 {2} 设定的行动期限。","ar":"تجاوزت الحالة {0} ({1}) الموعد النهائي للإجراء المحدد للخطر {2}."},"msg_prazo_a_expirar_titulo":{"pt":"Prazo a expirar em breve","en":"Deadline expiring soon","fr":"Délai expirant bientôt","es":"Plazo por vencer pronto","zh":"期限即将到期","ar":"الموعد النهائي يقترب"},"msg_prazo_a_expirar_corpo":{"pt":"Caso {0} ({1}) tem menos de 6h para o prazo de acção.","en":"Case {0} ({1}) has less than 6h left before the action deadline.","fr":"Le dossier {0} ({1}) a moins de 6h avant le délai d'action.","es":"El caso {0} ({1}) tiene menos de 6h para el plazo de acción.","zh":"案例 {0}（{1}）距行动期限不足 6 小时。","ar":"تتبقى أقل من 6 ساعات على الموعد النهائي للإجراء في الحالة {0} ({1})."},"msg_risco_sem_relatorio_titulo":{"pt":"Risco alto sem relatório","en":"High risk without report","fr":"Risque élevé sans rapport","es":"Riesgo alto sin informe","zh":"高风险案例缺少报告","ar":"خطر مرتفع بدون تقرير"},"msg_risco_sem_relatorio_corpo":{"pt":"Caso {0} ({1}) tem risco {2} e ainda não tem relatório técnico gerado.","en":"Case {0} ({1}) has risk {2} and no technical report has been generated yet.","fr":"Le dossier {0} ({1}) présente un risque {2} et aucun rapport technique n'a encore été généré.","es":"El caso {0} ({1}) tiene riesgo {2} y aún no tiene informe técnico generado.","zh":"案例 {0}（{1}）风险等级为 {2}，尚未生成技术报告。","ar":"الحالة {0} ({1}) ذات خطورة {2} ولم يتم إنشاء تقرير فني لها بعد."},"msg_risco_critico_titulo":{"pt":"{0} caso(s) com risco CRÍTICO","en":"{0} case(s) with CRITICAL risk","fr":"{0} dossier(s) à risque CRITIQUE","es":"{0} caso(s) con riesgo CRÍTICO","zh":"{0} 个案例存在严重风险","ar":"{0} حالة (حالات) بخطر حرج"},"msg_risco_critico_corpo":{"pt":"Atenção imediata necessária: {0}","en":"Immediate attention required: {0}","fr":"Attention immédiate requise : {0}","es":"Atención inmediata requerida: {0}","zh":"需要立即关注：{0}","ar":"يلزم اهتمام فوري: {0}"},"msg_sem_cliente_titulo":{"pt":"Casos sem cliente associado","en":"Cases without an associated client","fr":"Dossiers sans client associé","es":"Casos sin cliente asociado","zh":"案例未关联客户","ar":"حالات بدون عميل مرتبط"},"msg_sem_cliente_corpo":{"pt":"{0} caso(s) sem cliente definido.","en":"{0} case(s) without a client defined.","fr":"{0} dossier(s) sans client défini.","es":"{0} caso(s) sin cliente definido.","zh":"{0} 个案例未指定客户。","ar":"{0} حالة (حالات) بدون عميل محدد."},"msg_pdf_exportado_titulo":{"pt":"PDF exportado","en":"PDF exported","fr":"PDF exporté","es":"PDF exportado","zh":"PDF 已导出","ar":"تم تصدير PDF"},"msg_pdf_exportado_corpo":{"pt":"Relatório {0} exportado com sucesso.","en":"Report {0} exported successfully.","fr":"Rapport {0} exporté avec succès.","es":"Informe {0} exportado con éxito.","zh":"报告 {0} 导出成功。","ar":"تم تصدير التقرير {0} بنجاح."},"msg_word_exportado_titulo":{"pt":"Word exportado","en":"Word exported","fr":"Word exporté","es":"Word exportado","zh":"Word 已导出","ar":"تم تصدير Word"},"msg_word_exportado_corpo":{"pt":"Relatório {0} exportado com formatação profissional.","en":"Report {0} exported with professional formatting.","fr":"Rapport {0} exporté avec une mise en forme professionnelle.","es":"Informe {0} exportado con formato profesional.","zh":"报告 {0} 已按专业格式导出。","ar":"تم تصدير التقرير {0} بتنسيق احترافي."},"msg_kobo_importado_titulo":{"pt":"KoboToolbox importado","en":"KoboToolbox imported","fr":"KoboToolbox importé","es":"KoboToolbox importado","zh":"KoboToolbox 已导入","ar":"تم استيراد KoboToolbox"},"msg_kobo_importado_corpo":{"pt":"{0} caso(s) importado(s) com sucesso do KoboToolbox.","en":"{0} case(s) successfully imported from KoboToolbox.","fr":"{0} dossier(s) importé(s) avec succès depuis KoboToolbox.","es":"{0} caso(s) importado(s) con éxito desde KoboToolbox.","zh":"已成功从 KoboToolbox 导入 {0} 个案例。","ar":"تم استيراد {0} حالة (حالات) بنجاح من KoboToolbox."},"msg_cliente_add_titulo":{"pt":"Cliente adicionado","en":"Client added","fr":"Client ajouté","es":"Cliente añadido","zh":"已添加客户","ar":"تمت إضافة العميل"},"msg_cliente_add_corpo":{"pt":"{0} foi registado no sistema.","en":"{0} was registered in the system.","fr":"{0} a été enregistré(e) dans le système.","es":"{0} fue registrado/a en el sistema.","zh":"{0} 已在系统中注册。","ar":"تم تسجيل {0} في النظام."},"msg_permissao_titulo":{"pt":"Permissão actualizada","en":"Permission updated","fr":"Permission mise à jour","es":"Permiso actualizado","zh":"权限已更新","ar":"تم تحديث الصلاحية"},"msg_permissao_corpo":{"pt":"{0} é agora {1}.","en":"{0} is now {1}.","fr":"{0} est désormais {1}.","es":"{0} ahora es {1}.","zh":"{0} 现在是 {1}。","ar":"أصبح {0} الآن {1}."},"lbl_utilizador":{"pt":"Utilizador","en":"User","fr":"Utilisateur","es":"Usuario","zh":"用户","ar":"المستخدم"},"msg_triagem_titulo":{"pt":"Triagem concluída","en":"Triage completed","fr":"Triage terminé","es":"Triaje completado","zh":"分诊已完成","ar":"اكتمل الفرز"},"msg_triagem_corpo":{"pt":"Caso {0} — {1} — Risco HSE: {2}","en":"Case {0} — {1} — HSE Risk: {2}","fr":"Dossier {0} — {1} — Risque HSE : {2}","es":"Caso {0} — {1} — Riesgo HSE: {2}","zh":"案例 {0} — {1} — HSE 风险：{2}","ar":"الحالة {0} — {1} — خطر HSE: {2}"},"msg_relatorio_gerado_titulo":{"pt":"Relatório gerado","en":"Report generated","fr":"Rapport généré","es":"Informe generado","zh":"报告已生成","ar":"تم إنشاء التقرير"},"msg_relatorio_gerado_corpo":{"pt":"Relatório #{0} para {1} pronto para validação.","en":"Report #{0} for {1} ready for validation.","fr":"Rapport n° {0} pour {1} prêt pour validation.","es":"Informe n.º {0} para {1} listo para validación.","zh":"案例 #{0}（{1}）的报告已生成，等待验证。","ar":"التقرير رقم {0} الخاص بـ {1} جاهز للتحقق."},"msg_ponto_add_titulo":{"pt":"Ponto de localização adicionado","en":"Location point added","fr":"Point de localisation ajouté","es":"Punto de ubicación añadido","zh":"已添加位置点","ar":"تمت إضافة نقطة الموقع"},"msg_ponto_add_corpo":{"pt":"{0} foi adicionado ao mapa.","en":"{0} was added to the map.","fr":"{0} a été ajouté(e) à la carte.","es":"{0} fue añadido/a al mapa.","zh":"{0} 已添加到地图。","ar":"تمت إضافة {0} إلى الخريطة."},"msg_groq_conectado":{"pt":"Motor IA conectado com sucesso.","en":"AI engine connected successfully.","fr":"Moteur IA connecté avec succès.","es":"Motor de IA conectado con éxito.","zh":"AI 引擎连接成功。","ar":"تم توصيل محرك الذكاء الاصطناعي بنجاح."},"msg_whatsapp_enviado":{"pt":"Notificação enviada com sucesso.","en":"Notification sent successfully.","fr":"Notification envoyée avec succès.","es":"Notificación enviada con éxito.","zh":"通知发送成功。","ar":"تم إرسال الإشعار بنجاح."},"msg_demo_titulo":{"pt":"Demo criado","en":"Demo created","fr":"Démo créée","es":"Demo creado","zh":"演示已创建","ar":"تم إنشاء العرض التجريبي"},"msg_demo_corpo":{"pt":"Caso HCJ-025 (Vulcan Resources) criado. Vai a Gestão de Casos.","en":"Case HCJ-025 (Vulcan Resources) created. Go to Case Management.","fr":"Dossier HCJ-025 (Vulcan Resources) créé. Va dans Gestion des Dossiers.","es":"Caso HCJ-025 (Vulcan Resources) creado. Ve a Gestión de Casos.","zh":"案例 HCJ-025（Vulcan Resources）已创建。请前往案例管理查看。","ar":"تم إنشاء الحالة HCJ-025 (Vulcan Resources). انتقل إلى إدارة الحالات."},"msg_demo_toast":{"pt":"Caso demo HCJ-025 criado! Vai a Gestão de Casos.","en":"Demo case HCJ-025 created! Go to Case Management.","fr":"Dossier démo HCJ-025 créé ! Va dans Gestion des Dossiers.","es":"¡Caso demo HCJ-025 creado! Ve a Gestión de Casos.","zh":"演示案例 HCJ-025 已创建！请前往案例管理查看。","ar":"تم إنشاء الحالة التجريبية HCJ-025! انتقل إلى إدارة الحالات."}};
+function tr(key, args){
+  const lang = getLang();
+  const entry = UI_MSG[key];
+  let s = entry ? (entry[lang] || entry.pt) : key;
+  if(args){
+    args.forEach((a,i)=>{ s = s.split('{'+i+'}').join(a); });
+  }
+  return s;
+}
+
 
 function buildLangSelectors(){
   const opts = SUPPORTED_LANGS.map(l=>`<option value="${l}">${LANG_META[l].flag} ${LANG_META[l].native}</option>`).join('');
@@ -1496,7 +1532,7 @@ function cycleTheme(){
   const next=order[(order.indexOf(current)+1)%order.length];
   setTheme(next);
   const labels={dark:'Tema Escuro',light:'Tema Claro',auto:'Tema Automático'};
-  addNotif(labels[next], 'Aparência do sistema actualizada.', 'blue');
+  addNotif(labels[next], tr('msg_aparencia_actualizada'), 'blue');
 }
 function initTheme(){
   const saved = hcjStorage.getItem('hcj_theme') || 'dark';
@@ -1601,17 +1637,17 @@ function quickLogin(idx){
   const u=appUsers[idx];
   const pin=prompt(`PIN para ${u.name}:`);
   if(pin===u.pin){loginSuccess(u);}
-  else{alert('PIN incorrecto.');}
+  else{alert(tr('msg_pin_incorrecto'));}
 }
 function doLogin(){
   const name=document.getElementById('login-name-input').value.trim();
   const pin=document.getElementById('login-pin').value;
-  if(!name){alert('Introduz o nome.');return;}
+  if(!name){alert(tr('msg_introduz_nome'));return;}
   const u=appUsers.find(x=>x.name.toLowerCase()===name.toLowerCase()&&x.pin===pin);
   if(u){loginSuccess(u);}
   else{
     logAudit('Tentativa de login falhada', name);
-    alert('Utilizador ou PIN incorrecto.');
+    alert(tr('msg_user_pin_incorrecto'));
   }
 }
 function doRegister(){
@@ -1619,7 +1655,7 @@ function doRegister(){
   const role=document.getElementById('reg-role').value.trim();
   const permission=document.getElementById('reg-permission').value;
   const pin=document.getElementById('reg-pin').value;
-  if(!name||!pin||pin.length!==4){alert('Nome e PIN de 4 dígitos obrigatórios.');return;}
+  if(!name||!pin||pin.length!==4){alert(tr('msg_nome_pin4_obrigatorio'));return;}
   appUsers.push({name,role:role||'Colaborador',permission,pin});
   saveAll();
   logAudit('Conta criada',`${name} · ${permLabel(permission)}`);
@@ -1632,13 +1668,13 @@ function addTeamMember(){
   const role=document.getElementById('au-role').value.trim();
   const permission=document.getElementById('au-perm').value;
   const pin=document.getElementById('au-pin').value;
-  if(!name||!pin||pin.length!==4){alert('Nome e PIN obrigatórios.');return;}
+  if(!name||!pin||pin.length!==4){alert(tr('msg_nome_pin_obrigatorio'));return;}
   appUsers.push({name,role:role||'Colaborador',permission,pin});
   saveAll();
   closeModal('add-user-modal');
   renderTeam();
   logAudit('Membro adicionado à equipa',`${name} · ${role||'Colaborador'} · ${permLabel(permission)}`);
-  addNotif('Novo membro adicionado',`${name} foi adicionado à equipa como ${role}.`,'green');
+  addNotif(tr('msg_novo_membro_titulo'),tr('msg_novo_membro_corpo',[name,role]),'green');
 }
 function loginSuccess(u, silent){
   currentUser=u;
@@ -1702,7 +1738,7 @@ function canEdit(){return canAccess('tecnico');}
 function canManage(){return canAccess('gestor');}
 function isAdmin(){return canAccess('admin');}
 function doLogout(){
-  if(!confirm('Terminar sessão? Voltarás ao ecrã de login.'))return;
+  if(!confirm(tr('msg_confirm_logout')))return;
   logAudit('Logout', currentUser?.name||'—');
   currentUser=null;
   persistSession(null);
@@ -1850,13 +1886,13 @@ function checkCaseDeadlines(){
     const overdue = now > deadline;
     if(overdue && !c.notifiedOverdue){
       c.notifiedOverdue=true; changed=true; // define a flag ANTES de notificar (evita reentrância)
-      addNotif('⏰ Prazo expirado', `Caso ${c.id} (${c.cliente}) ultrapassou o prazo de acção definido para o risco ${c.risco_hse||c.prioridade||'—'}.`, 'red');
+      addNotif('⏰ '+tr('msg_prazo_expirado_titulo'), tr('msg_prazo_expirado_corpo',[c.id,c.cliente,c.risco_hse||c.prioridade||'—']), 'red');
       logAudit('Alerta de prazo expirado', `${c.id} · ${c.cliente}`);
     } else if(!overdue && !c.notifiedSoon){
       const hoursLeft=(deadline-now)/3600000;
       if(hoursLeft<=6){
         c.notifiedSoon=true; changed=true; // define a flag ANTES de notificar (evita reentrância)
-        addNotif('⚠ Prazo a expirar em breve', `Caso ${c.id} (${c.cliente}) tem menos de 6h para o prazo de acção.`, 'amber');
+        addNotif('⚠ '+tr('msg_prazo_a_expirar_titulo'), tr('msg_prazo_a_expirar_corpo',[c.id,c.cliente]), 'amber');
       }
     }
     const riscoAlto=['Crítico','CRÍTICO','Alto','ALTO'].includes(c.risco_hse||c.prioridade);
@@ -1864,7 +1900,7 @@ function checkCaseDeadlines(){
       c.notifiedRiskPending=true; changed=true; // define a flag ANTES de notificar — CORRIGE LOOP INFINITO:
       // antes, addNotif()→saveAll()→updateAll()→checkCaseDeadlines() reentrava aqui
       // com a flag ainda por definir, chamando addNotif outra vez, para sempre.
-      addNotif('🔴 Risco alto sem relatório', `Caso ${c.id} (${c.cliente}) tem risco ${c.risco_hse||c.prioridade} e ainda não tem relatório técnico gerado.`, 'red');
+      addNotif('🔴 '+tr('msg_risco_sem_relatorio_titulo'), tr('msg_risco_sem_relatorio_corpo',[c.id,c.cliente,c.risco_hse||c.prioridade]), 'red');
     }
   });
   if(changed){
@@ -1881,13 +1917,13 @@ function updateAll(){
   const clientesActivos = clients.filter(c=>c.estado==='Activo').length;
 
   document.getElementById('kpi-casos').textContent=totalCasos;
-  document.getElementById('kpi-casos-delta').textContent=totalCasos===0?'Nenhum caso ainda':totalCasos===1?'1 caso registado':`${totalCasos} casos registados`;
+  document.getElementById('kpi-casos-delta').textContent=totalCasos===0?tr('dash_kpi_nenhum_caso'):totalCasos===1?tr('dash_kpi_1_caso'):tr('dash_kpi_n_casos',[totalCasos]);
   document.getElementById('kpi-riscos').textContent=riscosAltos;
-  document.getElementById('kpi-riscos-delta').textContent=riscosAltos===0?'Sem riscos altos':'Aguardam acção';
+  document.getElementById('kpi-riscos-delta').textContent=riscosAltos===0?tr('dash_kpi_sem_riscos'):tr('dash_kpi_aguardam_accao');
   document.getElementById('kpi-nc').textContent=naoConf;
-  document.getElementById('kpi-nc-delta').textContent=naoConf===0?'Sem não conformidades':'Prioridade alta';
+  document.getElementById('kpi-nc-delta').textContent=naoConf===0?tr('dash_kpi_sem_nc'):tr('dash_kpi_prioridade_alta');
   document.getElementById('kpi-clientes').textContent=clients.length;
-  document.getElementById('kpi-clientes-delta').textContent=clientesActivos>0?`${clientesActivos} activos`:'Nenhum activo';
+  document.getElementById('kpi-clientes-delta').textContent=clientesActivos>0?tr('dash_kpi_n_activos',[clientesActivos]):tr('dash_kpi_nenhum_activo');
   document.getElementById('badge-casos').textContent=totalCasos;
   document.getElementById('storage-count').textContent=storageFiles.length;
   document.getElementById('storage-reports').textContent=storageFiles.filter(f=>f.type==='report').length;
@@ -1984,7 +2020,7 @@ function updateAll(){
   const dashAudit=document.getElementById('dash-auditoria');
   if(dashAudit){
     if(!auditLog.length){
-      dashAudit.innerHTML='<p style="color:var(--text3);font-size:11px;">Nenhuma actividade registada.</p>';
+      dashAudit.innerHTML='<p style="color:var(--text3);font-size:11px;">'+tr('dash_nenhuma_actividade')+'</p>';
     } else {
       dashAudit.innerHTML=auditLog.slice(-8).reverse().map(a=>`
         <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:flex-start;">
@@ -2013,7 +2049,7 @@ function checkSmartNotifications(){
   if(riscoCritico.length>0){
     const lastAlert=hcjStorage.getItem('hcj_alert_critico');
     if(lastAlert!==String(riscoCritico.length)){
-      addNotif(`⚠ ${riscoCritico.length} caso(s) com risco CRÍTICO`,`Atenção imediata necessária: ${riscoCritico.map(c=>c.cliente).join(', ')}`,'red');
+      addNotif('⚠ '+tr('msg_risco_critico_titulo',[riscoCritico.length]),tr('msg_risco_critico_corpo',[riscoCritico.map(c=>c.cliente).join(', ')]),'red');
       hcjStorage.setItem('hcj_alert_critico',String(riscoCritico.length));
     }
   }
@@ -2021,7 +2057,7 @@ function checkSmartNotifications(){
   if(semCliente.length>0){
     const lastSemCliente=hcjStorage.getItem('hcj_alert_semcliente');
     if(lastSemCliente!==String(semCliente.length)){
-      addNotif('Casos sem cliente associado',`${semCliente.length} caso(s) sem cliente definido.`,'amber');
+      addNotif(tr('msg_sem_cliente_titulo'),tr('msg_sem_cliente_corpo',[semCliente.length]),'amber');
       hcjStorage.setItem('hcj_alert_semcliente',String(semCliente.length));
     }
   } else {
@@ -2033,7 +2069,7 @@ function clearAllData(){
   hcjStorage.clear();
   clients=[];cases=[];storageFiles=[];notifications=[];appUsers=[];auditLog=[];
   saveAll();
-  alert('Dados eliminados.');
+  alert(tr('msg_dados_eliminados'));
   doLogout();
 }
 
@@ -2051,14 +2087,14 @@ function exportReportPDF(){
   const hasContent = textSections.some(s=>document.getElementById(s.id)?.textContent?.trim()) ||
                       document.getElementById('rep-riscos')?.innerHTML?.trim() ||
                       document.getElementById('rep-naoconf')?.innerHTML?.trim();
-  if(!hasContent){alert('Gera o relatório primeiro com a IA antes de exportar.');return;}
+  if(!hasContent){alert(tr('msg_gera_relatorio_primeiro'));return;}
 
   const caseNum=document.getElementById('r-caso')?.value||'HCJ-001';
   const cliente=document.getElementById('r-cliente')?.value||'—';
   const sectorSlugPdf=document.getElementById('r-sector')?.value||'';
-  const sector=SECTOR_LABELS[sectorSlugPdf]||sectorSlugPdf||'—';
+  const sector=sectorLabel(sectorSlugPdf)||sectorSlugPdf||'—';
   const tipoSlugPdf=document.getElementById('r-tipo')?.value||'';
-  const tipo=TIPO_LABELS[tipoSlugPdf]||tipoSlugPdf||rl.lbl.relatorioCompleto;
+  const tipo=tipoLabel(tipoSlugPdf)||tipoSlugPdf||rl.lbl.relatorioCompleto;
   const data=new Date().toLocaleDateString(rl.locale,{year:'numeric',month:'long',day:'numeric'});
   const isDraft = !!window.reportIsUnverifiedDraft;
 
@@ -2099,7 +2135,9 @@ function exportReportPDF(){
     h2{font-size:16pt;font-weight:700;color:#0a0c0f;border-bottom:3px solid #d4a017;padding-bottom:8px;margin:32px 0 16px;}
     .section{margin-bottom:28px;padding:20px;background:#f8f9fa;border-${rl.dir==='rtl'?'right':'left'}:4px solid #d4a017;border-radius:0 8px 8px 0;}
     .section h3{font-size:12pt;font-weight:700;color:#d4a017;margin-bottom:10px;}
-    .section p{font-size:10.5pt;line-height:1.8;color:#374151;}
+    .section p{font-size:10.5pt;line-height:1.8;color:#374151;text-align:justify;text-justify:inter-word;hyphens:auto;margin-bottom:8px;}
+    .section ul{margin:6px 0 10px;padding-${rl.dir==='rtl'?'right':'left'}:20px;}
+    .section li{font-size:10.5pt;line-height:1.7;color:#374151;text-align:justify;margin-bottom:5px;}
     table td,table th{border-bottom:1px solid #e5e7eb;}
     .signature{margin-top:50px;padding-top:20px;border-top:1px solid #d1d5db;font-size:9.5pt;color:#374151;}
     .footer{margin-top:40px;padding-top:16px;border-top:2px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;font-size:8pt;color:#9ca3af;}
@@ -2132,14 +2170,14 @@ function exportReportPDF(){
       const el=document.getElementById(s.id);
       const content=el?.textContent?.trim()||'';
       if(!content) return '';
-      return `<div class="section"><h3>${s.title}</h3><p>${content.replace(/\n/g,'<br>')}</p></div>`;
+      return `<div class="section"><h3>${s.title}</h3>${formatBodyParagraphs(content)}</div>`;
     }).join('')}
     <div class="section"><h3>${rl.sec.riscos}</h3>${riscosHtml}</div>
     <div class="section"><h3>${rl.sec.nc}</h3>${ncHtml}</div>
-    ${(()=>{const el=document.getElementById('rep-causa');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>${rl.sec.causa}</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
+    ${(()=>{const el=document.getElementById('rep-causa');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>${rl.sec.causa}</h3>${formatBodyParagraphs(c)}</div>`:'';})()}
     <div class="section"><h3>${rl.sec.rec}</h3>${recHtml}</div>
     <div class="section"><h3>${rl.sec.plano}</h3>${planoHtml}</div>
-    ${(()=>{const el=document.getElementById('rep-conclusao');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>${rl.sec.conc}</h3><p>${c.replace(/\n/g,'<br>')}</p></div>`:'';})()}
+    ${(()=>{const el=document.getElementById('rep-conclusao');const c=el?.textContent?.trim()||'';return c?`<div class="section"><h3>${rl.sec.conc}</h3>${formatBodyParagraphs(c)}</div>`:'';})()}
     <div class="signature">
       <p><strong>${currentUser?.name||'Auditor HCJ'}</strong> — ${currentUser?.role||'—'}</p>
       <p>HCJ Global Solutions, Moatize/Tete, Moçambique</p>
@@ -2163,15 +2201,81 @@ function exportReportPDF(){
   </div>`:''}
   </body></html>`;
 
-  const win=window.open('','_blank');
-  win.document.write(html);
-  win.document.close();
-  setTimeout(()=>{
-    win.print();
-    logAudit('Relatório PDF exportado',`Caso ${caseNum} · ${cliente}`);
-    addNotif('PDF exportado',`Relatório ${caseNum} exportado com sucesso.`,'green');
-    waNotifyReport(caseNum,cliente);
-  },800);
+  const pdfFilename = 'HCJ-Relatorio-'+caseNum+'-'+new Date().toISOString().split('T')[0]+'.pdf';
+
+  // Download real do ficheiro PDF (em vez de apenas abrir o diálogo de impressão do browser).
+  // Renderiza o HTML num container fora do ecrã e usa html2pdf.js (jsPDF + html2canvas)
+  // para gerar e descarregar o ficheiro directamente — sem passar pelo diálogo "Imprimir".
+  if(window.html2pdf){
+    const container=document.createElement('div');
+    container.style.cssText='position:fixed;left:-9999px;top:0;width:800px;background:#fff;';
+    container.innerHTML = html.replace(/^[\s\S]*?<body>/i,'').replace(/<\/body>[\s\S]*$/i,'');
+    document.body.appendChild(container);
+    // Injecta o <style> do relatório dentro do container (html2pdf lê estilos computados do DOM real)
+    const styleMatch = html.match(/<style>([\s\S]*?)<\/style>/i);
+    if(styleMatch){
+      const styleTag=document.createElement('style');
+      styleTag.textContent=styleMatch[1];
+      container.prepend(styleTag);
+    }
+    if(rl.dir==='rtl'){ container.setAttribute('dir','rtl'); }
+    const btn=document.getElementById('btn-report');
+    const originalBtnState = btn ? btn.textContent : null;
+    if(btn){ btn.disabled=true; btn.textContent='⏳ A gerar ficheiro PDF...'; }
+    window.html2pdf().set({
+      margin:0,
+      filename:pdfFilename,
+      image:{type:'jpeg',quality:0.95},
+      html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak:{mode:['css','legacy']}
+    }).from(container).save().then(()=>{
+      document.body.removeChild(container);
+      if(btn){ btn.disabled=false; btn.textContent=originalBtnState; }
+      logAudit('Relatório PDF exportado',`Caso ${caseNum} · ${cliente}`);
+      addNotif(tr('msg_pdf_exportado_titulo'),tr('msg_pdf_exportado_corpo',[caseNum]),'green');
+      waNotifyReport(caseNum,cliente);
+    }).catch(err=>{
+      console.error('html2pdf falhou, a usar fallback de impressão:',err);
+      document.body.removeChild(container);
+      if(btn){ btn.disabled=false; btn.textContent=originalBtnState; }
+      const win=window.open('','_blank'); win.document.write(html); win.document.close();
+      setTimeout(()=>win.print(),800);
+    });
+  } else {
+    // Fallback (ex: sem ligação à CDN) — mantém o comportamento anterior de impressão manual.
+    const win=window.open('','_blank');
+    win.document.write(html);
+    win.document.close();
+    setTimeout(()=>{
+      win.print();
+      logAudit('Relatório PDF exportado',`Caso ${caseNum} · ${cliente}`);
+      addNotif(tr('msg_pdf_exportado_titulo'),tr('msg_pdf_exportado_corpo',[caseNum]),'green');
+      waNotifyReport(caseNum,cliente);
+    },800);
+  }
+}
+
+// Converte texto plano da IA (parágrafos + eventuais linhas de lista "- item" / "1. item")
+// em HTML estruturado com <p> justificado e <ul>/<li> reais, em vez de um bloco único de texto.
+// Isto resolve a falta de estrutura/bullets nos relatórios exportados.
+function formatBodyParagraphs(text){
+  if(!text) return '';
+  const lines = text.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  let html='';
+  let inList=false;
+  const bulletRe=/^([-•*]|\d{1,2}[.)])\s+/;
+  lines.forEach(line=>{
+    if(bulletRe.test(line)){
+      if(!inList){ html+='<ul>'; inList=true; }
+      html+='<li>'+line.replace(bulletRe,'')+'</li>';
+    } else {
+      if(inList){ html+='</ul>'; inList=false; }
+      html+='<p>'+line+'</p>';
+    }
+  });
+  if(inList) html+='</ul>';
+  return html;
 }
 
 function exportReportWord(){
@@ -2179,9 +2283,9 @@ function exportReportWord(){
   const caseNum=document.getElementById('r-caso')?.value||'HCJ-001';
   const client=document.getElementById('r-cliente')?.value||'Cliente';
   const rtypeSlug=document.getElementById('r-tipo')?.value||'';
-  const rtype=TIPO_LABELS[rtypeSlug]||rtypeSlug||rl.lbl.relatorioCompleto;
+  const rtype=tipoLabel(rtypeSlug)||rtypeSlug||rl.lbl.relatorioCompleto;
   const sectorSlugW=document.getElementById('r-sector')?.value||'';
-  const sector=SECTOR_LABELS[sectorSlugW]||sectorSlugW||'—';
+  const sector=sectorLabel(sectorSlugW)||sectorSlugW||'—';
   const obs=document.getElementById('r-obs')?.value||'';
   const data=new Date().toLocaleDateString(rl.locale);
   const hora=new Date().toLocaleTimeString(rl.locale);
@@ -2203,27 +2307,40 @@ function exportReportWord(){
     } else if(isRec){
       sectionsHTML+=`<h2>${numTitles[id]}</h2><div>${txt}</div>`;
     } else {
-      sectionsHTML+=`<h2>${numTitles[id]}</h2><p>${txt.replace(/\n/g,'</p><p>')}</p>`;
+      sectionsHTML+=`<h2>${numTitles[id]}</h2>${formatBodyParagraphs(txt)}`;
     }
   });
   if(!sectionsHTML){
-    alert('Gera o relatório primeiro com a IA antes de exportar.');return;
+    alert(tr('msg_gera_relatorio_primeiro'));return;
   }
-  const htmlDoc=`<!DOCTYPE html><html dir="${rl.dir}"><head><meta charset="utf-8">
+  const htmlDoc=`<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40" dir="${rl.dir}">
+<head><meta charset="utf-8">
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
 <style>
-body{font-family:Calibri,Arial,sans-serif;margin:2cm 2.5cm;color:#1a1a1a;font-size:11pt;line-height:1.7;direction:${rl.dir};}
+@page{size:21cm 29.7cm;margin:2cm 2.5cm;}
+body{font-family:Calibri,Arial,sans-serif;margin:2cm 2.5cm;color:#1a1a1a;font-size:11pt;line-height:1.7;direction:${rl.dir};mso-line-height-rule:exactly;}
 .hdr{background:#1a5c35;color:white;padding:18px 22px;margin-bottom:18px;}
 .hdr h1{margin:0;font-size:17pt;letter-spacing:1px;}
 .hdr p{margin:3px 0 0;font-size:9.5pt;opacity:0.85;}
 table.meta{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:10pt;}
 table.meta td{padding:5px 10px;border:1px solid #ccc;}
 table.meta td:first-child{background:#f0f4f0;font-weight:700;width:32%;}
-h2{color:#1a5c35;font-size:12.5pt;border-bottom:2px solid #1a5c35;padding-bottom:3px;margin-top:22px;}
-p{margin:7px 0;text-align:justify;}
-ul{margin:6px 0;}
-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:10pt;}
+h2{color:#1a5c35;font-size:12.5pt;font-weight:700;border-bottom:2px solid #1a5c35;padding-bottom:3px;margin-top:22px;margin-bottom:10px;page-break-after:avoid;}
+p{margin:0 0 10px 0;text-align:justify;text-justify:inter-word;line-height:1.7;}
+ul{margin:6px 0 14px 0;padding-${rl.dir==='rtl'?'right':'left'}:22px;}
+li{margin-bottom:5px;text-align:justify;line-height:1.6;}
+table{width:100%;border-collapse:collapse;margin:10px 0 18px 0;font-size:10pt;}
 th{background:#1a5c35;color:white;padding:6px 10px;text-align:${rl.dir==='rtl'?'right':'left'};}
-td{padding:5px 10px;border:1px solid #ddd;}
+td{padding:5px 10px;border:1px solid #ddd;vertical-align:top;}
 tr:nth-child(even) td{background:#f8faf8;}
 .footer{margin-top:36px;padding-top:10px;border-top:1px solid #bbb;font-size:8.5pt;color:#777;text-align:center;}
 .confidencial{background:#dc2626;color:white;display:inline-block;padding:2px 10px;font-size:9pt;font-weight:700;border-radius:3px;margin-top:6px;}
@@ -2267,7 +2384,7 @@ ${rl.lbl.disclaimer}
   a.download='HCJ-Relatorio-'+caseNum+'-'+new Date().toISOString().split('T')[0]+'.doc';
   a.click();
   logAudit('Relatório Word exportado','Caso '+caseNum+' · '+client);
-  addNotif('Word exportado','Relatório '+caseNum+' exportado com formatação profissional.','green');
+  addNotif(tr('msg_word_exportado_titulo'),tr('msg_word_exportado_corpo',[caseNum]),'green');
   waNotifyReport(caseNum,client);
 }
 
@@ -2367,18 +2484,18 @@ async function koboImportData(){
         </tbody></table></div>
       ${submissions.length>5?`<div style="font-size:10px;color:var(--text3);margin-top:4px;">Mostrando 5 de ${submissions.length} registos</div>`:''}`;
     logAudit('KoboToolbox importado',`${imported} casos importados de ${submissions.length} submissões`);
-    addNotif('KoboToolbox importado',`${imported} caso(s) importado(s) com sucesso do KoboToolbox.`,'green');
+    addNotif(tr('msg_kobo_importado_titulo'),tr('msg_kobo_importado_corpo',[imported]),'green');
   }catch(e){
     result.innerHTML=`<span style="color:var(--amber)">⚠ Erro: ${e.message}</span>`;
   }
 }
 function koboShowMapping(){
-  alert('Mapeamento de campos:\n\nO sistema importa automaticamente:\n• cliente / Nome_do_Cliente → Cliente\n• sector / sector_actividade → Sector\n• _geolocation → Localização GPS\n• risco / risco_hse → Nível de Risco\n• _submitted_by → Técnico\n• _submission_time → Data\n\nCertifica-te que os teus formulários KoboToolbox usam estes nomes de campo para importação automática.');
+  alert(tr('msg_mapeamento_campos'));
 }
 
 // Export geral de dados para Excel/CSV
 function exportAllDataCSV(){
-  if(!cases.length&&!clients.length){alert('Sem dados para exportar.');return;}
+  if(!cases.length&&!clients.length){alert(tr('msg_sem_dados_exportar'));return;}
   let csv='CASOS\nID,Cliente,Serviço,Sector,Risco HSE,Prioridade,Técnico,Data\n';
   cases.forEach(c=>{csv+=`"${c.id}","${c.cliente}","${c.servico}","${c.sector}","${c.risco_hse||''}","${c.prioridade||''}","${c.tecnico}","${c.data}"\n`;});
   csv+='\nCLIENTES\nNome,Sector,Estado,Localização,Contacto\n';
@@ -2429,7 +2546,7 @@ function renderAuditView(){
     </tbody></table></div>`;
 }
 function exportAuditCSV(){
-  if(!auditLog.length){alert('Nenhuma acção para exportar.');return;}
+  if(!auditLog.length){alert(tr('msg_nenhuma_accao_exportar'));return;}
   const header='Data/Hora,Utilizador,Acção,Detalhe\n';
   const rows=auditLog.map(l=>`"${l.ts}","${l.user}","${l.action}","${l.detail}"`).join('\n');
   const blob=new Blob([header+rows],{type:'text/csv'});
@@ -2456,7 +2573,7 @@ function importBackup(file){
   reader.onload=(e)=>{
     try{
       const backup=JSON.parse(e.target.result);
-      if(!confirm(`Restaurar cópia de ${backup.exported?.slice(0,10)||'desconhecida'}? Isto substitui os dados actuais.`))return;
+      if(!confirm(tr('msg_confirm_restaurar',[backup.exported?.slice(0,10)||tr('msg_desconhecida')])))return;
       appUsers=backup.users||[];
       clients=backup.clients||[];
       cases=backup.cases||[];
@@ -2465,10 +2582,10 @@ function importBackup(file){
       mapLocations=backup.mapLocations||[];
       auditLog=backup.auditLog||[];
       saveAll();
-      alert('Cópia de segurança restaurada com sucesso! A sessão será reiniciada.');
+      alert(tr('msg_backup_restaurado'));
       doLogout();
     }catch(err){
-      alert('Ficheiro de backup inválido.');
+      alert(tr('msg_backup_invalido'));
     }
   };
   reader.readAsText(file);
@@ -2534,7 +2651,7 @@ function handleFiles(files,listId,mode){
   });
 }
 function renderPhotoGallery(){
-  const html = !reportPhotos.length ? '' : `<div style="font-size:12px;font-weight:600;color:var(--text2);margin:12px 0 8px;">📷 Anexo Fotográfico do Caso (${reportPhotos.length}) <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px;" onclick="if(confirm('Remover todas as fotos deste caso?')){reportPhotos=[];renderPhotoGallery();}">Limpar todas</button></div>
+  const html = !reportPhotos.length ? '' : `<div style="font-size:12px;font-weight:600;color:var(--text2);margin:12px 0 8px;">📷 Anexo Fotográfico do Caso (${reportPhotos.length}) <button class="btn btn-ghost" style="font-size:10px;padding:2px 8px;" onclick="if(confirm(tr('msg_confirm_remover_fotos'))){reportPhotos=[];renderPhotoGallery();}">Limpar todas</button></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">` +
     reportPhotos.map((p,i)=>`
       <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg2);">
@@ -2583,16 +2700,16 @@ function openModal(id){document.getElementById(id).classList.add('show');}
 function closeModal(id){document.getElementById(id).classList.remove('show');}
 function saveClient(){
   const nome=document.getElementById('m-nome').value.trim();
-  if(!nome){alert('Nome obrigatório');return;}
+  if(!nome){alert(tr('msg_nome_obrigatorio'));return;}
   const c={nome,sector:document.getElementById('m-sector').value,local:document.getElementById('m-local').value,contacto:document.getElementById('m-contacto').value,estado:document.getElementById('m-estado').value,casos:0,data:new Date().toLocaleDateString('pt-PT')};
   if(editClientIdx>=0)clients[editClientIdx]={...clients[editClientIdx],...c};
   else clients.push(c);
   logAudit(editClientIdx>=0?'Cliente actualizado':'Cliente adicionado', `${c.nome} · ${c.sector}`);
   saveAll();closeModal('client-modal');renderClients();
-  addNotif('Cliente adicionado',`${nome} foi registado no sistema.`,'green');
+  addNotif(tr('msg_cliente_add_titulo'),tr('msg_cliente_add_corpo',[nome]),'green');
 }
 function deleteClient(idx){
-  if(!confirm(`Remover "${clients[idx].nome}"?`))return;
+  if(!confirm(tr('msg_confirm_remover',[clients[idx].nome])))return;
   const nome=clients[idx].nome;
   clients.splice(idx,1);saveAll();renderClients();
   logAudit('Cliente removido',nome);
@@ -2659,10 +2776,10 @@ function changeUserRole(idx, newPerm){
   saveAll();
   renderTeam();
   logAudit('Permissão alterada',`${appUsers[idx]?.name||'Utilizador'}: ${permLabel(oldPerm)} → ${permLabel(newPerm)} · Alterado por ${currentUser?.name||'—'}`);
-  addNotif('Permissão actualizada',`${appUsers[idx]?.name||'Utilizador'} é agora ${permLabel(newPerm)}.`,'blue');
+  addNotif(tr('msg_permissao_titulo'),tr('msg_permissao_corpo',[appUsers[idx]?.name||tr('lbl_utilizador'),permLabel(newPerm)]),'blue');
 }
 function removeUser(idx){
-  if(!confirm(`Remover "${appUsers[idx].name}"?`))return;
+  if(!confirm(tr('msg_confirm_remover',[appUsers[idx].name])))return;
   const nome=appUsers[idx].name, perm=appUsers[idx].permission;
   appUsers.splice(idx,1);saveAll();renderTeam();
   logAudit('Utilizador removido',`${nome} · ${permLabel(perm)} · Removido por ${currentUser?.name||'—'}`);
@@ -2691,7 +2808,7 @@ function updateTopbarActions(){
 function renderDashCases(){
   const el=document.getElementById('dash-casos-table');
   const recent=cases.slice(-5).reverse();
-  if(!recent.length){el.innerHTML='<p style="color:var(--text3);font-size:12px;">Nenhum caso ainda.</p>';return;}
+  if(!recent.length){el.innerHTML='<p style="color:var(--text3);font-size:12px;">'+tr('dash_nenhum_caso_ponto')+'</p>';return;}
   el.innerHTML=`<div class="table-wrap"><table><thead><tr><th>ID</th><th>Cliente</th><th>Serviço</th><th>Risco HSE</th><th>Prioridade</th><th>Data</th></tr></thead><tbody>
   ${recent.map(c=>`<tr><td class="case-id">${c.id}</td><td>${c.cliente}</td><td>${c.servico}</td><td style="color:${riskColor(c.risco_hse)};font-weight:700">${c.risco_hse||'—'}</td><td style="color:${riskColor(c.prioridade)};font-weight:700">${c.prioridade||'—'}</td><td style="color:var(--text3);font-size:10px">${c.data}</td></tr>`).join('')}
   </tbody></table></div>`;
@@ -2705,7 +2822,7 @@ async function runTriage(){
   const cliente=document.getElementById('t-cliente').value;
   const local=document.getElementById('t-local').value;
   const desc=document.getElementById('t-desc').value;
-  if(!sector||!servico||!cliente){alert('Preencha Cliente, Sector e Tipo de Serviço.');return;}
+  if(!sector||!servico||!cliente){alert(tr('msg_preencha_campos_triagem'));return;}
   const btn=document.getElementById('btn-triagem');
   btn.disabled=true;btn.textContent='⏳ IA a analisar...';
   const filesInfo=uploadedFiles.length?`\nFicheiros: ${uploadedFiles.map(f=>f.name).join(', ')}`:'';
@@ -2732,7 +2849,7 @@ Cliente: ${cliente} | Sector: ${sector} | Serviço: ${servico} | Local: ${local|
     html+=result.acoes.map((a,i)=>`<div class="action-item"><span class="action-num">0${i+1}</span><span>${a}</span></div>`).join('');
     document.getElementById('actions-list').innerHTML=html;
     document.getElementById('triage-result').classList.add('show');
-    addNotif('Triagem concluída',`Caso ${caseId} — ${cliente} — Risco HSE: ${result.risco_hse}`,'amber');
+    addNotif(tr('msg_triagem_titulo'),tr('msg_triagem_corpo',[caseId,cliente,result.risco_hse]),'amber');
   }catch(e){
     console.error(e);
     let msg='Erro ao contactar IA.';
@@ -2747,7 +2864,7 @@ Cliente: ${cliente} | Sector: ${sector} | Serviço: ${servico} | Local: ${local|
 }
 function approveAndGoReport(){
   const d=lastTriageData;
-  if(!d.cliente){alert('Execute a triagem primeiro.');return;}
+  if(!d.cliente){alert(tr('msg_execute_triagem'));return;}
   const novoCaso={id:d.caseId||'#HCJ-001',cliente:d.cliente,servico:d.servico,sector:d.sector,risco_hse:d.risco_hse,prioridade:d.prioridade,tecnico:currentUser?.name||'—',data:new Date().toLocaleDateString('pt-PT'),prazo:computePrazo(d.prioridade||d.risco_hse)};
   cases.push(novoCaso);
   logAudit('Caso criado',`${d.cliente||'—'} · ${d.sector||'—'} · Risco: ${d.risco_hse||'—'}`);
@@ -2769,20 +2886,20 @@ function approveAndGoReport(){
 async function generateReport(){
   const tipoSlugCheck = document.getElementById('r-tipo')?.value||'';
   const sectorSlugCheck = document.getElementById('r-sector')?.value||'';
-  if(!tipoSlugCheck){alert('Selecciona o Tipo de Relatório antes de gerar.');return;}
-  if(!sectorSlugCheck){alert('Selecciona o Sector antes de gerar.');return;}
+  if(!tipoSlugCheck){alert(tr('msg_seleciona_tipo_relatorio'));return;}
+  if(!sectorSlugCheck){alert(tr('msg_seleciona_sector'));return;}
   const caso = (document.getElementById('r-caso')?.value||'HCJ-001').replace(/^#+/,''); // remove # duplicado (o caseId já vem com # da triagem)
   const cliente = document.getElementById('r-cliente')?.value||'Cliente';
   const tipoSlug = document.getElementById('r-tipo')?.value||'hse';
   const TIPO_LABELS={hse:'Auditoria HSE (ISO 45001)',ambiental:'Conformidade Ambiental (ISO 14001)',qualidade:'Qualidade (ISO 9001)',esg:'ESG / Sustentabilidade (GRI)'};
   const NORMA_MAP={hse:'ISO 45001:2018',ambiental:'ISO 14001:2015',qualidade:'ISO 9001:2015',esg:'GRI Standards'};
-  const tipo = TIPO_LABELS[tipoSlug] || tipoSlug; // rótulo completo em vez do valor interno do <select>
+  const tipo = tipoLabel(tipoSlug) || tipoSlug; // rótulo completo, já no idioma do relatório
   const sectorSlug = document.getElementById('r-sector')?.value||'mineracao';
-  const sector = SECTOR_LABELS[sectorSlug] || sectorSlug; // rótulo amigável em vez do valor interno do <select>
+  const sector = sectorLabel(sectorSlug) || sectorSlug; // rótulo amigável, já no idioma do relatório
   const obs = document.getElementById('r-obs')?.value||'';
   const norma = NORMA_MAP[tipoSlug] || 'ISO 45001:2018';
   const btn = document.getElementById('btn-report');
-  if(!obs.trim()){alert('Preenche as Observações de Campo antes de gerar.');return;}
+  if(!obs.trim()){alert(tr('msg_preenche_observacoes'));return;}
   btn.disabled=true;
   btn.textContent='⏳ Groq AI a gerar relatório...';
   btn.scrollIntoView({behavior:'smooth',block:'center'});
@@ -2822,6 +2939,21 @@ async function generateReport(){
     // ABORDAGEM: 3 pedidos separados simples em vez de 1 JSON gigante
     const baseCtx = 'Caso:'+caso+' Cliente:'+cliente+' Sector:'+sector+' Norma:'+norma+' Observacoes:'+obs.substring(0,500);
 
+    // Directiva de idioma reforçada — a instrução base (marcadores RESUMO:, DIAGNOSTICO:, etc.)
+    // está escrita em português por ser o "código" de parsing interno do sistema; isso sozinho
+    // fazia o LLM seguir o idioma dominante da instrução e ignorar o idioma pedido. Esta directiva
+    // é repetida em ANTES e DEPOIS da instrução, e sempre no próprio idioma-alvo (não em português),
+    // para que a última coisa que o modelo "lê" antes de responder seja o idioma correcto.
+    const LANG_DIRECTIVE = {
+      pt:'ATENÇÃO: escreve TODO o texto livre da tua resposta em português europeu. Os marcadores em maiúsculas (RESUMO:, METODOLOGIA:, etc.) mantêm-se exactamente como pedido — não os traduzas.',
+      en:'IMPORTANT: write ALL free-form text of your answer in English. Keep the uppercase structural markers (RESUMO:, METODOLOGIA:, etc.) EXACTLY as given, in Latin script — do not translate the markers themselves, only the content that follows each one, which must be entirely in English.',
+      fr:"IMPORTANT : rédige TOUT le texte libre de ta réponse en français. Conserve les marqueurs en majuscules (RESUMO:, METODOLOGIA:, etc.) EXACTEMENT tels quels — ne traduis pas les marqueurs eux-mêmes, seulement le contenu qui suit chacun d'eux, qui doit être entièrement en français.",
+      es:'IMPORTANTE: escribe TODO el texto libre de tu respuesta en español. Mantén los marcadores en mayúsculas (RESUMO:, METODOLOGIA:, etc.) EXACTAMENTE como se indican — no traduzcas los marcadores, solo el contenido que sigue a cada uno, que debe estar completamente en español.',
+      zh:'重要提示：请将回答中的所有自由文本内容全部用中文（简体）书写。保留大写结构标记（RESUMO:、METODOLOGIA: 等）完全不变——不要翻译标记本身，只需将每个标记后面的内容完全用中文书写。',
+      ar:'مهم: اكتب كل النص الحر في إجابتك باللغة العربية بالكامل. حافظ على العلامات الهيكلية بالأحرف الكبيرة (RESUMO:، METODOLOGIA: وغيرها) كما هي تمامًا دون ترجمة — لا تترجم العلامات نفسها، بل فقط المحتوى الذي يلي كل علامة، ويجب أن يكون بالكامل باللغة العربية.'
+    };
+    const langDirective = LANG_DIRECTIVE[reportLang] || LANG_DIRECTIVE.pt;
+
     async function askGroq(instruction, maxTok){
       async function attempt(){
         const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
@@ -2830,8 +2962,8 @@ async function generateReport(){
           body:JSON.stringify({
             model:'llama-3.3-70b-versatile',
             messages:[
-              {role:'system',content:'You are a senior HSE consultant at HCJ Global Solutions, Mozambique. Write the ENTIRE content of every section strictly in '+langPromptName+' — do not mix in any other language. Keep the structural markers (RESUMO:, METODOLOGIA:, DIAGNOSTICO:, CAUSA_RAIZ:, SCORES:, RISCOS:, NAO_CONFORMIDADES:, RECOMENDACOES:, PLANO:, CONCLUSAO:) exactly as given, in Latin capital letters, never translated — they are parsing markers, not visible text. Be direct, technical and detailed. Vary sentence structure throughout the document: never reuse the same sentence template (e.g. "the lack of X may have significant impact on Y") more than twice in the whole report.'},
-              {role:'user',content:baseCtx+'\n\n'+instruction}
+              {role:'system',content:'You are a senior HSE consultant at HCJ Global Solutions, Mozambique. '+langDirective+' Write the ENTIRE content of every section strictly in '+langPromptName+' — do not mix in any other language, including Portuguese, unless '+langPromptName+' IS Portuguese. Be direct, technical and detailed. Vary sentence structure throughout the document: never reuse the same sentence template (e.g. "the lack of X may have significant impact on Y") more than twice in the whole report.'},
+              {role:'user',content:langDirective+'\n\n'+baseCtx+'\n\n'+instruction+'\n\n'+langDirective}
             ],
             temperature:0.3,
             max_tokens:maxTok||2800
@@ -3110,7 +3242,7 @@ OBRIGATORIO: usa EXACTAMENTE estes scores finais por pilar, ja calculados na sec
     saveReport(caso,cliente);
     renderPhotoAnnexInReport();
     logAudit('Relatório gerado','Caso '+caso+' - '+cliente);
-    addNotif('Relatório gerado','Relatório #'+caso+' para '+cliente+' pronto para validação.','blue');
+    addNotif(tr('msg_relatorio_gerado_titulo'),tr('msg_relatorio_gerado_corpo',[caso,cliente]),'blue');
     waNotifyReport(caso,cliente);
 
   }catch(e){
@@ -3147,7 +3279,7 @@ function downloadBlob(content, filename, mime){
 }
 function exportLocationsGeoJSON(){
   const withCoords = mapLocations.filter(l=>l.lat!=null && l.lon!=null);
-  if(withCoords.length===0){ alert('Nenhum ponto com coordenadas para exportar. Adiciona localizações com endereço válido primeiro.'); return; }
+  if(withCoords.length===0){ alert(tr('msg_sem_pontos_coords_endereco')); return; }
   const geojson = {
     type:'FeatureCollection',
     crs:{type:'name',properties:{name:'urn:ogc:def:crs:OGC:1.3:CRS84'}},
@@ -3165,7 +3297,7 @@ function exportLocationsGeoJSON(){
 }
 function exportLocationsKML(){
   const withCoords = mapLocations.filter(l=>l.lat!=null && l.lon!=null);
-  if(withCoords.length===0){ alert('Nenhum ponto com coordenadas para exportar.'); return; }
+  if(withCoords.length===0){ alert(tr('msg_sem_pontos_coords')); return; }
   const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const placemarks = withCoords.map(l => `
     <Placemark>
@@ -3188,7 +3320,7 @@ function csvEscape(v){
   return /[",\n;]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
 }
 function exportCasesCSV(){
-  if(cases.length===0){ alert('Nenhum caso registado para exportar.'); return; }
+  if(cases.length===0){ alert(tr('msg_nenhum_caso_exportar')); return; }
   const headers = ['id','cliente','sector','servico','risco_hse','prioridade','tecnico','data','prazo','reportGenerated'];
   const rows = cases.map(c => headers.map(h=>csvEscape(c[h])).join(';'));
   const csv = headers.join(';')+'\n'+rows.join('\n');
@@ -3218,7 +3350,7 @@ function saveToStorage(){
   storageFiles.push({id:'REP-'+Date.now(),name:titulo,type:'report',date:new Date().toLocaleDateString('pt-PT'),size:'Auto-gerado',tecnico:currentUser?.name||'—'});
   saveAll();
   logAudit('Relatório guardado',titulo);
-  alert('Relatório guardado no Armazenamento.');
+  alert(tr('msg_relatorio_guardado_storage'));
 }
 
 // STORAGE
@@ -3241,7 +3373,7 @@ function renderStorage(){
     </div>`).join('');
 }
 function deleteStorageFile(idx){
-  if(!confirm('Eliminar ficheiro?'))return;
+  if(!confirm(tr('msg_confirm_eliminar_ficheiro')))return;
   storageFiles.splice(idx,1);saveAll();renderStorage();
 }
 
@@ -3475,7 +3607,7 @@ function refreshMapMarkers(){
 async function saveLocation(){
   const nome=document.getElementById('loc-nome').value.trim();
   const endereco=document.getElementById('loc-endereco').value.trim();
-  if(!nome||!endereco){alert('Nome do local e endereço/localização são obrigatórios.');return;}
+  if(!nome||!endereco){alert(tr('msg_nome_endereco_obrigatorios'));return;}
   const btn=event.target;
   const original=btn.textContent;
   btn.disabled=true;btn.textContent='A localizar...';
@@ -3501,7 +3633,7 @@ async function saveLocation(){
   renderLocations();
   refreshMapMarkers();
   if(lat&&lon&&hcjMap){hcjMap.setView([lat,lon],14);}
-  addNotif('Ponto de localização adicionado', `${nome} foi adicionado ao mapa.`, 'green');
+  addNotif(tr('msg_ponto_add_titulo'), tr('msg_ponto_add_corpo',[nome]), 'green');
 }
 function viewLocationOnMap(idx){
   const loc=mapLocations[idx];
@@ -3517,7 +3649,7 @@ function viewLocationOnMap(idx){
   }
 }
 function deleteLocation(idx){
-  if(!confirm(`Remover "${mapLocations[idx].nome}"?`))return;
+  if(!confirm(tr('msg_confirm_remover',[mapLocations[idx].nome])))return;
   mapLocations.splice(idx,1);saveAll();renderLocations();refreshMapMarkers();
 }
 function renderLocations(){
@@ -3684,7 +3816,7 @@ async function groqTestKey(){
     });
     if(r.ok){
       if(res) res.innerHTML='<span style="color:var(--green);">✓ Groq AI conectado! Podes gerar relatórios.</span>';
-      addNotif('Groq AI','Motor IA conectado com sucesso.','green');
+      addNotif('Groq AI',tr('msg_groq_conectado'),'green');
     } else {
       const e=await r.json();
       if(res) res.innerHTML='<span style="color:var(--red);">✗ Erro: '+(e?.error?.message||r.status)+'</span>';
@@ -3727,7 +3859,7 @@ async function waSendAlert(message){
   img.onload=()=>{
     if(res) res.innerHTML='<span style="color:var(--green);">✓ Mensagem enviada! Verifica o WhatsApp.</span>';
     logAudit('WhatsApp enviado',message.substring(0,50));
-    addNotif('WhatsApp','Notificação enviada com sucesso.','green');
+    addNotif('WhatsApp',tr('msg_whatsapp_enviado'),'green');
   };
   img.onerror=()=>{
     if(res) res.innerHTML='<span style="color:var(--green);">✓ Pedido enviado. Verifica o WhatsApp em 30s.</span>';
@@ -3748,7 +3880,7 @@ function waNotifyReport(caseNum,client){
 
 // ===== CASO DE DEMONSTRAÇÃO =====
 function createDemoCase(){
-  if(!confirm('Criar caso demo fictício?\n\nDados: Vulcan Resources / Mineração / Moatize\nPermite testar todo o fluxo do APP.')) return;
+  if(!confirm(tr('msg_confirm_criar_demo'))) return;
   const demoCase={
     id:'HCJ-DEMO-001',numero:'HCJ-025',cliente:'Vulcan Resources Moçambique',
     sector:'Mineração',servico:'Auditoria HSE (ISO 45001)',local:'Mina de Moatize, Tete',
@@ -3771,14 +3903,14 @@ function createDemoCase(){
   }
   updateAll();
   logAudit('Caso DEMO criado','HCJ-025 — Vulcan Resources (fictício)');
-  addNotif('Demo criado','Caso HCJ-025 (Vulcan Resources) criado. Vai a Gestão de Casos.','green');
+  addNotif(tr('msg_demo_titulo'),tr('msg_demo_corpo'),'green');
   showView('casos',null);
   setTimeout(()=>{
     const rc=document.getElementById('r-case'); const rcl=document.getElementById('r-client'); const rs=document.getElementById('r-sector');
     if(rc) rc.value='HCJ-025'; if(rcl) rcl.value='Vulcan Resources Moçambique'; if(rs) rs.value='Mineração';
   },500);
   waNotifyRisk('HCJ-025','Vulcan Resources','ALTO — 3 NCs Críticas');
-  showToast('✓ Caso demo HCJ-025 criado! Vai a Gestão de Casos.','green');
+  showToast('✓ '+tr('msg_demo_toast'),'green');
 }
 function showToast(msg,type){
   const t=document.createElement('div');
